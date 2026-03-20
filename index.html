@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Избранное | Ádel</title>
+    <style>
+        body {
+            font-family: 'Georgia', serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .carousel-container {
+            position: relative;
+            width: 100%;
+            max-width: 850px;
+            background: #fff;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            border-radius: 20px;
+            overflow: hidden;
+            padding: 50px 40px;
+            box-sizing: border-box;
+            margin: 20px;
+        }
+        .carousel-track {
+            display: flex;
+            overflow-x: auto;
+            scroll-snap-type: x mandatory;
+            scroll-behavior: smooth;
+            scrollbar-width: none;
+        }
+        .carousel-track::-webkit-scrollbar {
+            display: none;
+        }
+        .slide {
+            flex: 0 0 100%;
+            scroll-snap-align: start;
+            text-align: center;
+            padding: 0 20px;
+            box-sizing: border-box;
+        }
+        .poem-title {
+            font-size: 2.2em;
+            color: #2c3e50;            margin-bottom: 25px;
+            font-style: italic;
+            font-weight: normal;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 15px;
+            display: inline-block;
+        }
+        .poem-text {
+            white-space: pre-line;
+            font-size: 1.25em;
+            line-height: 1.8;
+            color: #444;
+            margin-bottom: 30px;
+        }
+        .review-box {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            border-left: 5px solid #667eea;
+            padding: 20px;
+            text-align: left;
+            font-size: 1em;
+            color: #555;
+            font-style: italic;
+            margin-top: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        .review-author {
+            display: block;
+            margin-top: 15px;
+            font-weight: bold;
+            color: #667eea;
+            font-style: normal;
+            text-align: right;
+            font-size: 0.95em;
+        }
+        .nav-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: #fff;
+            border: 2px solid #667eea;
+            color: #667eea;
+            font-size: 24px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            cursor: pointer;
+            z-index: 10;
+            display: flex;
+            align-items: center;            justify-content: center;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+        .nav-btn:hover {
+            background: #667eea;
+            color: #fff;
+            transform: translateY(-50%) scale(1.1);
+        }
+        .prev-btn { left: 15px; }
+        .next-btn { right: 15px; }
+        
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            font-size: 1em;
+            color: #888;
+            border-top: 2px solid #eee;
+            padding-top: 20px;
+        }
+        .author-name {
+            font-weight: bold;
+            color: #667eea;
+            letter-spacing: 2px;
+            font-size: 1.2em;
+        }
+        .counter {
+            position: absolute;
+            bottom: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(102, 126, 234, 0.1);
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            color: #667eea;
+        }
+    </style>
+</head>
+<body>
+
+<div class="carousel-container">
+    <button class="nav-btn prev-btn" onclick="scrollSlide(-1)">&#10094;</button>
+    <button class="nav-btn next-btn" onclick="scrollSlide(1)">&#10095;</button>
+
+    <div class="carousel-track" id="track">
+        
+        <!-- Слайд 1: Горсть дождя -->
+        <div class="slide">
+            <div class="poem-title">Горсть дождя</div>            <div class="review-box">
+                «Захотелось после этих стихов взять в ладошку горсточку нашего русского дождя, такого тёплого, родного и доброго. А то у нас тут злые тропические ливни. Африка...»
+                <span class="review-author">— Боб Джек</span>
+            </div>
+        </div>
+
+        <!-- Слайд 2: Трава -->
+        <div class="slide">
+            <div class="poem-title">Трава</div>
+            <div class="review-box">
+                «Красивая песня. Ох как хорошо звучит: «Пройдешь босиком по траве непримятой...». Не каждому дано увидеть красоту природы и передать свою любовь в поэзии. Творческого вдохновения и успехов!»
+                <span class="review-author">— Алла Колосовская Аллайда</span>
+            </div>
+        </div>
+
+        <!-- Слайд 3: Вечный огонь -->
+        <div class="slide">
+            <div class="poem-title">Вечный огонь</div>
+            <div class="review-box">
+                «Вечный огонь - память о нём - солдате - не на параде. Экспромтом. Хороший стих.»
+                <span class="review-author">— Серж Ив 74</span>
+            </div>
+        </div>
+
+        <!-- Слайд 4: Месяц -->
+        <div class="slide">
+            <div class="poem-title">Месяц</div>
+            <div class="review-box">
+                «Понравилось, интересно написано "на стекле Капли дождя Одиноки!" - очень хорошо внутренним противоречием с "Нам месяц поет" - (одиночество как противопоставление множественному "нам"). "Запах цветов Утром растяняется" - хороша динамика "растяняется". "Листь промоют" - по-видимому опечатка, следует читать "листья"? "Теплой волной Солнце пройдет" - хорошо это "пройдёт"!»
+                <span class="review-author">— Леонид Ярмольинский 2</span>
+            </div>
+        </div>
+
+        <!-- Слайд 5: Стирая прошлого границы.. -->
+        <div class="slide">
+            <div class="poem-title">Стирая прошлого границы..</div>
+            <div class="review-box">
+                «Все смешалось в одно: и люди, и деньги, и интернет. Деградация мира. Спасение детей. Только вот бесполезно спасать детей, ограждая их от мира. Они гораздо быстрее воспринимают реальность и адаптируются к ней. Не надо ли менять себя? Тогда и не надо будет спасать детей.»
+                <span class="review-author">— Антонина Быстрых</span>
+            </div>
+        </div>
+
+        <!-- Слайд 6: Венец -->
+        <div class="slide">
+            <div class="poem-title">Венец</div>
+            <div class="review-box">
+                «Складно, но многовато дидактики»
+                <span class="review-author">— Алексей Козлов 3</span>
+            </div>
+        </div>
+        <!-- Слайд 7: Просто обо всём -->
+        <div class="slide">
+            <div class="poem-title">Просто обо всём</div>
+            <div class="review-box">
+                «Хорошо, нравится. 12 лет уже пишете? Немало) Я, впрочем, даже чуть больше, а по-прежнему бездарен. Ну да это мои проблемы))»
+                <span class="review-author">— Алексей Козлов 3</span>
+            </div>
+        </div>
+
+        <!-- Слайд 8: Ты и я -->
+        <div class="slide">
+            <div class="poem-title">Ты и я</div>
+            <div class="review-box">
+                «От произведения так веет теплом, добротой и спокойствием. Так вдохновляюще и красиво. С теплом.»
+                <span class="review-author">— Эмили Миллс</span>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="counter">
+        <span id="current">1</span> / <span id="total">8</span>
+    </div>
+
+    <div class="footer">
+        Портфолио поэта <span class="author-name">Ádel</span>
+    </div>
+</div>
+
+<script>
+    const track = document.getElementById('track');
+    const currentEl = document.getElementById('current');
+    const totalEl = document.getElementById('total');
+    const totalSlides = 8;
+    
+    function updateCounter() {
+        const slideWidth = track.clientWidth;
+        const currentSlide = Math.round(track.scrollLeft / slideWidth) + 1;
+        currentEl.textContent = currentSlide;
+    }
+    
+    function scrollSlide(direction) {
+        const slideWidth = track.clientWidth;
+        track.scrollBy({
+            left: direction * slideWidth,
+            behavior: 'smooth'
+        });
+    }
+        track.addEventListener('scroll', updateCounter);
+    window.addEventListener('resize', updateCounter);
+</script>
+
+</body>
+</html>
