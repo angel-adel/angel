@@ -290,13 +290,9 @@
 
     </div>
 
-    <footer>
-        <p>© 2025 Ádel — Ангел Поэзии</p>
-        <p>609 произведений | Портфолио поэта</p>    </footer>
+    <p>609 произведений | Портфолио поэта</p>
+    </footer>
 
-    <!-- ВОТ ЗДЕСЬ БЫЛА ПРОБЛЕМА - НУЖНЫ ТЕГИ <script> -->
-  
-    
     <script>
         let currentSlide = 0;
         const slides = document.querySelectorAll('.carousel-slide');
@@ -315,7 +311,6 @@
             goToSlide(next);
         }
         
-        // Автопереключение каждые 5 секунд
         setInterval(nextSlide, 5000);
     </script>
 
