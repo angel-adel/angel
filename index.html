@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Избранное | Ádel</title>
+    <title>Ádel — Ангел Поэзии</title>
     <style>
         body {
             font-family: 'Georgia', 'Times New Roman', serif;
@@ -56,114 +56,158 @@
             color: #fff;
         }
         .container {
-            max-width: 1200px;
+            max-width: 1000px;
             margin: 0 auto;
             padding: 40px 20px;
         }
-        .portfolio-title {
+        .hero {
             text-align: center;
             color: #fff;
-            font-size: 2.5em;
-            margin-bottom: 40px;
+            margin-bottom: 50px;
+            padding: 40px 20px;
+        }
+        .hero h1 {
+            font-size: 3em;
+            margin-bottom: 10px;
             text-shadow: 0 2px 4px rgba(0,0,0,0.3);
         }
-        .poems-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 30px;
+        .hero p {
+            font-size: 1.3em;
+            font-style: italic;
+            opacity: 0.95;
         }
-        .poem-card {
+        .carousel-container {
             background: #fff;
-            border-radius: 10px;
-            padding: 25px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            transition: transform 0.3s, box-shadow 0.3s;
-        }
-        .poem-card:hover {
-            transform: translateY(-5px);
+            border-radius: 15px;
+            padding: 40px;
+            margin-bottom: 40px;
             box-shadow: 0 8px 25px rgba(0,0,0,0.15);
         }
-        .poem-title {
+        .carousel-title {
+            text-align: center;
             color: #764ba2;
-            font-size: 1.4em;
-            margin-bottom: 15px;
-            border-bottom: 2px solid #667eea;
-            padding-bottom: 10px;
+            font-size: 1.8em;
+            margin-bottom: 30px;
         }
-        .poem-excerpt {
-            font-style: italic;
+        .carousel {
+            position: relative;
+            overflow: hidden;
+            min-height: 200px;
+        }
+        .carousel-slide {
+            display: none;
+            animation: fadeIn 0.8s;        }
+        .carousel-slide.active {
+            display: block;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateX(20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        .fact-number {
+            font-size: 3em;
+            color: #667eea;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .fact-text {
+            font-size: 1.2em;
             color: #555;
-            margin-bottom: 15px;
             line-height: 1.8;
         }
-        .review {            background: #f5f7fa;
-            border-left: 4px solid #667eea;
-            padding: 15px;
-            margin-top: 15px;
-            font-size: 0.95em;
+        .carousel-nav {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 30px;
         }
-        .review-author {
-            font-weight: bold;
-            color: #764ba2;
-            margin-top: 10px;
-            text-align: right;
-        }
-        .pagination {
-            text-align: center;
-            margin-top: 40px;
-            padding: 20px;
-        }
-        .pagination a {
-            display: inline-block;
-            padding: 10px 20px;
-            margin: 0 5px;
-            background: #fff;
-            color: #764ba2;
-            text-decoration: none;
-            border-radius: 5px;
-            border: 2px solid #764ba2;
+        .carousel-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #ddd;
+            cursor: pointer;
             transition: all 0.3s;
         }
-        .pagination a:hover, .pagination a.active {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: #fff;
-            border-color: transparent;
+        .carousel-dot.active {
+            background: #764ba2;
+            width: 30px;
+            border-radius: 6px;
+        }
+        .featured-review {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4e8ec 100%);
+            border-left: 5px solid #764ba2;
+            padding: 30px;
+            border-radius: 10px;
+            margin: 40px 0;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        .featured-review h2 {
+            color: #764ba2;
+            margin-top: 0;
+            font-size: 1.5em;        }
+        .review-text {
+            font-style: italic;
+            font-size: 1.1em;
+            color: #555;
+            margin: 20px 0;
+            line-height: 1.8;
+        }
+        .review-author {
+            text-align: right;
+            font-weight: bold;
+            color: #667eea;
+        }
+        .cta-section {
+            text-align: center;
+            margin: 50px 0;
         }
         .cta-button {
             display: inline-block;
-            margin-top: 30px;
             padding: 15px 40px;
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            margin: 10px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: #fff;
             text-decoration: none;
             border-radius: 25px;
             font-weight: bold;
-            font-size: 1.2em;
+            font-size: 1.1em;
             transition: transform 0.3s, box-shadow 0.3s;
         }
         .cta-button:hover {
             transform: translateY(-3px);
-            box-shadow: 0 6px 20px rgba(245, 87, 108, 0.4);
+            box-shadow: 0 6px 20px rgba(118, 75, 162, 0.4);
         }
-        footer {            text-align: center;
+        .cta-button.secondary {
+            background: #fff;
+            color: #764ba2;
+            border: 2px solid #764ba2;
+        }
+        .cta-button.secondary:hover {
+            background: #f5f7fa;
+        }
+        footer {
+            text-align: center;
             padding: 30px;
             background: rgba(255, 255, 255, 0.9);
             margin-top: 50px;
             color: #764ba2;
         }
         @media (max-width: 768px) {
-            .header-content {
-                flex-direction: column;
+            .header-content {                flex-direction: column;
                 gap: 15px;
             }
             nav ul {
                 justify-content: center;
             }
-            .portfolio-title {
-                font-size: 1.8em;
+            .hero h1 {
+                font-size: 2em;
             }
-            .poems-grid {
-                grid-template-columns: 1fr;
+            .carousel-container {
+                padding: 25px;
+            }
+            .fact-number {
+                font-size: 2em;
             }
         }
     </style>
@@ -179,139 +223,101 @@
                     <li><a href="about.html">Об авторе</a></li>
                     <li><a href="portfolio.html">Произведения</a></li>
                     <li><a href="reviews.html">Рецензии</a></li>
-                    <li><a href="order.html" class="cta-nav">Заказать</a></li>
+                    <li><a href="order.html">Заказать</a></li>
                 </ul>
             </nav>
         </div>
     </header>
 
     <div class="container">
-        <h1 class="portfolio-title">Портфолио поэта Ádel</h1>
+        
+        <div class="hero">
+            <h1>Ádel — Ангел Поэзии</h1>
+            <p>Голос, свободный от ожиданий</p>
+        </div>
 
-        <div class="poems-grid">
+        <div class="carousel-container">
+            <h2 class="carousel-title">✨ Кратко о творчестве</h2>
             
-            <div class="poem-card">
-                <h2 class="poem-title">Горсть дождя</h2>
-                <div class="poem-excerpt">
-                    «Захотелось после этих стихов взять в ладошку горсточку нашего русского дождя, такого тёплого, родного и доброго. А то у нас тут злые тропические ливни. Африка...»
-                </div>                <div class="review">
-                    — Боб Джек Трава
+            <div class="carousel">
+                <div class="carousel-slide active">
+                    <div class="fact-number">609</div>
+                    <div class="fact-text">произведений написано за годы творчества. От коротких экспромтов до глубоких философских размышлений.</div>
+                </div>                
+                <div class="carousel-slide">
+                    <div class="fact-number">2024</div>
+                    <div class="fact-text">год рождения Ádel — Ангела Поэзии. Голоса, свободного от рамок и ожиданий.</div>
+                </div>
+                
+                <div class="carousel-slide">
+                    <div class="fact-number">∞</div>
+                    <div class="fact-text">Жанров: лирика, философия, юмор, социальные темы. Поэзия, которая говорит о главном.</div>
+                </div>
+                
+                <div class="carousel-slide">
+                    <div class="fact-number">ESP</div>
+                    <div class="fact-text">Испанский язык открыл новое звучание. Ángel de la poesía — так звучит Ádel на языке страсти.</div>
+                </div>
+                
+                <div class="carousel-slide">
+                    <div class="fact-number">❤️</div>
+                    <div class="fact-text">Пишу для тех, кто не боится чувствовать. Для тех, кто любит всерьёз и не стесняется этого.</div>
                 </div>
             </div>
 
-            <div class="poem-card">
-                <h2 class="poem-title">Вечный огонь</h2>
-                <div class="poem-excerpt">
-                    «Вечный огонь - память о нём - солдате - не на параде. Экспромтом. Хороший стих.»
-                </div>
-                <div class="review">
-                    — Серж Ив 74
-                </div>
+            <div class="carousel-nav">
+                <span class="carousel-dot active" onclick="goToSlide(0)"></span>
+                <span class="carousel-dot" onclick="goToSlide(1)"></span>
+                <span class="carousel-dot" onclick="goToSlide(2)"></span>
+                <span class="carousel-dot" onclick="goToSlide(3)"></span>
+                <span class="carousel-dot" onclick="goToSlide(4)"></span>
             </div>
-
-            <div class="poem-card">
-                <h2 class="poem-title">Месяц</h2>
-                <div class="poem-excerpt">
-                    «Понравилось, интересно написано "на стекле Капли дождя Одиноки!" - очень хорошо внутренним противоречием с "Нам месяц поет"...»
-                </div>
-                <div class="review">
-                    — Леонид Ярмольинский
-                </div>
-            </div>
-
-            <div class="poem-card">
-                <h2 class="poem-title">Стирая прошлого границы..</h2>
-                <div class="poem-excerpt">
-                    «Все смешалось в одно: и люди, и деньги, и интернет. Деградация мира. Спасение детей...»
-                </div>
-                <div class="review">
-                    — Антонина Быстрых
-                </div>
-            </div>
-
-            <div class="poem-card">
-                <h2 class="poem-title">Венец</h2>
-                <div class="poem-excerpt">
-                    «Складно, но многовато дидактики»
-                </div>
-                <div class="review">
-                    — Алексей Козлов
-                </div>
-            </div>
-
-            <div class="poem-card">
-                <h2 class="poem-title">Просто обо всём</h2>
-                <div class="poem-excerpt">
-                    «Хорошо, нравится. 12 лет уже пишете? Немало) Я, впрочем, даже чуть больше, а по-прежнему бездарен...»
-                </div>                <div class="review">
-                    — Алексей Козлов
-                </div>
-            </div>
-
-            <div class="poem-card">
-                <h2 class="poem-title">Ты и я</h2>
-                <div class="poem-excerpt">
-                    «От произведения так веет теплом, добротой и спокойствием. Так вдохновляюще и красиво. С теплом.»
-                </div>
-                <div class="review">
-                    — Эмили Миллс
-                </div>
-            </div>
-
         </div>
 
-        <div class="pagination">
-            <a href="#" class="active">1</a>
-            <a href="#">2</a>
-            <a href="#">3</a>
-            <a href="#">4</a>
-            <a href="#">5</a>
-            <a href="#">...</a>
-            <a href="#">8</a>
+        <div class="featured-review">
+            <h2>💬 Что говорят читатели</h2>
+            <div class="review-text">
+                «От произведения так веет теплом, добротой и спокойствием. Так вдохновляюще и красиво.»
+            </div>
+            <div class="review-author">— Эмили Миллс о стихотворении «Ты и я»</div>
         </div>
 
-        <div style="text-align: center;">
-            <a href="order.html" class="cta-button">📝 Заказать произведение</a>
+        <div class="cta-section">
+            <a href="portfolio.html" class="cta-button">📚 Всё портфолио</a>
+            <a href="reviews.html" class="cta-button secondary">💬 Все рецензии</a>
+            <a href="about.html" class="cta-button secondary">👤 Об авторе</a>
         </div>
+
     </div>
 
     <footer>
         <p>© 2025 Ádel — Ангел Поэзии</p>
-        <p>609 произведений | Портфолио поэта</p>
-    </footer>
-
-</body>
-    </html> и спокойствием. Так вдохновляюще и красиво. С теплом.»
-                <div class="author">— Эмили Миллс</div>
-            </div>
-        </div>
-
-        <!-- Слайд 9 -->
-    <div class="slide">
-        <h2>Не думай о словах</h2>
-        <div class="line"></div>
-        <div class="quote-box">
-            «Заметно, что автор не думает о словах...)))»
-            <div class="author">— Никон Сидоров</div>
-        </div>
-    </div>
-
-        <div class="counter"><span id="current">1</span> / 9</div>
-
-        <!-- Кнопка заказа -->
-        <div class="order-section">
-            <h3>✨ Хотите уникальное произведение?</h3>
-            <p>Напишу стихотворение, песню или поздравление специально для вас</p>
-            <a href="order.html" class="order-btn">🎁 Оформить заказ</a>
-        </div>
-
-        <div class="footer">
-            Портфолио поэта <strong>Ádel</strong>
-        </div>
-    </div>
+        <p>609 произведений | Портфолио поэта</p>    </footer>
 
     <script>
         let currentSlide = 0;
+        const slides = document.querySelectorAll('.carousel-slide');
+        const dots = document.querySelectorAll('.carousel-dot');
+        
+        function goToSlide(index) {
+            slides[currentSlide].classList.remove('active');
+            dots[currentSlide].classList.remove('active');
+            currentSlide = index;
+            slides[currentSlide].classList.add('active');
+            dots[currentSlide].classList.add('active');
+        }
+        
+        function nextSlide() {
+            let next = (currentSlide + 1) % slides.length;
+            goToSlide(next);
+        }
+        
+        // Автопереключение каждые 5 секунд
+        setInterval(nextSlide, 5000);
+    </script>
+
+</body>
+</html>ide = 0;
         const slides = document.querySelectorAll('.slide');
         const counter = document.getElementById('current');
 
