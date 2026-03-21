@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ádel — Ангел Поэзии</title>
+    <style>
+        body {
+            font-family: 'Georgia', 'Times New Roman', serif;
+            line-height: 1.6;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        header {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .logo {
+            font-size: 2em;
+            font-weight: bold;
+            color: #764ba2;
+            text-decoration: none;
+        }
+        nav ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        nav a {
+            text-decoration: none;
+            color: #333;
+            font-weight: bold;            padding: 10px 15px;
+            border-radius: 5px;
+            transition: all 0.3s;
+        }
+        nav a:hover, nav a.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #fff;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+        .hero {
+            text-align: center;
+            color: #fff;
+            margin-bottom: 50px;
+            padding: 40px 20px;
+        }
+        .hero h1 {
+            font-size: 3em;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+        .hero p {
+            font-size: 1.3em;
+            font-style: italic;
+            opacity: 0.95;
+        }
+        .carousel-container {
+            background: #fff;
+            border-radius: 15px;
+            padding: 40px;
+            margin-bottom: 40px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+        .carousel-title {
+            text-align: center;
+            color: #764ba2;
+            font-size: 1.8em;
+            margin-bottom: 30px;
+        }
+        .carousel {
+            position: relative;
+            overflow: hidden;
+            min-height: 200px;
+        }
+        .carousel-slide {
+            display: none;
+            animation: fadeIn 0.8s;        }
+        .carousel-slide.active {
+            display: block;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateX(20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        .fact-number {
+            font-size: 3em;
+            color: #667eea;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .fact-text {
+            font-size: 1.2em;
+            color: #555;
+            line-height: 1.8;
+        }
+        .carousel-nav {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 30px;
+        }
+        .carousel-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #ddd;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .carousel-dot.active {
+            background: #764ba2;
+            width: 30px;
+            border-radius: 6px;
+        }
+        .featured-review {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4e8ec 100%);
+            border-left: 5px solid #764ba2;
+            padding: 30px;
+            border-radius: 10px;
+            margin: 40px 0;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        .featured-review h2 {
+            color: #764ba2;
+            margin-top: 0;
+            font-size: 1.5em;        }
+        .review-text {
+            font-style: italic;
+            font-size: 1.1em;
+            color: #555;
+            margin: 20px 0;
+            line-height: 1.8;
+        }
+        .review-author {
+            text-align: right;
+            font-weight: bold;
+            color: #667eea;
+        }
+        .cta-section {
+            text-align: center;
+            margin: 50px 0;
+        }
+        .cta-button {
+            display: inline-block;
+            padding: 15px 40px;
+            margin: 10px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #fff;
+            text-decoration: none;
+            border-radius: 25px;
+            font-weight: bold;
+            font-size: 1.1em;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(118, 75, 162, 0.4);
+        }
+        .cta-button.secondary {
+            background: #fff;
+            color: #764ba2;
+            border: 2px solid #764ba2;
+        }
+        .cta-button.secondary:hover {
+            background: #f5f7fa;
+        }
+        footer {
+            text-align: center;
+            padding: 30px;
+            background: rgba(255, 255, 255, 0.9);
+            margin-top: 50px;
+            color: #764ba2;
+        }
+        @media (max-width: 768px) {
+            .header-content {                flex-direction: column;
+                gap: 15px;
+            }
+            nav ul {
+                justify-content: center;
+            }
+            .hero h1 {
+                font-size: 2em;
+            }
+            .carousel-container {
+                padding: 25px;
+            }
+            .fact-number {
+                font-size: 2em;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="header-content">
+            <a href="index.html" class="logo">Ádel</a>
+            <nav>
+                <ul>
+                    <li><a href="index.html" class="active">Главная</a></li>
+                    <li><a href="about.html">Об авторе</a></li>
+                    <li><a href="portfolio.html">Произведения</a></li>
+                    <li><a href="reviews.html">Рецензии</a></li>
+                    <li><a href="order.html">Заказать</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <div class="container">
+        
+        <div class="hero">
+            <h1>Ádel — Ангел Поэзии</h1>
+            <p>Голос, свободный от ожиданий</p>
+        </div>
+
+        <div class="carousel-container">
+            <h2 class="carousel-title">✨ Кратко о творчестве</h2>
+            
+            <div class="carousel">
+                <div class="carousel-slide active">
+                    <div class="fact-number">609</div>
+                    <div class="fact-text">произведений написано за годы творчества. От коротких экспромтов до глубоких философских размышлений.</div>
+                </div>                
+                <div class="carousel-slide">
+                    <div class="fact-number">2024</div>
+                    <div class="fact-text">год рождения Ádel — Ангела Поэзии. Голоса, свободного от рамок и ожиданий.</div>
+                </div>
+                
+                <div class="carousel-slide">
+                    <div class="fact-number">∞</div>
+                    <div class="fact-text">Жанров: лирика, философия, юмор, социальные темы. Поэзия, которая говорит о главном.</div>
+                </div>
+                
+                <div class="carousel-slide">
+                    <div class="fact-number">ESP</div>
+                    <div class="fact-text">Испанский язык открыл новое звучание. Ángel de la poesía — так звучит Ádel на языке страсти.</div>
+                </div>
+                
+                <div class="carousel-slide">
+                    <div class="fact-number">❤️</div>
+                    <div class="fact-text">Пишу для тех, кто не боится чувствовать. Для тех, кто любит всерьёз и не стесняется этого.</div>
+                </div>
+            </div>
+
+            <div class="carousel-nav">
+                <span class="carousel-dot active" onclick="goToSlide(0)"></span>
+                <span class="carousel-dot" onclick="goToSlide(1)"></span>
+                <span class="carousel-dot" onclick="goToSlide(2)"></span>
+                <span class="carousel-dot" onclick="goToSlide(3)"></span>
+                <span class="carousel-dot" onclick="goToSlide(4)"></span>
+            </div>
+        </div>
+
+        <div class="featured-review">
+            <h2>💬 Что говорят читатели</h2>
+            <div class="review-text">
+                «От произведения так веет теплом, добротой и спокойствием. Так вдохновляюще и красиво.»
+            </div>
+            <div class="review-author">— Эмили Миллс о стихотворении «Ты и я»</div>
+        </div>
+
+        <div class="cta-section">
+            <a href="portfolio.html" class="cta-button">📚 Всё портфолио</a>
+            <a href="reviews.html" class="cta-button secondary">💬 Все рецензии</a>
+            <a href="about.html" class="cta-button secondary">👤 Об авторе</a>
+        </div>
+
+    </div>
+
+    <footer>
+        <p>© 2025 Ádel — Ангел Поэзии</p>
+        <p>609 произведений | Портфолио поэта</p>    </footer>
+
+    <!-- ВОТ ЗДЕСЬ БЫЛА ПРОБЛЕМА - НУЖНЫ ТЕГИ <script> -->
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.carousel-slide');
+        const dots = document.querySelectorAll('.carousel-dot');
+        
+        function goToSlide(index) {
+            slides[currentSlide].classList.remove('active');
+            dots[currentSlide].classList.remove('active');
+            currentSlide = index;
+            slides[currentSlide].classList.add('active');
+            dots[currentSlide].classList.add('active');
+        }
+        
+        function nextSlide() {
+            let next = (currentSlide + 1) % slides.length;
+            goToSlide(next);
+        }
+        
+        // Автопереключение каждые 5 секунд
+        setInterval(nextSlide, 5000);
+    </script>
+
+</body>
+</html>
