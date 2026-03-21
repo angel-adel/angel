@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Произведения | Ádel</title>
+    <style>
+        body {
+            font-family: 'Georgia', 'Times New Roman', serif;
+            line-height: 1.6;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        header {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .logo {
+            font-size: 2em;
+            font-weight: bold;
+            color: #764ba2;
+            text-decoration: none;
+        }
+        nav ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        nav a {
+            text-decoration: none;
+            color: #333;
+            font-weight: bold;            padding: 10px 15px;
+            border-radius: 5px;
+            transition: all 0.3s;
+        }
+        nav a:hover, nav a.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #fff;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+        .page-title {
+            text-align: center;
+            color: #fff;
+            font-size: 2.5em;
+            margin-bottom: 30px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+        .search-container {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .search-input {
+            width: 100%;
+            max-width: 500px;
+            padding: 15px 25px;
+            font-size: 1.1em;
+            border: 2px solid #fff;
+            border-radius: 25px;
+            outline: none;
+            transition: all 0.3s;
+        }
+        .search-input:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 15px rgba(102, 126, 234, 0.4);
+        }
+        .filter-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 40px;
+        }
+        .filter-btn {
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.9);
+            color: #764ba2;
+            border: 2px solid #764ba2;            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.95em;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+        .filter-btn:hover, .filter-btn.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #fff;
+            border-color: transparent;
+        }
+        .poems-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 25px;
+        }
+        .poem-card {
+            background: #fff;
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+            cursor: pointer;
+        }
+        .poem-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+        .poem-title {
+            color: #764ba2;
+            font-size: 1.3em;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+        .poem-genre {
+            color: #667eea;
+            font-size: 0.9em;
+            font-style: italic;
+            margin-bottom: 15px;
+        }
+        .poem-excerpt {
+            color: #555;
+            line-height: 1.8;
+            font-style: italic;
+        }
+        .pagination {
+            text-align: center;
+            margin-top: 40px;
+            padding: 20px;
+        }        .pagination button {
+            display: inline-block;
+            padding: 10px 20px;
+            margin: 0 5px;
+            background: #fff;
+            color: #764ba2;
+            border: 2px solid #764ba2;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .pagination button:hover, .pagination button.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #fff;
+            border-color: transparent;
+        }
+        .stats {
+            text-align: center;
+            color: #fff;
+            margin-bottom: 30px;
+            font-size: 1.1em;
+        }
+        footer {
+            text-align: center;
+            padding: 30px;
+            background: rgba(255, 255, 255, 0.9);
+            margin-top: 50px;
+            color: #764ba2;
+        }
+
+        /* Модальное окно */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.7);
+            animation: fadeIn 0.3s;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        .modal-content {
+            background: #fff;
+            margin: 5% auto;
+            padding: 40px;            border-radius: 15px;
+            width: 90%;
+            max-width: 700px;
+            max-height: 80vh;
+            overflow-y: auto;
+            position: relative;
+            animation: slideDown 0.3s;
+        }
+        @keyframes slideDown {
+            from { transform: translateY(-50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        .modal-close {
+            position: absolute;
+            right: 20px;
+            top: 15px;
+            font-size: 35px;
+            font-weight: bold;
+            color: #764ba2;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+        .modal-close:hover {
+            color: #667eea;
+        }
+        #modal-title {
+            color: #764ba2;
+            font-size: 2em;
+            margin-bottom: 10px;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 15px;
+        }
+        .modal-genre {
+            color: #667eea;
+            font-style: italic;
+            margin-bottom: 25px;
+            font-size: 1.1em;
+        }
+        .modal-text {
+            font-size: 1.2em;
+            line-height: 2;
+            color: #333;
+            white-space: pre-line;
+            font-family: 'Georgia', serif;
+        }
+
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 15px;            }
+            nav ul {
+                justify-content: center;
+            }
+            .page-title {
+                font-size: 1.8em;
+            }
+            .poems-grid {
+                grid-template-columns: 1fr;
+            }
+            .filter-btn {
+                font-size: 0.85em;
+                padding: 8px 15px;
+            }
+            .modal-content {
+                margin: 10% auto;
+                padding: 25px;
+                width: 95%;
+            }
+            #modal-title {
+                font-size: 1.5em;
+            }
+            .modal-text {
+                font-size: 1em;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="header-content">
+            <a href="index.html" class="logo">Ádel</a>
+            <nav>
+                <ul>
+                    <li><a href="index.html">Главная</a></li>
+                    <li><a href="about.html">Об авторе</a></li>
+                    <li><a href="portfolio.html" class="active">Произведения</a></li>
+                    <li><a href="reviews.html">Рецензии</a></li>
+                    <li><a href="order.html">Заказать</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <div class="container">
+        <h1 class="page-title">Все произведения</h1>
+        
+        <div class="stats">
+            <span id="total-count">0</span> произведений | Показано: <span id="showing-count">0</span>        </div>
+
+        <div class="search-container">
+            <input type="text" class="search-input" id="search-input" placeholder="🔍 Поиск по названию...">
+        </div>
+
+        <div class="filter-container" id="filter-container">
+            <button class="filter-btn active" data-genre="all">Все</button>
+            <button class="filter-btn" data-genre="любовная лирика">💜 Любовная лирика</button>
+            <button class="filter-btn" data-genre="философская лирика">🤔 Философская</button>
+            <button class="filter-btn" data-genre="пейзажная лирика">🌿 Пейзажная</button>
+            <button class="filter-btn" data-genre="гражданская лирика">🇷🇺 Гражданская</button>
+            <button class="filter-btn" data-genre="городская лирика">🏙️ Городская</button>
+            <button class="filter-btn" data-genre="религиозная лирика">🙏 Религиозная</button>
+            <button class="filter-btn" data-genre="авторская песня">🎸 Авторская песня</button>
+            <button class="filter-btn" data-genre="белый и вольный стих">📝 Белый стих</button>
+            <button class="filter-btn" data-genre="поэтические переводы">🌍 Переводы</button>
+            <button class="filter-btn" data-genre="стихи на других языках">🗣️ Иноязычные</button>
+            <button class="filter-btn" data-genre="шуточные стихи">😄 Шуточные</button>
+            <button class="filter-btn" data-genre="сатирические стихи">😏 Сатира</button>
+            <button class="filter-btn" data-genre="басни">🦊 Басни</button>
+            <button class="filter-btn" data-genre="стихи для детей">👶 Детские</button>
+            <button class="filter-btn" data-genre="поэмы">📖 Поэмы</button>
+            <button class="filter-btn" data-genre="мистика и эзотерика">🔮 Мистика</button>
+            <button class="filter-btn" data-genre="переделки песен">🎵 Переделки</button>
+            <button class="filter-btn" data-genre="прозаические миниатюры">📄 Проза</button>
+            <button class="filter-btn" data-genre="без рубрики">📁 Без рубрики</button>
+        </div>
+
+        <div class="poems-grid" id="poems-grid">
+            <!-- Сюда JavaScript добавит карточки -->
+        </div>
+
+        <div class="pagination" id="pagination"></div>
+    </div>
+
+    <!-- Модальное окно для просмотра текста -->
+    <div id="poem-modal" class="modal">
+        <div class="modal-content">
+            <span class="modal-close">&times;</span>
+            <h2 id="modal-title"></h2>
+            <div class="modal-genre" id="modal-genre"></div>
+            <div class="modal-text" id="modal-text"></div>
+        </div>
+    </div>
+
+    <footer>
+        <p>© 2025 Ádel — Ангел Поэзии</p>
+        <p>Портфолио поэта</p>
+    </footer>
+    <script>
+        // === ЗАГРУЗКА JSON ===
+        let poems = [];
+        let currentPage = 1;
+        let currentGenre = 'all';
+        let filteredPoems = [];
+        const itemsPerPage = 24;
+
+        // Элементы
+        const poemsGrid = document.getElementById('poems-grid');
+        const pagination = document.getElementById('pagination');
+        const filterContainer = document.getElementById('filter-container');
+        const searchInput = document.getElementById('search-input');
+        const totalCount = document.getElementById('total-count');
+        const showingCount = document.getElementById('showing-count');
+
+        // Модальное окно
+        const modal = document.getElementById('poem-modal');
+        const modalTitle = document.getElementById('modal-title');
+        const modalGenre = document.getElementById('modal-genre');
+        const modalText = document.getElementById('modal-text');
+        const modalClose = document.querySelector('.modal-close');
+
+        // Загрузка произведений из JSON
+        async function loadPoems() {
+            try {
+                const response = await fetch('poems.json');
+                poems = await response.json();
+                filteredPoems = [...poems];
+                totalCount.textContent = poems.length;
+                renderPoems();
+            } catch (error) {
+                console.error('Ошибка загрузки:', error);
+                poemsGrid.innerHTML = '<p style="text-align:center;color:#fff;">Ошибка загрузки произведений. Проверьте файл poems.json</p>';
+            }
+        }
+
+        // Рендер карточек
+        function renderPoems() {
+            poemsGrid.innerHTML = '';
+            const start = (currentPage - 1) * itemsPerPage;
+            const end = start + itemsPerPage;
+            const pagePoems = filteredPoems.slice(start, end);
+
+            pagePoems.forEach((poem, index) => {
+                const card = document.createElement('div');
+                card.className = 'poem-card';
+                card.dataset.index = start + index;
+                card.innerHTML = `                    <div class="poem-title">${poem.title}</div>
+                    <div class="poem-genre">${poem.genre}</div>
+                    <div class="poem-excerpt">${poem.excerpt}</div>
+                `;
+                card.addEventListener('click', () => openPoem(start + index));
+                poemsGrid.appendChild(card);
+            });
+
+            showingCount.textContent = filteredPoems.length;
+            renderPagination();
+        }
+
+        // Пагинация
+        function renderPagination() {
+            pagination.innerHTML = '';
+            const totalPages = Math.ceil(filteredPoems.length / itemsPerPage);
+
+            if (totalPages <= 1) return;
+
+            for (let i = 1; i <= totalPages; i++) {
+                const btn = document.createElement('button');
+                btn.textContent = i;
+                btn.className = i === currentPage ? 'active' : '';
+                btn.onclick = () => {
+                    currentPage = i;
+                    renderPoems();
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                };
+                pagination.appendChild(btn);
+            }
+        }
+
+        // Фильтрация
+        function filterPoems() {
+            currentPage = 1;
+            const searchTerm = searchInput.value.toLowerCase();
+
+            filteredPoems = poems.filter(poem => {
+                const matchesGenre = currentGenre === 'all' || poem.genre === currentGenre;
+                const matchesSearch = poem.title.toLowerCase().includes(searchTerm);
+                return matchesGenre && matchesSearch;
+            });
+
+            renderPoems();
+        }
+
+        // Модальное окно
+        function openPoem(index) {
+            const poem = filteredPoems[index];
+            modalTitle.textContent = poem.title;            modalGenre.textContent = poem.genre;
+            modalText.textContent = poem.fullText || 'Текст произведения готовится...';
+            modal.style.display = 'block';
+            document.body.style.overflow = 'hidden';
+        }
+
+        modalClose.onclick = () => {
+            modal.style.display = 'none';
+            document.body.style.overflow = 'auto';
+        };
+
+        window.onclick = (e) => {
+            if (e.target === modal) {
+                modal.style.display = 'none';
+                document.body.style.overflow = 'auto';
+            }
+        };
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                modal.style.display = 'none';
+                document.body.style.overflow = 'auto';
+            }
+        });
+
+        // События
+        filterContainer.addEventListener('click', (e) => {
+            if (e.target.classList.contains('filter-btn')) {
+                document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+                e.target.classList.add('active');
+                currentGenre = e.target.dataset.genre;
+                filterPoems();
+            }
+        });
+
+        searchInput.addEventListener('input', filterPoems);
+
+        // Запуск
+        loadPoems();
+    </script>
+
+</body>
+</html>"袧芯褔褜 蟹邪斜褘褌褘褏 褋褌懈褏芯胁" },
+            { title: "袟邪斜褘褌邪褟 屑械谢芯写懈褟", genre: "褎懈谢芯褋芯褎褋泻邪褟 谢懈褉懈泻邪", excerpt: "协褏芯 锌褉芯褕谢芯谐芯" },
+            { title: "Camino sin huellas", genre: "锌芯褝褌懈褔械褋泻懈械 锌械褉械胁芯写褘", excerpt: "袩褍褌褜 斜械蟹 褋谢械写芯胁" },
+            { title: "孝邪薪械褑 褌械薪械泄", genre: "谢褞斜芯胁薪邪褟 谢懈褉懈泻邪", excerpt: "袠谐褉邪 褋胁械褌邪" },
+            { title: "袨 薪械泄", genre: "谢褞斜芯胁薪邪褟 谢懈褉懈泻邪", excerpt: "袩芯褋胁褟褖械薪懈械" },            { title: "Coraz贸n de cristal roto", genre: "褎懈谢芯褋芯褎褋泻邪褟 谢懈褉懈泻邪", excerpt: "袪邪蟹斜懈褌芯械 褋械褉写褑械" },
+            { title: "小械褉写褑械 懈蟹 斜褍屑邪谐懈", genre: "褎懈谢芯褋芯褎褋泻邪褟 谢懈褉懈泻邪", excerpt: "啸褉褍锌泻芯褋褌褜 褔褍胁褋褌胁" },
+            { title: "Polvo de estrellas fugaces", genre: "锌械褉械胁芯写褘 锌械褋械薪", excerpt: "袩褘谢褜 泻芯屑械褌" },
+            { title: "袛胁械褉褜 胁 薪懈泻褍写邪", genre: "褎懈谢芯褋芯褎褋泻邪褟 谢懈褉懈泻邪", excerpt: "袨褌泻褉褘褌褘泄 锌褍褌褜" },
+            { title: "La puerta que jam谩s se abri贸", genre: "锌芯褝褌懈褔械褋泻懈械 锌械褉械胁芯写褘", excerpt: "袟邪泻褉褘褌邪褟 写胁械褉褜" },
+            { title: "袩芯褋谢械写薪懈泄 谢褍褔", genre: "褎懈谢芯褋芯褎褋泻邪褟 谢懈褉懈泻邪", excerpt: "校谐邪褋邪褞褖懈泄 褋胁械褌" },
+            { title: "Nubes en la taza de caf茅", genre: "褎懈谢芯褋芯褎褋泻邪褟 谢懈褉懈泻邪", excerpt: "袨斜谢邪泻邪 胁 褔邪褕泻械" },
+            { title: "协褏芯 斜械蟹 谐芯谢芯褋邪", genre: "褎懈谢芯褋芯褎褋泻邪褟 谢懈褉懈泻邪", excerpt: "袘械蟹蟹胁褍褔薪褘泄 芯褌泻谢懈泻" },
+            { title: "El jard铆n de los recuerdos perdidos", genre: "褋褌懈褏懈 薪邪 写褉褍谐懈褏 褟蟹褘泻邪褏", excerpt: "小邪写 锌邪屑褟褌懈" },
+            { title: "笑胁械褌芯泻 胁 锌械锌谢械", genre: "褎懈谢芯褋芯褎褋泻邪褟 谢懈褉懈泻邪", excerpt: "袞懈蟹薪褜 锌芯褋谢械 芯谐薪褟" },
+            { title: "Sombras que caminan solas", genre: "褎懈谢芯褋芯褎褋泻邪褟 谢懈褉懈泻邪", excerpt: "袨写懈薪芯泻懈械 褌械薪懈" },
+            { title: "袟懈屑邪", genre: "锌械泄蟹邪卸薪邪褟 谢懈褉懈泻邪", excerpt: "啸芯谢芯写薪芯械 胁褉械屑褟" },
+            { title: "袙芯 懈屑褟 褔懈褋褌芯褌褘", genre: "褎懈谢芯褋芯褎褋泻邪褟 谢懈褉懈泻邪", excerpt: "袪邪写懈 褋胁械褌邪" },
+            { title: "小泻胁芯蟹褜 褋褌械泻谢芯 胁褉械屑械薪懈", genre: "褎懈谢芯褋芯褎褋泻邪褟 谢懈褉懈泻邪", excerpt: "小泻胁芯蟹褜 胁械泻邪" },
+            { title: "Mariposa en la tormenta", genre: "褎懈谢芯褋芯褎褋泻邪褟 谢懈褉懈泻邪", excerpt: "袘邪斜芯褔泻邪 胁 斜褍褉械" },
+            { title: "袧械蟹邪泻芯薪褔械薪薪褘泄 胁蟹写芯褏", genre: "锌械泄蟹邪卸薪邪褟 谢懈褉懈泻邪", excerpt: "袩褉械褉胁邪薪薪褘泄 屑懈谐" },
+            { title: "El eco de un adi贸s", genre: "谢褞斜芯胁薪邪褟 谢懈褉懈泻邪", excerpt: "协褏芯 锌褉芯褖邪薪懈褟" },
+            { title: "袥褍薪邪 胁 褔邪褕泻械 褔邪褟", genre: "谐芯褉芯写褋泻邪褟 谢懈褉懈泻邪", excerpt: "校褞褌薪褘泄 胁械褔械褉" },
+            { title: "Lluvia en los bolsillos", genre: "褎懈谢芯褋芯褎褋泻邪褟 谢懈褉懈泻邪", excerpt: "袛芯卸写褜 胁 泻邪褉屑邪薪邪褏" },
+            { title: "小械褉械卸泻懈", genre: "褎懈谢芯褋芯褎褋泻邪褟 谢懈褉懈泻邪", excerpt: "袦械谢芯褔懈 卸懈蟹薪懈" },
+            { title: "袩械锌械谢 胁芯褋锌芯屑懈薪邪薪懈泄", genre: "褎懈谢芯褋芯褎褋泻邪褟 谢懈褉懈泻邪", excerpt: "袨褋褌邪褌泻懈 锌褉芯褕谢芯谐芯" },
+            { title: "Ra铆ces del silencio", genre: "褎懈谢芯褋芯褎褋泻邪褟 谢懈褉懈泻邪", excerpt: "袣芯褉薪懈 褌懈褕懈薪褘" },
+            { title: "小谢械写褘 薪邪 胁芯写械", genre: "褎懈谢芯褋芯褎褋泻邪褟 谢懈褉懈泻邪", excerpt: "袠褋褔械蟹邪褞褖懈泄 褋谢械写" },
+            { title: "Viento entre las costillas", genre: "褎懈谢芯褋芯褎褋泻邪褟 谢懈褉懈泻邪", excerpt: "袙械褌械褉 胁 褉褢斜褉邪褏" },
+            { title: "袚芯褉褋褌褜 写芯卸写褟", genre: "褎懈谢芯褋芯褎褋泻邪褟 谢懈褉懈泻邪", excerpt: "袣邪锌谢懈 锌邪屑褟褌懈" },
+            { title: "Espejos Rotos del Alma", genre: "锌芯褝褌懈褔械褋泻懈械 锌械褉械胁芯写褘", excerpt: "袪邪蟹斜懈褌褘械 蟹械褉泻邪谢邪" },
+            { title: "袙械褌械褉 胁 胁芯谢芯褋邪褏 薪芯褔懈", genre: "褎懈谢芯褋芯褎褋泻邪褟 谢懈褉懈泻邪", excerpt: "袧芯褔薪芯泄 斜褉懈蟹" },
+            { title: "袙蟹谐谢褟写 懈薪邪褔械", genre: "邪胁褌芯褉褋泻邪褟 锌械褋薪褟", excerpt: "袛褉褍谐芯泄 褍谐芯谢" },
+            { title: "El 煤ltimo suspiro del r铆o", genre: "锌械泄蟹邪卸薪邪褟 谢懈褉懈泻邪", excerpt: "袩芯褋谢械写薪懈泄 胁蟹写芯褏 褉械泻懈" },
+            { title: "袨褋泻芯谢泻懈 屑邪褟", genre: "褎懈谢芯褋芯褎褋泻邪褟 谢懈褉懈泻邪", excerpt: "袨斜谢芯屑泻懈 胁械褋薪褘" },
+            { title: "Ceniza de abril", genre: "褋褌懈褏懈 薪邪 写褉褍谐懈褏 褟蟹褘泻邪褏", excerpt: "袗锌褉械谢褜褋泻懈泄 锌械锌械谢" },
+            { title: "孝懈褕懈薪邪 屑械卸写褍 褋褌褉芯泻", genre: "谐褉邪卸写邪薪褋泻邪褟 谢懈褉懈泻邪", excerpt: "袧械胁褘褋泻邪蟹邪薪薪芯械" },
+            { title: "Carta a la luna menguante", genre: "褎懈谢芯褋芯褎褋泻邪褟 谢懈褉懈泻邪", excerpt: "袩懈褋褜屑芯 谢褍薪械" },
+            { title: "袟胁褢蟹写褘 胁 泻邪褉屑邪薪械", genre: "褎懈谢芯褋芯褎褋泻邪褟 谢懈褉懈泻邪", excerpt: "袣邪褉屑邪薪薪邪褟 胁褋械谢械薪薪邪褟" },
+            { title: "Susurros de medianoches", genre: "锌械泄蟹邪卸薪邪褟 谢懈褉懈泻邪", excerpt: "袩芯谢薪芯褔薪褘泄 褕褢锌芯褌" },
+            { title: "袩懈褋褜屑芯 斜械蟹 邪写褉械褋邪", genre: "谐褉邪卸写邪薪褋泻邪褟 谢懈褉懈泻邪", excerpt: "袘械蟹 芯褌胁械褌邪" },
+            { title: "El reloj de las ausencias", genre: "褎懈谢芯褋芯褎褋泻邪褟 谢懈褉懈泻邪", excerpt: "效邪褋褘 芯褌褋褍褌褋褌胁懈褟" },
+            { title: "袚写械 褋锌褟褌 芯斜谢邪泻邪", genre: "褉械谢懈谐懈芯蟹薪邪褟 谢懈褉懈泻邪", excerpt: "袧械斜械褋薪褘泄 锌芯泻芯泄" },
+            { title: "Huellas en la niebla", genre: "褎懈谢芯褋芯褎褋泻邪褟 谢懈褉懈泻邪", excerpt: "小谢械写褘 胁 褌褍屑邪薪械" },
+            { title: "袥懈褕褜 胁 薪芯褟斜褉械 袙褋械 谢懈褋褌褜褟 锌芯卸械谢褌械谢懈...", genre: "锌械泄蟹邪卸薪邪褟 谢懈褉懈泻邪", excerpt: "袨褋械薪薪褟褟 谐褉褍褋褌褜" },
+            { title: "孝械薪褜 薪邪 褉邪褋褋胁械褌械", genre: "褎懈谢芯褋芯褎褋泻邪褟 谢懈褉懈泻邪", excerpt: "校褌褉械薪薪褟褟 褌械薪褜" },
+            { title: "校屑械褉褜 褋胁芯懈 蟹邪锌褉芯褋褘, 薪械蟹薪邪泻芯屑泻邪", genre: "谐褉邪卸写邪薪褋泻邪褟 谢懈褉懈泻邪", excerpt: "小芯胁械褌 锌褉芯褏芯卸械泄" },
+            { title: "袩褉芯褋褌芯 蟹薪邪泄", genre: "褎懈谢芯褋芯褎褋泻邪褟 谢懈褉懈泻邪", excerpt: "袙邪卸薪芯械 薪邪锌芯屑懈薪邪薪懈械" },
+            { title: "袧械 谐谢褟写褟 薪邪蟹邪写", genre: "褎懈谢芯褋芯褎褋泻邪褟 谢懈褉懈泻邪", excerpt: "袙锌械褉褢写 斜械蟹 芯谐谢褟写泻懈" },
+            { title: "袨褋泻芯谢泻懈 褋谢芯胁", genre: "褎懈谢芯褋芯褎褋泻邪褟 谢懈褉懈泻邪", excerpt: "袪邪蟹斜懈褌褘械 褎褉邪蟹褘" },
+            { title: "小胁械褌芯褎芯褉", genre: "褎懈谢芯褋芯褎褋泻邪褟 谢懈褉懈泻邪", excerpt: "小懈谐薪邪谢褘 褋褍写褜斜褘" },
+            { title: "校 芯谐褉邪写褘", genre: "褎懈谢芯褋芯褎褋泻邪褟 谢懈褉懈泻邪", excerpt: "袧邪 谐褉邪薪懈褑械" },
+            { title: "效邪褕邪", genre: "褎懈谢芯褋芯褎褋泻邪褟 谢懈褉懈泻邪", excerpt: "袩芯谢薪邪褟 屑械褉邪" },
+            { title: "袧械 谐芯薪懈褋褜 蟹邪 锌褉懈蟹褉邪泻芯屑", genre: "邪胁褌芯褉褋泻邪褟 锌械褋薪褟", excerpt: "袨褋褌邪薪芯胁懈褋褜" },
+            { title: "袞懈蟹薪褜 胁 芯写薪芯屑 薪邪斜褉芯褋泻械", genre: "褎懈谢芯褋芯褎褋泻邪褟 谢懈褉懈泻邪", excerpt: "协褋泻懈蟹 褋褍写褜斜褘" },            { title: "袗泻胁邪褉械谢褜", genre: "锌械泄蟹邪卸薪邪褟 谢懈褉懈泻邪", excerpt: "袪邪蟹屑褘褌褘械 泻褉邪褋泻懈" },
+            { title: "袞懈胁懈, 泻邪泻 蟹薪邪械褕褜", genre: "褎懈谢芯褋芯褎褋泻邪褟 谢懈褉懈泻邪", excerpt: "小胁芯泄 锌褍褌褜" },
+            { title: "袩械褉械谢懈胁褘 薪芯褌", genre: "褎懈谢芯褋芯褎褋泻邪褟 谢懈褉懈泻邪", excerpt: "袦褍蟹褘泻邪 褋谢芯胁" },
+            { title: "袪邪褋泻邪褌褘 谐褉芯屑邪", genre: "褎懈谢芯褋芯褎褋泻邪褟 谢懈褉懈泻邪", excerpt: "袚芯谢芯褋 薪械斜械褋" },
+            { title: "小懈谢邪 褋谢芯胁", genre: "褎懈谢芯褋芯褎褋泻邪褟 谢懈褉懈泻邪", excerpt: "袦芯褖褜 褉械褔懈" },
+            { title: "孝褉邪胁邪", genre: "锌械泄蟹邪卸薪邪褟 谢懈褉懈泻邪", excerpt: "袟械谢褢薪褘泄 泻芯胁褢褉" },
+            { title: "袧邪写 褋锌褟褖懈屑 谐芯褉芯写芯屑...", genre: "谐芯褉芯写褋泻邪褟 谢懈褉懈泻邪", excerpt: "袧芯褔薪芯泄 锌芯泻芯泄" },
+            { title: "袨褋械薪薪懈泄 褔邪褋", genre: "锌械泄蟹邪卸薪邪褟 谢懈褉懈泻邪", excerpt: "袙褉械屑褟 褍胁褟写邪薪懈褟" },
+            { title: "袛褍屑邪泄...", genre: "谢褞斜芯胁薪邪褟 谢懈褉懈泻邪", excerpt: "袪邪蟹屑褘褕谢械薪懈褟 芯 薪械泄" },
+            { title: "袟邪泻褉芯泄 谐谢邪蟹邪 褋胁芯懈 薪邪 屑懈谐", genre: "锌械泄蟹邪卸薪邪褟 谢懈褉懈泻邪", excerpt: "袦谐薪芯胁械薪懈械 锌芯泻芯褟" },
+            { title: "袣芯谐写邪 薪邪 泻褍褏薪械 谐邪褋薪械褌 褋胁械褌", genre: "斜械谢褘泄 懈 胁芯谢褜薪褘泄 褋褌懈褏", excerpt: "袛芯屑邪褕薪懈泄 褍褞褌" },
+            { title: "袦芯褌褘谢械泻", genre: "邪胁褌芯褉褋泻邪褟 锌械褋薪褟", excerpt: "啸褉褍锌泻邪褟 卸懈蟹薪褜" },
+            { title: "孝芯褔泻邪 薪械胁芯蟹胁褉邪褌邪", genre: "褎懈谢芯褋芯褎褋泻邪褟 谢懈褉懈泻邪", excerpt: "袪褍斜懈泻芯薪" },
+            { title: "袙械褉褕懈薪邪 屑懈褉邪", genre: "褎懈谢芯褋芯褎褋泻邪褟 谢懈褉懈泻邪", excerpt: "袧邪 锌懈泻械" },
+            { title: "袟邪 泻褉芯薪邪屑懈 褋芯褋械薪", genre: "褎懈谢芯褋芯褎褋泻邪褟 谢懈褉懈泻邪", excerpt: "袥械褋薪邪褟 褌邪泄薪邪" },
+            { title: "效械褌胁械褉褌褜 卸懈蟹薪懈", genre: "褎懈谢芯褋芯褎褋泻邪褟 谢懈褉懈泻邪", excerpt: "协褌邪锌 锌褍褌懈" },
+            { title: "袧械褉邪蟹写械谢褢薪薪褘泄 屑懈谐", genre: "谢褞斜芯胁薪邪褟 谢懈褉懈泻邪", excerpt: "袨写薪芯褋褌芯褉芯薪薪械械 褔褍胁褋褌胁芯" },
+            { title: "Solo escucha", genre: "褋褌懈褏懈 薪邪 写褉褍谐懈褏 褟蟹褘泻邪褏", excerpt: "袩褉芯褋褌芯 褋谢褍褕邪泄" },
+            { title: "小谢褍褕邪泄", genre: "斜械谢褘泄 懈 胁芯谢褜薪褘泄 褋褌懈褏", excerpt: "袙薪械屑谢懈" },
+            { title: "袧邪 锌械褉械泻褉械褋褌泻械", genre: "褎懈谢芯褋芯褎褋泻邪褟 谢懈褉懈泻邪", excerpt: "袙褘斜芯褉 锌褍褌懈" },
+            { title: "袟邪 胁械褌褉芯屑", genre: "邪胁褌芯褉褋泻邪褟 锌械褋薪褟", excerpt: "袙 锌芯谐芯薪械" },
+            { title: "小薪褘", genre: "谐褉邪卸写邪薪褋泻邪褟 谢懈褉懈泻邪", excerpt: "袚褉褢蟹褘 薪邪褟胁褍" },
+            { title: "孝邪屑, 谐写械 写褍褕邪 褉褍泻懈 泻芯褋薪械褌褋褟", genre: "褎懈谢芯褋芯褎褋泻邪褟 谢懈褉懈泻邪", excerpt: "袩褉懈泻芯褋薪芯胁械薪懈械" },
+            { title: "袣芯褋屑芯褋", genre: "谐褉邪卸写邪薪褋泻邪褟 谢懈褉懈泻邪", excerpt: "袘械褋泻芯薪械褔薪芯褋褌褜" },
+            { title: "袟邪斜芯褉", genre: "斜械谢褘泄 懈 胁芯谢褜薪褘泄 褋褌懈褏", excerpt: "袚褉邪薪懈褑褘" },
+            { title: "肖芯薪邪褉懈", genre: "谐褉邪卸写邪薪褋泻邪褟 谢懈褉懈泻邪", excerpt: "校谢懈褔薪褘械 芯谐薪懈" },
+            { title: "袩芯锌褍褌褔懈泻", genre: "谐褉邪卸写邪薪褋泻邪褟 谢懈褉懈泻邪", excerpt: "袙褉械屑械薪薪褘泄 褋锌褍褌薪懈泻" },
+            { title: "袧邪 写芯褉芯卸泻褍...", genre: "谐褉邪卸写邪薪褋泻邪褟 谢懈褉懈泻邪", excerpt: "袩褉芯胁芯写
