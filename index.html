@@ -5,352 +5,283 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Избранное | Ádel</title>
     <style>
-        * {
+        body {
+            font-family: 'Georgia', 'Times New Roman', serif;
+            line-height: 1.6;
+            color: #333;
             margin: 0;
             padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: #333;
             min-height: 100vh;
+        }
+        header {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
             display: flex;
-            justify-content: center;
+            justify-content: space-between;
             align-items: center;
-            padding: 20px 10px;
+            flex-wrap: wrap;
         }
-
-        .carousel {
-            background: white;
-            border-radius: 20px;
-            padding: 40px 30px;
-            max-width: 600px;
-            width: 100%;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .slide {
-            display: none;
-            animation: fadeIn 0.5s;
-        }
-
-        .slide.active {
-            display: block;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
-        h2 {
-            font-size: 32px;
-            color: #2c3e50;
-            margin-bottom: 20px;
-            text-align: center;
-            font-weight: 600;
-            line-height: 1.3;
-        }
-
-        .line {
-            width: 60%;
-            height: 2px;
-            background: linear-gradient(90deg, #667eea, #764ba2);
-            margin: 20px auto 30px;
-        }
-
-        .quote-box {
-            background: linear-gradient(135deg, #f5f7fa 0%, #e8ecf1 100%);
-            padding: 25px;
-            border-radius: 12px;
-            margin: 25px 0;
-            border-left: 4px solid #667eea;
-            font-style: italic;
-            line-height: 1.6;
-            color: #555;
-            font-size: 15px;
-        }
-
-        .author {
-            text-align: right;
-            color: #667eea;
-            font-weight: 600;
-            margin-top: 10px;
-            font-style: normal;
-        }
-
-        .nav-btn {
-            position: absolute;
-            top: 50%;
-            transform: translateY(-50%);
-            background: white;
-            border: 2px solid #667eea;
-            width: 45px;
-            height: 45px;
-            border-radius: 50%;
-            cursor: pointer;
-            font-size: 20px;
-            color: #667eea;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.3s;
-            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
-        }
-
-        .nav-btn:hover {
-            background: #667eea;
-            color: white;
-            transform: translateY(-50%) scale(1.1);
-        }
-
-        .nav-btn.prev {
-            left: 10px;
-        }
-
-        .nav-btn.next {
-            right: 10px;
-        }
-
-        .counter {
-            text-align: center;
-            margin: 25px 0 15px;
-            color: #667eea;
-            font-size: 14px;
-            font-weight: 500;
-        }
-
-        .footer {
-            text-align: center;
-            margin-top: 20px;
-            padding-top: 20px;
-            border-top: 1px solid #e0e0e0;
-            color: #7f8c8d;
-            font-size: 14px;
-        }
-
-        .footer strong {
-            color: #667eea;
-        }
-
-        /* Кнопка заказа */
-        .order-section {
-            text-align: center;
-            margin: 30px 0 20px 0;
-            padding: 25px 20px;
-            background: linear-gradient(135deg, rgba(102,126,234,0.1) 0%, rgba(118,75,162,0.1) 100%);
-            border-radius: 16px;
-        }
-
-        .order-section h3 {
-            margin: 0 0 12px 0;
-            color: #667eea;
-            font-size: 18px;
-        }
-
-        .order-section p {
-            margin: 0 0 18px 0;
-            color: #666;
-            font-size: 13px;
-            line-height: 1.5;
-        }
-
-        .order-btn {
-            display: inline-block;
-            padding: 14px 35px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
+        .logo {
+            font-size: 2em;
+            font-weight: bold;
+            color: #764ba2;
             text-decoration: none;
-            border-radius: 50px;
-            font-size: 15px;
-            font-weight: 600;
-            box-shadow: 0 4px 15px rgba(102,126,234,0.4);
-            transition: all 0.3s ease;
         }
-
-        .order-btn:hover {
+        nav ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        nav a {
+            text-decoration: none;
+            color: #333;
+            font-weight: bold;            padding: 10px 15px;
+            border-radius: 5px;
+            transition: all 0.3s;
+        }
+        nav a:hover, nav a.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #fff;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+        .portfolio-title {
+            text-align: center;
+            color: #fff;
+            font-size: 2.5em;
+            margin-bottom: 40px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+        .poems-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 30px;
+        }
+        .poem-card {
+            background: #fff;
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .poem-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+        .poem-title {
+            color: #764ba2;
+            font-size: 1.4em;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+        }
+        .poem-excerpt {
+            font-style: italic;
+            color: #555;
+            margin-bottom: 15px;
+            line-height: 1.8;
+        }
+        .review {            background: #f5f7fa;
+            border-left: 4px solid #667eea;
+            padding: 15px;
+            margin-top: 15px;
+            font-size: 0.95em;
+        }
+        .review-author {
+            font-weight: bold;
+            color: #764ba2;
+            margin-top: 10px;
+            text-align: right;
+        }
+        .pagination {
+            text-align: center;
+            margin-top: 40px;
+            padding: 20px;
+        }
+        .pagination a {
+            display: inline-block;
+            padding: 10px 20px;
+            margin: 0 5px;
+            background: #fff;
+            color: #764ba2;
+            text-decoration: none;
+            border-radius: 5px;
+            border: 2px solid #764ba2;
+            transition: all 0.3s;
+        }
+        .pagination a:hover, .pagination a.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #fff;
+            border-color: transparent;
+        }
+        .cta-button {
+            display: inline-block;
+            margin-top: 30px;
+            padding: 15px 40px;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: #fff;
+            text-decoration: none;
+            border-radius: 25px;
+            font-weight: bold;
+            font-size: 1.2em;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .cta-button:hover {
             transform: translateY(-3px);
-            box-shadow: 0 6px 20px rgba(102,126,234,0.6);
+            box-shadow: 0 6px 20px rgba(245, 87, 108, 0.4);
         }
-
-        /* АДАПТАЦИЯ ДЛЯ МОБИЛЬНЫХ */
-        @media (max-width: 600px) {
-            body {
-                padding: 10px 5px;
-            }
-
-            .carousel {
-                padding: 30px 20px;
-                border-radius: 16px;
-            }
-
-            h2 {
-                font-size: 24px;
-            }
-
-            .quote-box {
-                padding: 20px 15px;
-                font-size: 14px;
-                border-radius: 10px;
-            }
-
-            .nav-btn {
-                width: 40px;
-                height: 40px;
-                font-size: 18px;
-            }
-
-            .nav-btn.prev {
-                left: 5px;
-            }
-
-            .nav-btn.next {
-                right: 5px;
-            }
-
-            .order-section {
-                padding: 20px 15px;
-                margin: 25px 0 15px 0;
-            }
-
-            .order-section h3 {
-                font-size: 16px;
-            }
-
-            .order-section p {
-                font-size: 12px;
-            }
-
-            .order-btn {
-                padding: 12px 28px;
-                font-size: 14px;
-            }
-
-            .footer {
-                font-size: 12px;
-            }
+        footer {            text-align: center;
+            padding: 30px;
+            background: rgba(255, 255, 255, 0.9);
+            margin-top: 50px;
+            color: #764ba2;
         }
-
-        /* Для очень маленьких экранов */
-        @media (max-width: 360px) {
-            .carousel {
-                padding: 25px 15px;
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 15px;
             }
-
-            h2 {
-                font-size: 20px;
+            nav ul {
+                justify-content: center;
             }
-
-            .quote-box {
-                padding: 15px 12px;
-                font-size: 13px;
+            .portfolio-title {
+                font-size: 1.8em;
             }
-
-            .nav-btn {
-                width: 35px;
-                height: 35px;
-                font-size: 16px;
-            }
-        }
-
-        /* Для планшетов и ПК */
-        @media (min-width: 601px) {
-            .carousel {
-                padding: 40px 35px;
-            }
-
-            h2 {
-                font-size: 32px;
+            .poems-grid {
+                grid-template-columns: 1fr;
             }
         }
     </style>
 </head>
 <body>
 
-    <div class="carousel">
-        <button class="nav-btn prev" onclick="changeSlide(-1)">❮</button>
-        <button class="nav-btn next" onclick="changeSlide(1)">❯</button>
+    <header>
+        <div class="header-content">
+            <a href="index.html" class="logo">Ádel</a>
+            <nav>
+                <ul>
+                    <li><a href="index.html" class="active">Главная</a></li>
+                    <li><a href="about.html">Об авторе</a></li>
+                    <li><a href="portfolio.html">Произведения</a></li>
+                    <li><a href="reviews.html">Рецензии</a></li>
+                    <li><a href="order.html" class="cta-nav">Заказать</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
 
-        <!-- Слайд 1 -->
-        <div class="slide active">
-            <h2>Горсть дождя</h2>
-            <div class="line"></div>
-            <div class="quote-box">
-                «Захотелось после этих стихов взять в ладошку горсточку нашего русского дождя, такого тёплого, родного и доброго. А то у нас тут злые тропические ливни. Африка...»
-                <div class="author">— Боб Джек</div>
+    <div class="container">
+        <h1 class="portfolio-title">Портфолио поэта Ádel</h1>
+
+        <div class="poems-grid">
+            
+            <div class="poem-card">
+                <h2 class="poem-title">Горсть дождя</h2>
+                <div class="poem-excerpt">
+                    «Захотелось после этих стихов взять в ладошку горсточку нашего русского дождя, такого тёплого, родного и доброго. А то у нас тут злые тропические ливни. Африка...»
+                </div>                <div class="review">
+                    — Боб Джек Трава
+                </div>
             </div>
+
+            <div class="poem-card">
+                <h2 class="poem-title">Вечный огонь</h2>
+                <div class="poem-excerpt">
+                    «Вечный огонь - память о нём - солдате - не на параде. Экспромтом. Хороший стих.»
+                </div>
+                <div class="review">
+                    — Серж Ив 74
+                </div>
+            </div>
+
+            <div class="poem-card">
+                <h2 class="poem-title">Месяц</h2>
+                <div class="poem-excerpt">
+                    «Понравилось, интересно написано "на стекле Капли дождя Одиноки!" - очень хорошо внутренним противоречием с "Нам месяц поет"...»
+                </div>
+                <div class="review">
+                    — Леонид Ярмольинский
+                </div>
+            </div>
+
+            <div class="poem-card">
+                <h2 class="poem-title">Стирая прошлого границы..</h2>
+                <div class="poem-excerpt">
+                    «Все смешалось в одно: и люди, и деньги, и интернет. Деградация мира. Спасение детей...»
+                </div>
+                <div class="review">
+                    — Антонина Быстрых
+                </div>
+            </div>
+
+            <div class="poem-card">
+                <h2 class="poem-title">Венец</h2>
+                <div class="poem-excerpt">
+                    «Складно, но многовато дидактики»
+                </div>
+                <div class="review">
+                    — Алексей Козлов
+                </div>
+            </div>
+
+            <div class="poem-card">
+                <h2 class="poem-title">Просто обо всём</h2>
+                <div class="poem-excerpt">
+                    «Хорошо, нравится. 12 лет уже пишете? Немало) Я, впрочем, даже чуть больше, а по-прежнему бездарен...»
+                </div>                <div class="review">
+                    — Алексей Козлов
+                </div>
+            </div>
+
+            <div class="poem-card">
+                <h2 class="poem-title">Ты и я</h2>
+                <div class="poem-excerpt">
+                    «От произведения так веет теплом, добротой и спокойствием. Так вдохновляюще и красиво. С теплом.»
+                </div>
+                <div class="review">
+                    — Эмили Миллс
+                </div>
+            </div>
+
         </div>
 
-        <!-- Слайд 2 -->
-        <div class="slide">
-            <h2>Трава</h2>
-            <div class="line"></div>
-            <div class="quote-box">
-                «Красивая песня. Ох как хорошо звучит: «Пройдешь босиком по траве непримятой...». Не каждому дано увидеть красоту природы и передать свою любовь в поэзии. Творческого вдохновения и успехов!»
-                <div class="author">— Алла Колосовская Аллаида</div>
-            </div>
+        <div class="pagination">
+            <a href="#" class="active">1</a>
+            <a href="#">2</a>
+            <a href="#">3</a>
+            <a href="#">4</a>
+            <a href="#">5</a>
+            <a href="#">...</a>
+            <a href="#">8</a>
         </div>
 
-        <!-- Слайд 3 -->
-        <div class="slide">
-            <h2>Вечный огонь</h2>
-            <div class="line"></div>
-            <div class="quote-box">
-                «Вечный огонь - память о нём - солдате - не на параде. Экспромтом. Хороший стих.»
-                <div class="author">— Серж Ив 74</div>
-            </div>
+        <div style="text-align: center;">
+            <a href="order.html" class="cta-button">📝 Заказать произведение</a>
         </div>
+    </div>
 
-        <!-- Слайд 4 -->
-        <div class="slide">
-            <h2>Месяц</h2>
-            <div class="line"></div>
-            <div class="quote-box">
-                «Понравилось, интересно написано "на стекле Капли дождя Одиноки!" - очень хорошо внутренним противоречием с "Нам месяц поет" - (одиночество как противопоставление множественному "нам"). "Запах цветов Утром растяняется" - хороша динамика "растяняется". "Листь промоют" - по-видимому опечатка, следует читать "листья"? "Теплой волной Солнце пройдет" - хорошо это "пройдёт"!»
-                <div class="author">— Леонид Ярмолинский</div>
-            </div>
-        </div>
+    <footer>
+        <p>© 2025 Ádel — Ангел Поэзии</p>
+        <p>609 произведений | Портфолио поэта</p>
+    </footer>
 
-        <!-- Слайд 5 -->
-        <div class="slide">
-            <h2>2 Стирая прошлого границы..</h2>
-            <div class="line"></div>
-            <div class="quote-box">
-                «Все смешалось в одно: и люди, и деньги, и интернет. Деградация мира. Спасение детей. Только вот бесполезно спасать детей, ограждая их от мира. Они гораздо быстрее воспринимают реальность и адаптируются к ней. Не надо ли менять себя? Тогда и не надо будет спасать детей.»
-                <div class="author">— Антонина Быстрых</div>
-            </div>
-        </div>
-
-        <!-- Слайд 6 -->
-        <div class="slide">
-            <h2>Венец</h2>
-            <div class="line"></div>
-            <div class="quote-box">
-                «Складно, но многовато дидактики»
-                <div class="author">— Алексей Козлов</div>
-            </div>
-        </div>
-
-        <!-- Слайд 7 -->
-        <div class="slide">
-            <h2>3 Просто обо всём</h2>
-            <div class="line"></div>
-            <div class="quote-box">
-                «Хорошо, нравится. 12 лет уже пишете? Немало) Я, впрочем, даже чуть больше, а по-прежнему бездарен. Ну да это мои проблемы))»
-                <div class="author">— Алексей Козлов</div>
-            </div>
-        </div>
-
-        <!-- Слайд 8 -->
-        <div class="slide">
-            <h2>Ты и я</h2>
-            <div class="line"></div>
-            <div class="quote-box">
-                «От произведения так веет теплом, добротой и спокойствием. Так вдохновляюще и красиво. С теплом.»
+</body>
+    </html> и спокойствием. Так вдохновляюще и красиво. С теплом.»
                 <div class="author">— Эмили Миллс</div>
             </div>
         </div>
