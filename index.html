@@ -294,6 +294,7 @@
         <p>© 2025 Ádel — Ангел Поэзии</p>
         <p>609 произведений | Портфолио поэта</p>    </footer>
 
+    <!-- ВОТ ЗДЕСЬ БЫЛА ПРОБЛЕМА - НУЖНЫ ТЕГИ <script> -->
     <script>
         let currentSlide = 0;
         const slides = document.querySelectorAll('.carousel-slide');
@@ -306,6 +307,18 @@
             slides[currentSlide].classList.add('active');
             dots[currentSlide].classList.add('active');
         }
+        
+        function nextSlide() {
+            let next = (currentSlide + 1) % slides.length;
+            goToSlide(next);
+        }
+        
+        // Автопереключение каждые 5 секунд
+        setInterval(nextSlide, 5000);
+    </script>
+
+</body>
+</html>       }
         
         function nextSlide() {
             let next = (currentSlide + 1) % slides.length;
