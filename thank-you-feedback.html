@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Спасибо за отзыв! | Ádel</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Georgia', 'Times New Roman', serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 60px 40px;
+            max-width: 600px;
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            animation: slideIn 0.6s ease-out;
+        }
+        
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .icon {
+            font-size: 5em;
+            margin-bottom: 20px;
+            animation: bounce 1s ease-out;
+        }        
+        @keyframes bounce {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+        }
+        
+        h1 {
+            color: #764ba2;
+            font-size: 2.5em;
+            margin-bottom: 20px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .message {
+            color: #555;
+            font-size: 1.2em;
+            line-height: 1.8;
+            margin-bottom: 30px;
+        }
+        
+        .highlight {
+            color: #667eea;
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+        
+        .stars {
+            font-size: 2em;
+            margin: 20px 0;
+            color: #f39c12;
+        }
+        
+        .back-button {
+            display: inline-block;
+            margin-top: 30px;
+            padding: 15px 40px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #fff;
+            text-decoration: none;
+            border-radius: 25px;
+            font-size: 1.1em;
+            font-weight: bold;
+            transition: transform 0.3s, box-shadow 0.3s;
+            box-shadow: 0 4px 15px rgba(118, 75, 162, 0.3);
+        }
+        
+        .back-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(118, 75, 162, 0.4);
+        }        
+        .footer-text {
+            margin-top: 30px;
+            color: #999;
+            font-size: 0.9em;
+            font-style: italic;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 40px 25px;
+            }
+            h1 {
+                font-size: 1.8em;
+            }
+            .icon {
+                font-size: 3.5em;
+            }
+            .message {
+                font-size: 1em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="icon">✨</div>
+        
+        <h1>Спасибо за ваш отзыв!</h1>
+        
+        <div class="stars">⭐⭐⭐⭐⭐</div>
+        
+        <p class="message">
+            Ваше мнение <span class="highlight">очень важно</span> для меня!<br><br>
+            Я обязательно прочитаю ваши комментарии и учту все пожелания.<br>
+            Вместе мы сделаем сайт ещё лучше! 💜
+        </p>
+        
+        <a href="index.html" class="back-button">🏠 Вернуться на главную</a>
+        
+        <p class="footer-text">
+            С благодарностью,<br>
+            <strong>Ádel — Ангел Поэзии</strong>
+        </p>
+    </div>
+</body>
+</html>
