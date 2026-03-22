@@ -230,17 +230,26 @@
 
         async function loadPoems() {
             try {
-                const response = await fetch('poems.json');
-                poems = await response.json();
-                filteredPoems = [...poems];
-                document.getElementById('total-count').textContent = poems.length;
-                renderPoems();
+                // Загружаем все части
+                const files = ['poems-part1.json']; // Потом добавим part2 и part3
+                poems = [];
+        
+                for (const file of files) {
+                const response = await fetch(file);
+                const data = await response.json();
+                poems = poems.concat(data);
+        }
+        
+        filteredPoems = [...poems];
+        document.getElementById('total-count').textContent = poems.length;
+        renderPoems();
             } catch (error) {
+                console.error('Ошибка загрузки:', error);
                 document.getElementById('poems-grid').innerHTML = 
-                    '<p style="text-align:center;color:#fff;">Ошибка загрузки. Проверьте poems.json</p>';
+                    '<p style="text-align:center;color:#fff;">Ошибка загрузки произведений. Проверьте файлы JSON</p>';
             }
         }
-
+  
         function renderPoems() {
             const grid = document.getElementById('poems-grid');
             grid.innerHTML = '';            document.getElementById('showing-count').textContent = filteredPoems.length;
