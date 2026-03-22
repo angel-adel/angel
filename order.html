@@ -1,6 +1,13 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
+    <script>
+    const MAINTENANCE_MODE = true; // true = вкл, false = выкл
+    
+    if (MAINTENANCE_MODE && !window.location.href.includes('maintenance.html')) {
+        window.location.href = 'maintenance.html';
+    }
+    </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Заказ произведений | Автор Ádel</title>
