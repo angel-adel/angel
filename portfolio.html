@@ -234,7 +234,6 @@
     <script>
         let poems = [];
         let filteredPoems = [];
-        
         async function loadPoems() {
     try {
         const files = [
@@ -252,6 +251,15 @@
             poems = poems.concat(data);
         }
         
+        filteredPoems = [...poems];
+        document.getElementById('total-count').textContent = poems.length;
+        renderPoems();
+    } catch (error) {
+        console.error('Ошибка загрузки:', error);
+        document.getElementById('poems-grid').innerHTML = 
+            '<p style="text-align:center;color:#fff;">Ошибка загрузки произведений</p>';
+    }
+        }
         filteredPoems = [...poems];
         document.getElementById('total-count').textContent = poems.length;
         renderPoems();
