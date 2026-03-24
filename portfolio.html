@@ -2,8 +2,7 @@
 <html lang="ru">
 <head>
     <script>
-    const MAINTENANCE_MODE = false; // true = вкл, false = выкл
-    
+    const MAINTENANCE_MODE = false;
     if (MAINTENANCE_MODE && !window.location.href.includes('maintenance.html')) {
         window.location.href = 'maintenance.html';
     }
@@ -48,13 +47,13 @@
             gap: 20px;
             flex-wrap: wrap;
         }
-        nav a {
-            text-decoration: none;
+        nav a {            text-decoration: none;
             color: #333;
             font-weight: bold;
             padding: 10px 15px;
             border-radius: 5px;
-            transition: all 0.3s;        }
+            transition: all 0.3s;
+        }
         nav a:hover, nav a.active {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: #fff;
@@ -97,13 +96,14 @@
             padding: 10px 20px;
             background: rgba(255, 255, 255, 0.9);
             color: #764ba2;
-            border: 2px solid #764ba2;
-            border-radius: 20px;
+            border: 2px solid #764ba2;            border-radius: 20px;
             cursor: pointer;
             font-weight: bold;
+            white-space: nowrap;
         }
         .filter-btn.active {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);            color: #fff;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #fff;
         }
         .poems-grid {
             display: grid;
@@ -145,14 +145,14 @@
         .modal-content {
             background: #fff;
             margin: 5% auto;
-            padding: 40px;
-            border-radius: 15px;
+            padding: 40px;            border-radius: 15px;
             width: 90%;
             max-width: 700px;
             max-height: 80vh;
             overflow-y: auto;
             position: relative;
-        }        .modal-close {
+        }
+        .modal-close {
             position: absolute;
             right: 20px;
             top: 15px;
@@ -177,6 +177,10 @@
             margin-top: 50px;
             color: #764ba2;
         }
+        @media (max-width: 768px) {
+            .filter-container { gap: 8px; }
+            .filter-btn { padding: 8px 15px; font-size: 0.9em; }
+        }
     </style>
 </head>
 <body>
@@ -190,8 +194,7 @@
                     <li><a href="about.html">Об авторе</a></li>
                     <li><a href="portfolio.html" class="active">Произведения</a></li>
                     <li><a href="reviews.html">Рецензии</a></li>
-                    <li><a href="order.html">Заказать</a></li>
-                </ul>
+                    <li><a href="order.html">Заказать</a></li>                </ul>
             </nav>
         </div>
     </header>
@@ -201,7 +204,7 @@
         <div class="stats">
             Всего: <span id="total-count">0</span> | Показано: <span id="showing-count">0</span>
         </div>
-                <input type="text" class="search-input" id="search-input" placeholder="🔍 Поиск по названию...">
+        <input type="text" class="search-input" id="search-input" placeholder="🔍 Поиск по названию...">
 
         <div class="filter-container" id="filter-container">
             <button class="filter-btn active" data-genre="all">Все</button>
@@ -234,45 +237,62 @@
     <script>
         let poems = [];
         let filteredPoems = [];
+
         async function loadPoems() {
-    try {
-        const files = ['poems-part1.json', 'poems-part2.json', 'poems-part3.json', 'poems-part4.json', 'poems-part5.json'];//Загружаем все части
-        poems = [];
-        
-        for (const file of files) {
-            const response = await fetch(file);
-            const data = await response.json();
-            poems = poems.concat(data);
-        }
-        
-        filteredPoems = [...poems];
-        document.getElementById('total-count').textContent = poems.length;
-        renderPoems();
-    } catch (error) {
-        console.error('Ошибка загрузки:', error);
-        document.getElementById('poems-grid').innerHTML = 
-            '<p style="text-align:center;color:#fff;">Ошибка загрузки произведений</p>';
-    }
-        }
-        filteredPoems = [...poems];
-        document.getElementById('total-count').textContent = poems.length;
-        renderPoems();
-    } catch (error) {
-        console.error('Ошибка загрузки:', error);
-        document.getElementById('poems-grid').innerHTML = 
-            '<p style="text-align:center;color:#fff;">Ошибка загрузки произведений</p>';
-    }
+            try {
+                const files = [
+                    'poems-part1.json',
+                    'poems-part2.json',
+                    'poems-part3.json',                    'poems-part4.json',
+                    'poems-part5.json'
+                ];
+                
+                poems = [];
+                let loadedCount = 0;
+                let errors = [];
+                
+                for (const file of files) {
+                    try {
+                        const response = await fetch(file);
+                        if (!response.ok) {
+                            errors.push(file + ': ' + response.status);
+                            continue;
+                        }
+                        const data = await response.json();
+                        poems = poems.concat(data);
+                        loadedCount++;
+                    } catch (err) {
+                        errors.push(file + ': ' + err.message);
+                    }
+                }
+                
+                // Показываем результат загрузки
+                if (errors.length > 0) {
+                    alert('⚠️ Загружено файлов: ' + loadedCount + '/5\n\nОшибки:\n' + errors.join('\n'));
+                } else {
+                    console.log('✅ Все файлы загружены: ' + loadedCount + '/5');
+                }
+                
+                filteredPoems = [...poems];
+                document.getElementById('total-count').textContent = poems.length;
+                renderPoems();
+                
+            } catch (error) {
+                console.error('Ошибка загрузки:', error);
+                document.getElementById('poems-grid').innerHTML = 
+                    '<p style="text-align:center;color:#fff;">Ошибка: ' + error.message + '</p>';
+            }
         }
   
         function renderPoems() {
             const grid = document.getElementById('poems-grid');
-            grid.innerHTML = '';            document.getElementById('showing-count').textContent = filteredPoems.length;
+            grid.innerHTML = '';
+            document.getElementById('showing-count').textContent = filteredPoems.length;
 
             filteredPoems.slice(0, 50).forEach(poem => {
                 const card = document.createElement('div');
                 card.className = 'poem-card';
-                card.innerHTML = `
-                    <div class="poem-title">${poem.title}</div>
+                card.innerHTML = `                    <div class="poem-title">${poem.title}</div>
                     <div class="poem-genre">${poem.genre}</div>
                     <div>${poem.excerpt}</div>
                 `;
@@ -299,6 +319,20 @@
         });
 
         document.getElementById('filter-container').addEventListener('click', (e) => {
+            if (e.target.classList.contains('filter-btn')) {
+                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                e.target.classList.add('active');
+                const genre = e.target.dataset.genre;
+                filteredPoems = genre === 'all' ? [...poems] : poems.filter(p => p.genre === genre);
+                renderPoems();
+            }
+        });
+
+        loadPoems();
+    </script>
+
+</body>
+</html>tElementById('filter-container').addEventListener('click', (e) => {
             if (e.target.classList.contains('filter-btn')) {
                 document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
                 e.target.classList.add('active');
