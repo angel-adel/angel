@@ -236,25 +236,31 @@
         let filteredPoems = [];
 
         async function loadPoems() {
-            try {
-                // Загружаем все части
-                const files = ['poems-part1.json', 'poems-part2.json', 'poems-part3.json', 'poems-part4.json', 'poems-part5.json']; // Потом добавим part2 и part3
-                poems = [];
+        async function loadPoems() {
+    try {
+        const files = [
+            'poems-part1.json',
+            'poems-part2.json',
+            'poems-part3.json',
+            'poems-part4.json',
+            'poems-part5.json'
+        ];
+        poems = [];
         
-                for (const file of files) {
-                const response = await fetch(file);
-                const data = await response.json();
-                poems = poems.concat(data);
+        for (const file of files) {
+            const response = await fetch(file);
+            const data = await response.json();
+            poems = poems.concat(data);
         }
         
         filteredPoems = [...poems];
         document.getElementById('total-count').textContent = poems.length;
         renderPoems();
-            } catch (error) {
-                console.error('Ошибка загрузки:', error);
-                document.getElementById('poems-grid').innerHTML = 
-                    '<p style="text-align:center;color:#fff;">Ошибка загрузки произведений. Проверьте файлы JSON</p>';
-            }
+    } catch (error) {
+        console.error('Ошибка загрузки:', error);
+        document.getElementById('poems-grid').innerHTML = 
+            '<p style="text-align:center;color:#fff;">Ошибка загрузки произведений</p>';
+    }
         }
   
         function renderPoems() {
