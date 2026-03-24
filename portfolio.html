@@ -132,6 +132,43 @@
             font-style: italic;
             margin-bottom: 15px;
         }
+        .more-info-banner {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: #fff;
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            margin: 40px auto;
+            max-width: 800px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+            animation: fadeIn 0.8s ease-out;
+        }
+        .more-info-banner h3 {
+            margin: 0 0 15px 0;
+            font-size: 1.5em;        }
+        .more-info-banner p {
+            margin: 10px 0;
+            font-size: 1.1em;
+            line-height: 1.6;
+        }
+        .more-info-banner a {
+            color: #fff;
+            font-weight: bold;
+            text-decoration: underline;
+        }
+        .more-info-banner a:hover {
+            text-decoration: none;
+        }
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
         .modal {
             display: none;
             position: fixed;
@@ -145,7 +182,8 @@
         .modal-content {
             background: #fff;
             margin: 5% auto;
-            padding: 40px;            border-radius: 15px;
+            padding: 40px;
+            border-radius: 15px;
             width: 90%;
             max-width: 700px;
             max-height: 80vh;
@@ -156,8 +194,7 @@
             position: absolute;
             right: 20px;
             top: 15px;
-            font-size: 35px;
-            cursor: pointer;
+            font-size: 35px;            cursor: pointer;
             color: #764ba2;
         }
         #modal-title {
@@ -180,6 +217,16 @@
         @media (max-width: 768px) {
             .filter-container { gap: 8px; }
             .filter-btn { padding: 8px 15px; font-size: 0.9em; }
+            .more-info-banner {
+                padding: 20px;
+                margin: 30px 10px;
+            }
+            .more-info-banner h3 {
+                font-size: 1.2em;
+            }
+            .more-info-banner p {
+                font-size: 1em;
+            }
         }
     </style>
 </head>
@@ -194,9 +241,9 @@
                     <li><a href="about.html">Об авторе</a></li>
                     <li><a href="portfolio.html" class="active">Произведения</a></li>
                     <li><a href="reviews.html">Рецензии</a></li>
-                    <li><a href="order.html">Заказать</a></li>                </ul>
-            </nav>
-        </div>
+                    <li><a href="order.html">Заказать</a></li>
+                </ul>
+            </nav>        </div>
     </header>
 
     <div class="container">
@@ -219,6 +266,15 @@
         <div class="poems-grid" id="poems-grid">
             <p style="text-align:center;color:#fff;">Загрузка произведений...</p>
         </div>
+
+        <!-- Баннер с информацией -->
+        <div class="more-info-banner">
+            <h3>📚 Хотите прочитать больше?</h3>
+            <p>На сайте представлена часть произведений автора.</p>
+            <p>Если вы хотите ознакомиться с полным собранием сочинений,<br>
+            напишите нам через <a href="order.html">форму заказа</a> или <a href="feedback.html">обратную связь</a>.</p>
+            <p>💌 Мы с радостью поделимся остальными стихами!</p>
+        </div>
     </div>
 
     <div id="poem-modal" class="modal">
@@ -237,14 +293,12 @@
     <script>
         let poems = [];
         let filteredPoems = [];
-
         async function loadPoems() {
             try {
                 const files = [
                     'poems-part1.json',
                     'poems-part2.json',
-                    'poems-part3.json',                    'poems-part4.json',
-                    'poems-part5.json'
+                    'poems-part3.json'
                 ];
                 
                 poems = [];
@@ -266,11 +320,13 @@
                     }
                 }
                 
-                // Показываем результат загрузки
                 if (errors.length > 0) {
-                    alert('⚠️ Загружено файлов: ' + loadedCount + '/5\n\nОшибки:\n' + errors.join('\n'));
+                    console.error('⚠️ Загружено файлов: ' + loadedCount + '/3');
+                    console.error('Ошибки:', errors);
+                    alert('⚠️ Загружено файлов: ' + loadedCount + '/3\n\nОшибки:\n' + errors.join('\n'));
                 } else {
-                    console.log('✅ Все файлы загружены: ' + loadedCount + '/5');
+                    console.log('✅ Все файлы загружены: ' + loadedCount + '/3');
+                    console.log('Всего произведений:', poems.length);
                 }
                 
                 filteredPoems = [...poems];
@@ -285,19 +341,54 @@
         }
   
         function renderPoems() {
-            const grid = document.getElementById('poems-grid');
-            grid.innerHTML = '';
+            const grid = document.getElementById('poems-grid');            grid.innerHTML = '';
             document.getElementById('showing-count').textContent = filteredPoems.length;
 
             filteredPoems.slice(0, 50).forEach(poem => {
                 const card = document.createElement('div');
                 card.className = 'poem-card';
-                card.innerHTML = `                    <div class="poem-title">${poem.title}</div>
+                card.innerHTML = `
+                    <div class="poem-title">${poem.title}</div>
                     <div class="poem-genre">${poem.genre}</div>
                     <div>${poem.excerpt}</div>
                 `;
                 card.onclick = () => openPoem(poem);
                 grid.appendChild(card);
+            });
+        }
+
+        function openPoem(poem) {
+            document.getElementById('modal-title').textContent = poem.title;
+            document.getElementById('modal-genre').textContent = poem.genre;
+            document.getElementById('modal-text').textContent = poem.fullText || 'Текст готовится...';
+            document.getElementById('poem-modal').style.display = 'block';
+        }
+
+        document.querySelector('.modal-close').onclick = () => {
+            document.getElementById('poem-modal').style.display = 'none';
+        };
+
+        document.getElementById('search-input').addEventListener('input', (e) => {
+            const term = e.target.value.toLowerCase();
+            filteredPoems = poems.filter(p => p.title.toLowerCase().includes(term));
+            renderPoems();
+        });
+
+        document.getElementById('filter-container').addEventListener('click', (e) => {
+            if (e.target.classList.contains('filter-btn')) {
+                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                e.target.classList.add('active');
+                const genre = e.target.dataset.genre;
+                filteredPoems = genre === 'all' ? [...poems] : poems.filter(p => p.genre === genre);
+                renderPoems();
+            }
+        });
+
+        loadPoems();
+    </script>
+
+</body>
+        </html>
             });
         }
 
