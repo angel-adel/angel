@@ -236,13 +236,7 @@
         let filteredPoems = [];
         async function loadPoems() {
     try {
-        const files = [
-            'poems-part1.json',
-            'poems-part2.json',
-            'poems-part3.json',
-            'poems-part4.json',
-            'poems-part5.json'
-        ];
+        const files = ['poems-part1.json', 'poems-part2.json', 'poems-part3.json', 'poems-part4.json', 'poems-part5.json'];//Загружаем все части
         poems = [];
         
         for (const file of files) {
