@@ -1,19 +1,16 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <script>
-    const MAINTENANCE_MODE = false; // true = вкл, false = выкл
-    
-    if (MAINTENANCE_MODE && !window.location.href.includes('maintenance.html')) {
-        window.location.href = 'maintenance.html';
-    }
-    </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Обратная связь | Ádel</title>
+    
+    <!-- FAVICON -->
     <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+    <link rel="icon" type="image/png" href="favicon.png">
+    
     <style>
         body {
             font-family: 'Georgia', 'Times New Roman', serif;
@@ -24,34 +21,13 @@
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
         }
-        .logo {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    font-size: 2em;
-    font-weight: bold;
-    color: #764ba2;
-    text-decoration: none;
-}
-
-.logo-icon {
-    height: 40px;
-    width: auto;
-    display: block;
-}
-
-@media (max-width: 768px) {
-    .logo-icon {
-        height: 30px;
-    }
-    .logo {
-        font-size: 1.5em;
-    }
-}
         header {
             background: rgba(255, 255, 255, 0.95);
             padding: 20px;
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
         }
         .header-content {
             max-width: 1200px;
@@ -61,12 +37,34 @@
             align-items: center;
             flex-wrap: wrap;
         }
+        
+        /* LOGO STYLES */
         .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
             font-size: 2em;
             font-weight: bold;
             color: #764ba2;
             text-decoration: none;
         }
+        
+        .logo-icon {
+            height: 40px;
+            width: auto;
+            display: block;
+        }
+        
+        @media (max-width: 768px) {
+            .logo-icon {
+                height: 30px;
+            }
+            .logo {
+                font-size: 1.5em;
+            }
+        }
+        /* END LOGO STYLES */
+        
         nav ul {
             list-style: none;
             margin: 0;
@@ -81,13 +79,14 @@
             font-weight: bold;
             padding: 10px 15px;
             border-radius: 5px;
-            transition: all 0.3s;        }
+            transition: all 0.3s;
+        }
         nav a:hover, nav a.active {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: #fff;
         }
         .container {
-            max-width: 700px;
+            max-width: 800px;
             margin: 0 auto;
             padding: 40px 20px;
         }
@@ -95,131 +94,115 @@
             text-align: center;
             color: #fff;
             font-size: 2.5em;
-            margin-bottom: 30px;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+            margin-bottom: 40px;
         }
-        .form-container {
-            background: #fff;
-            border-radius: 15px;
+        .form-card {
+            background: rgba(255, 255, 255, 0.95);
             padding: 40px;
-            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+        .form-card h2 {
+            color: #764ba2;
+            margin-bottom: 20px;
         }
         .form-group {
-            margin-bottom: 25px;
+            margin-bottom: 20px;
         }
-        label {
+        .form-group label {
             display: block;
             margin-bottom: 8px;
-            color: #764ba2;
             font-weight: bold;
-            font-size: 1.1em;
+            color: #333;
         }
-        .required {
-            color: #e74c3c;
-        }
-        .optional {
-            color: #999;
-            font-weight: normal;
-            font-size: 0.9em;
-        }
-        input[type="text"],
-        input[type="email"],
-        textarea {
+        .form-group input,
+        .form-group textarea {
             width: 100%;
-            padding: 12px 15px;
+            padding: 12px;
             border: 2px solid #ddd;
             border-radius: 8px;
             font-size: 1em;
-            font-family: inherit;            transition: border-color 0.3s;
+            font-family: inherit;
             box-sizing: border-box;
         }
-        input[type="text"]:focus,
-        input[type="email"]:focus,
-        textarea:focus {
+        .form-group input:focus,
+        .form-group textarea:focus {
             outline: none;
             border-color: #764ba2;
         }
-        textarea {
+        .form-group textarea {
+            min-height: 150px;
             resize: vertical;
-            min-height: 120px;
         }
-        .rating-label {
-            text-align: center;
-            margin-bottom: 15px;
-            color: #555;
-            font-size: 1.1em;
-        }
-        .stars {
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-            font-size: 2.5em;
-            cursor: pointer;
-        }
-        .star {
-            color: #ddd;
-            transition: color 0.2s;
-            cursor: pointer;
-        }
-        .star:hover,
-        .star.active {
-            color: #f39c12;
-        }
-        .star.selected {
-            color: #f39c12;
-        }
-        .submit-btn {
+        .btn-submit {
             width: 100%;
             padding: 15px;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: #fff;
             border: none;
             border-radius: 8px;
-            font-size: 1.2em;
+            font-size: 1.1em;
             font-weight: bold;
             cursor: pointer;
-            transition: transform 0.3s, box-shadow 0.3s;
-        }        .submit-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(118, 75, 162, 0.4);
+            transition: transform 0.3s;
+        }
+        .btn-submit:hover {
+            transform: translateY(-3px);
+        }
+        .contact-box {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            margin-top: 30px;
+        }
+        .contact-box h3 {
+            color: #764ba2;
+            margin-bottom: 15px;
+        }
+        .btn {
+            display: inline-block;
+            padding: 15px 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #fff;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: bold;
+            margin: 10px;
+            transition: transform 0.3s;
+        }
+        .btn:hover {
+            transform: translateY(-3px);
         }
         footer {
             text-align: center;
             padding: 30px;
-            background: rgba(255, 255, 255, 0.9);
-            margin-top: 50px;
+            background: rgba(255, 255, 255, 0.95);
             color: #764ba2;
+            margin-top: 50px;
         }
         @media (max-width: 768px) {
             .header-content {
                 flex-direction: column;
-                gap: 15px;
+                gap: 20px;
             }
-            nav ul {
-                justify-content: center;
-            }
-            .page-title {
-                font-size: 1.8em;
-            }
-            .form-container {
-                padding: 25px;
-            }
-            .stars {
-                font-size: 2em;
+            .form-card {
+                padding: 20px;
             }
         }
     </style>
 </head>
 <body>
 
-  <header>
-    <div class="header-content">
-        <a href="index.html" class="logo">
-            <img src="favicon.png" alt="Ádel — Ангел Поэзии" class="logo-icon">
-            <span>Ádel</span>
-        </a>
-        <nav>
-            <ul>
+    <header>
+        <div class="header-content">
+            <a href="index.html" class="logo">
+                <img src="favicon.png" alt="Ádel — Ангел Поэзии" class="logo-icon">
+                <span>Ádel</span>
+            </a>
+            <nav>
+                <ul>
                     <li><a href="index.html">Главная</a></li>
                     <li><a href="about.html">Об авторе</a></li>
                     <li><a href="portfolio.html">Произведения</a></li>
@@ -231,103 +214,44 @@
         </div>
     </header>
 
-    <div class="container">        <h1 class="page-title">Ваше мнение важно!</h1>
+    <div class="container">
+        <h1 class="page-title">Обратная связь</h1>
         
-        <div class="form-container">
-            <form action="https://formsubmit.co/adel2026@f5.si" method="POST" id="feedback-form">
-                <!-- Настройки FormSubmit -->
-                <input type="hidden" name="_subject" value="📝 Новый отзыв о сайте Ádel">
-                <input type="hidden" name="_captcha" value="false">
-                <input type="hidden" name="_template" value="table">
-                <input type="hidden" name="_next" value="https://angel-adel.github.io/angel/thank-you-feedback.html">
-                <input type="text" name="_honey" style="display:none">
+        <div class="form-card">
+            <h2>💌 Напишите мне</h2>
+            <form id="feedbackForm" action="https://formspree.io/f/YOUR_FORM_ID" method="POST">
+                <div class="form-group">
+                    <label for="name">Ваше имя *</label>
+                    <input type="text" id="name" name="name" required placeholder="Достаточно имени для связи">
+                </div>
                 
                 <div class="form-group">
-                    <label>Ваше имя <span class="required">*</span></label>
-                    <input type="text" name="Имя" required placeholder="Как к вам обращаться?">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email" placeholder="Для ответа (необязательно)">
                 </div>
-
+                
                 <div class="form-group">
-                    <label>Ваш Email <span class="optional">(необязательно)</span></label>
-                    <input type="email" name="Email" placeholder="example@mail.ru (если хотите ответить)">
+                    <label for="message">Сообщение *</label>
+                    <textarea id="message" name="message" required placeholder="Ваш отзыв, пожелания или вопрос..."></textarea>
                 </div>
-
-                <div class="form-group">
-                    <label class="rating-label">Оцените сайт <span class="required">*</span></label>
-                    <div class="stars" id="stars">
-                        <span class="star" data-rating="1">★</span>
-                        <span class="star" data-rating="2">★</span>
-                        <span class="star" data-rating="3">★</span>
-                        <span class="star" data-rating="4">★</span>
-                        <span class="star" data-rating="5">★</span>
-                    </div>
-                    <input type="hidden" name="Рейтинг" id="rating-input" required>
-                </div>
-
-                <div class="form-group">
-                    <label>Ваши комментарии и пожелания</label>
-                    <textarea name="Комментарии" placeholder="Расскажите, что вам понравилось, а что можно улучшить..."></textarea>
-                </div>
-
-                <button type="submit" class="submit-btn">Отправить отзыв</button>
+                
+                <button type="submit" class="btn-submit">📬 Отправить сообщение</button>
             </form>
+        </div>
+        
+        <div class="contact-box">
+            <h3>📞 Или свяжитесь напрямую</h3>
+            <p>Предпочитаете живой разговор?</p>
+            <a href="tel:+79192353599" class="btn">📞 Позвонить: +7 (919) 235-35-99</a>
+            <br>
+            <a href="index.html" class="btn">🏠 Вернуться на главную</a>
+            <a href="order.html" class="btn">📝 Заказать произведение</a>
         </div>
     </div>
 
     <footer>
         <p>© 2025 Ádel — Ангел Поэзии</p>
-        <p>Спасибо за вашу обратную связь!</p>
     </footer>
 
-    <script>
-        // Рейтинг звёздочками
-        const stars = document.querySelectorAll('.star');        const ratingInput = document.getElementById('rating-input');
-        let selectedRating = 0;
-
-        stars.forEach(star => {
-            star.addEventListener('click', function() {
-                selectedRating = parseInt(this.dataset.rating);
-                ratingInput.value = selectedRating;
-                
-                stars.forEach(s => {
-                    if (parseInt(s.dataset.rating) <= selectedRating) {
-                        s.classList.add('selected');
-                    } else {
-                        s.classList.remove('selected');
-                    }
-                });
-            });
-
-            star.addEventListener('mouseenter', function() {
-                const rating = parseInt(this.dataset.rating);
-                stars.forEach(s => {
-                    if (parseInt(s.dataset.rating) <= rating) {
-                        s.classList.add('active');
-                    } else {
-                        s.classList.remove('active');
-                    }
-                });
-            });
-
-            star.addEventListener('mouseleave', function() {
-                stars.forEach(s => {
-                    if (parseInt(s.dataset.rating) <= selectedRating) {
-                        s.classList.add('selected');
-                    } else {
-                        s.classList.remove('active');
-                    }
-                });
-            });
-        });
-
-        // Обработка отправки формы
-        document.getElementById('feedback-form').addEventListener('submit', function(e) {
-            if (!selectedRating) {
-                e.preventDefault();
-                alert('Пожалуйста, поставьте оценку сайту! ⭐');
-                return false;
-            }
-        });
-    </script>
-
-</body></html>
+</body>
+</html>
