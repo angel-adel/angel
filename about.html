@@ -96,6 +96,28 @@
             font-size: 2.5em;
             margin-bottom: 40px;
         }
+        
+        /* ANGEL PHOTO STYLES */
+        .author-photo {
+            text-align: center;
+            margin: 40px 0;
+        }
+        
+        .author-photo img {
+            max-width: 400px;
+            width: 100%;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            border: 5px solid rgba(255,255,255,0.9);
+        }
+        
+        @media (max-width: 768px) {
+            .author-photo img {
+                max-width: 300px;
+            }
+        }
+        /* END ANGEL PHOTO STYLES */
+        
         .about-card {
             background: rgba(255, 255, 255, 0.95);
             padding: 40px;
@@ -152,6 +174,11 @@
 
     <div class="container">
         <h1 class="page-title">Об авторе</h1>
+        
+        <!-- ANGEL PHOTO -->
+        <div class="author-photo">
+            <img src="angel-photo.jpg" alt="Ádel — Ангел Поэзии">
+        </div>
         
         <div class="about-card">
             <h2>Дмитрий Торопцев (Ádel)</h2>
