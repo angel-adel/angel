@@ -24,6 +24,30 @@
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
         }
+        .logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 2em;
+    font-weight: bold;
+    color: #764ba2;
+    text-decoration: none;
+}
+
+.logo-icon {
+    height: 40px;
+    width: auto;
+    display: block;
+}
+
+@media (max-width: 768px) {
+    .logo-icon {
+        height: 30px;
+    }
+    .logo {
+        font-size: 1.5em;
+    }
+}
         header {
             background: rgba(255, 255, 255, 0.95);
             padding: 20px;
@@ -188,11 +212,14 @@
 </head>
 <body>
 
-    <header>
-        <div class="header-content">
-            <a href="index.html" class="logo">Ádel</a>
-            <nav>
-                <ul>
+  <header>
+    <div class="header-content">
+        <a href="index.html" class="logo">
+            <img src="favicon.png" alt="Ádel — Ангел Поэзии" class="logo-icon">
+            <span>Ádel</span>
+        </a>
+        <nav>
+            <ul>
                     <li><a href="index.html">Главная</a></li>
                     <li><a href="about.html">Об авторе</a></li>
                     <li><a href="portfolio.html">Произведения</a></li>
