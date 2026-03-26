@@ -1,451 +1,323 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <script>
-    const MAINTENANCE_MODE = false; // true = вкл, false = выкл
-    
-    if (MAINTENANCE_MODE && !window.location.href.includes('maintenance.html')) {
-        window.location.href = 'maintenance.html';
-    }
-    </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Заказ произведений | Автор Ádel</title>
+    <title>Заказ произведений | Ádel</title>
+    
+    <!-- FAVICON -->
     <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+    <link rel="icon" type="image/png" href="favicon.png">
+    
     <style>
-        * {
+        body {
+            font-family: 'Georgia', 'Times New Roman', serif;
+            line-height: 1.6;
+            color: #333;
             margin: 0;
             padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: #333;
             min-height: 100vh;
-            padding: 20px 10px;
+        }
+        header {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
             display: flex;
-            justify-content: center;
-            align-items: flex-start;
-        }
-
-        .form-wrapper {
-            background: #ffffff;
-            width: 100%;
-            max-width: 500px;
-            padding: 40px 30px;
-            border-radius: 16px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
-            margin: 20px auto;
-        }
-
-        h1 {
-            text-align: center;
-            font-size: 26px;
-            color: #2c3e50;
-            margin-bottom: 8px;
-            font-weight: 600;
-        }
-
-        h1 span {
-            display: block;
-            font-size: 16px;
-            color: #7f8c8d;
-            font-weight: 400;
-            margin-top: 5px;
-        }
-
-        .form-group {
-            margin-bottom: 22px;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 8px;
-            font-size: 14px;
-            color: #555;
-            font-weight: 500;
-        }
-
-        .required:after {
-            content: " *";
-            color: #e74c3c;
-        }
-
-        input[type="text"],
-        input[type="tel"],
-        input[type="date"],
-        select,
-        textarea {
-            width: 100%;
-            padding: 12px 15px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            font-size: 15px;
-            box-sizing: border-box;
-            transition: border-color 0.3s, box-shadow 0.3s;
-            font-family: inherit;
-        }
-
-        input:focus,
-        select:focus,
-        textarea:focus {
-            outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-        }
-
-        textarea {
-            resize: vertical;
-            min-height: 100px;
-        }
-
-        select {
-            cursor: pointer;
-            background-color: white;
-        }
-
-        .radio-group {
-            display: flex;
-            gap: 25px;
+            justify-content: space-between;
+            align-items: center;
             flex-wrap: wrap;
         }
-
-        .radio-option {
+        
+        /* LOGO STYLES */
+        .logo {
             display: flex;
             align-items: center;
-            font-size: 14px;
-            color: #555;
-            cursor: pointer;
+            gap: 10px;
+            font-size: 2em;
+            font-weight: bold;
+            color: #764ba2;
+            text-decoration: none;
         }
-
-        .radio-option input {
-            margin-right: 8px;
-            accent-color: #667eea;
-            width: 18px;
-            height: 18px;
+        
+        .logo-icon {
+            height: 40px;
+            width: auto;
+            display: block;
         }
-
+        
+        @media (max-width: 768px) {
+            .logo-icon {
+                height: 30px;
+            }
+            .logo {
+                font-size: 1.5em;
+            }
+        }
+        /* END LOGO STYLES */
+        
+        nav ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        nav a {
+            text-decoration: none;
+            color: #333;
+            font-weight: bold;
+            padding: 10px 15px;
+            border-radius: 5px;
+            transition: all 0.3s;
+        }
+        nav a:hover, nav a.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #fff;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+        .page-title {
+            text-align: center;
+            color: #fff;
+            font-size: 2.5em;
+            margin-bottom: 40px;
+        }
+        .form-card {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+        .form-card h2 {
+            color: #764ba2;
+            margin-bottom: 20px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #333;
+        }
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1em;
+            font-family: inherit;
+            box-sizing: border-box;
+        }
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #764ba2;
+        }
+        .form-group textarea {
+            min-height: 150px;
+            resize: vertical;
+        }
+        .form-group small {
+            color: #666;
+            font-style: italic;
+        }
         .btn-submit {
             width: 100%;
             padding: 15px;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
+            color: #fff;
             border: none;
-            border-radius: 10px;
-            font-size: 16px;
-            font-weight: 600;
+            border-radius: 8px;
+            font-size: 1.1em;
+            font-weight: bold;
             cursor: pointer;
-            transition: transform 0.2s, box-shadow 0.2s;
-            margin-top: 10px;
+            transition: transform 0.3s;
         }
-
         .btn-submit:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+            transform: translateY(-3px);
         }
-
-        .btn-submit:active {
-            transform: translateY(0);
-        }
-
-        .hint {
-            font-size: 12px;
-            color: #999;
-            margin-top: 6px;
-        }
-
-        /* Блок с предупреждением про VPN */
-        .vpn-notice {
-            margin-top: 25px;
-            padding: 15px 18px;
-            background: #fff3cd;
-            border-left: 4px solid #ffc107;
-            border-radius: 8px;
-            font-size: 13px;
-            color: #856404;
-            line-height: 1.5;
-        }
-
-        .vpn-notice strong {
-            color: #ff9800;
-            display: block;
-            margin-bottom: 5px;
-        }
-
-        /* Блок контактов */
-        .contact-backup {
-            margin-top: 25px;
+        .info-box {
+            background: rgba(102, 126, 234, 0.1);
+            border-left: 4px solid #667eea;
             padding: 20px;
-            text-align: center;
-            border-top: 2px solid #ecf0f1;
-        }
-
-        .contact-backup p {
-            font-size: 14px;
-            color: #666;
-            margin-bottom: 15px;
-            line-height: 1.5;
-        }
-
-        .btn-phone {
-            display: inline-block;
-            padding: 12px 25px;
-            background: #27ae60;
-            color: white;
-            text-decoration: none;
             border-radius: 8px;
-            font-weight: 500;
-            font-size: 15px;
-            box-shadow: 0 4px 15px rgba(39, 174, 96, 0.3);
-            transition: transform 0.2s, box-shadow 0.2s;
-            margin: 5px;
+            margin-top: 30px;
         }
-
-        .btn-phone:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(39, 174, 96, 0.4);
-        }
-
-        /* Ссылка возврата */
-        .back-link {
-            text-align: center;
-            margin-top: 20px;
-            padding-top: 20px;
-            border-top: 1px solid #e0e0e0;
-        }
-
-        .back-link a {
+        .info-box h3 {
             color: #667eea;
+            margin-bottom: 10px;
+        }
+        .contact-box {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            margin-top: 30px;
+        }
+        .contact-box h3 {
+            color: #764ba2;
+            margin-bottom: 15px;
+        }
+        .btn {
+            display: inline-block;
+            padding: 15px 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #fff;
             text-decoration: none;
-            font-size: 14px;
-            font-weight: 500;
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
-            transition: gap 0.2s;
+            border-radius: 50px;
+            font-weight: bold;
+            margin: 10px;
+            transition: transform 0.3s;
         }
-
-        .back-link a:hover {
-            gap: 8px;
+        .btn:hover {
+            transform: translateY(-3px);
         }
-
-        /* АДАПТАЦИЯ ДЛЯ МОБИЛЬНЫХ */
-        @media (max-width: 600px) {
-            body {
-                padding: 10px 5px;
-            }
-
-            .form-wrapper {
-                padding: 30px 20px;
-                margin: 10px auto;
-                border-radius: 12px;
-            }
-
-            h1 {
-                font-size: 22px;
-            }
-
-            h1 span {
-                font-size: 14px;
-            }
-
-            input, select, textarea {
-                font-size: 16px; /* Чтобы iOS не зумил */
-            }
-
-            .radio-group {
+        footer {
+            text-align: center;
+            padding: 30px;
+            background: rgba(255, 255, 255, 0.95);
+            color: #764ba2;
+            margin-top: 50px;
+        }
+        @media (max-width: 768px) {
+            .header-content {
                 flex-direction: column;
-                gap: 12px;
+                gap: 20px;
             }
-
-            .btn-submit {
-                padding: 14px;
-                font-size: 15px;
-            }
-
-            .btn-phone {
-                display: block;
-                margin: 10px 0;
-            }
-
-            .vpn-notice {
-                padding: 12px 15px;
-                font-size: 12px;
-            }
-        }
-
-        /* Для очень маленьких экранов */
-        @media (max-width: 360px) {
-            .form-wrapper {
-                padding: 25px 15px;
-            }
-
-            h1 {
-                font-size: 20px;
-            }
-
-            input, select, textarea {
-                padding: 10px 12px;
-            }
-        }
-
-        /* Для планшетов и ПК */
-        @media (min-width: 601px) {
-            .form-wrapper {
-                padding: 40px 35px;
+            .form-card {
+                padding: 20px;
             }
         }
     </style>
 </head>
 <body>
 
-    <div class="form-wrapper">
-        <header>
-            <h1>
-                Заказ произведений
-                <span>Автор Ádel</span>
-            </h1>
-        </header>
+    <header>
+        <div class="header-content">
+            <a href="index.html" class="logo">
+                <img src="favicon.png" alt="Ádel — Ангел Поэзии" class="logo-icon">
+                <span>Ádel</span>
+            </a>
+            <nav>
+                <ul>
+                    <li><a href="index.html">Главная</a></li>
+                    <li><a href="about.html">Об авторе</a></li>
+                    <li><a href="portfolio.html">Произведения</a></li>
+                    <li><a href="reviews.html">Рецензии</a></li>
+                    <li><a href="feedback.html">Обратная связь</a></li>
+                    <li><a href="order.html" class="active">Заказать</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
 
-        <main>
+    <div class="container">
+        <h1 class="page-title">Заказ произведений</h1>
+        
+        <div class="form-card">
+            <h2>📝 Форма заказа</h2>
             <form action="https://formsubmit.co/adel2026@f5.si" method="POST">
-                <!-- Скрытые настройки -->
-                <input type="hidden" name="_subject" value="🎁 Новый заказ произведения!">
-                <input type="hidden" name="_captcha" value="false">
-                <input type="hidden" name="_template" value="table">
-                <input type="hidden" name="_next" value="https://angel-adel.github.io/angel/thank-you.html">
-
-                <!-- Имя -->
                 <div class="form-group">
-                    <label for="name" class="required">Ваше имя</label>
-                    <input type="text" id="name" name="name" placeholder="Как к вам обращаться" required>
-                    <div class="hint">Достаточно имени для связи</div>
+                    <label for="name">Ваше имя *</label>
+                    <input type="text" id="name" name="name" required placeholder="Достаточно имени для связи">
                 </div>
-
-                <!-- Телефон -->
+                
                 <div class="form-group">
-                    <label for="phone" class="required">Телефон</label>
-                    <input type="tel" id="phone" name="phone" placeholder="+7 (900) 123-45-67" required>
+                    <label for="phone">Телефон *</label>
+                    <input type="tel" id="phone" name="phone" required placeholder="+7 (___) ___-__-__">
                 </div>
-
-                <!-- Дата рождения -->
+                
                 <div class="form-group">
                     <label for="birthdate">Дата рождения</label>
-                    <input type="date" id="birthdate" name="birthdate">
-                    <div class="hint">Необязательно, для личных произведений</div>
+                    <input type="date" id="birthdate" name="birthdate" placeholder="Необязательно, для личных произведений">
+                    <small>Необязательно, для личных произведений</small>
                 </div>
-
-                <!-- Пол -->
+                
                 <div class="form-group">
-                    <label>Пол</label>
-                    <div class="radio-group">
-                        <label class="radio-option">
-                            <input type="radio" name="gender" value="male" checked>
-                            Мужской
-                        </label>
-                        <label class="radio-option">
-                            <input type="radio" name="gender" value="female">
-                            Женский
-                        </label>
-                    </div>
+                    <label for="gender">Пол</label>
+                    <select id="gender" name="gender">
+                        <option value="male">Мужской</option>
+                        <option value="female">Женский</option>
+                    </select>
                 </div>
-
-                <!-- Тип произведения -->
+                
                 <div class="form-group">
-                    <label for="workType" class="required">Тип произведения</label>
+                    <label for="workType">Тип произведения *</label>
                     <select id="workType" name="workType" required>
-                        <option value="" disabled selected>Выберите из списка...</option>
+                        <option value="">Выберите из списка...</option>
                         <option value="poem">Стихотворение</option>
                         <option value="song">Песня / Текст песни</option>
                         <option value="greeting">Поздравление</option>
                         <option value="dedication">Посвящение</option>
-                        <option value="humorous">Шуточное произведение</option>
-                        <option value="lyrical">Лирическое / О любви</option>
+                        <option value="humor">Шуточное произведение</option>
+                        <option value="lyric">Лирическое / О любви</option>
                         <option value="birthday">На день рождения</option>
                         <option value="wedding">На свадьбу</option>
                         <option value="other">Другое</option>
                     </select>
                 </div>
-
-                <!-- Тема произведения -->
+                
                 <div class="form-group">
-                    <label for="theme" class="required">Тема произведения</label>
-                    <input type="text" id="theme" name="theme" placeholder="Например: Юбилей, Дружба, Природа..." required>
+                    <label for="theme">Тема произведения *</label>
+                    <input type="text" id="theme" name="theme" required placeholder="О чем должно быть произведение">
+                    <small>Чем подробнее опишете, тем лучше получится произведение</small>
                 </div>
-
-                <!-- Содержание -->
+                
                 <div class="form-group">
-                    <label for="content" class="required">Содержание (о чем должно быть произведение)</label>
-                    <textarea id="content" name="content" placeholder="Расскажите подробнее: имена, даты, особые пожелания, стиль, настроение, ключевые моменты..." required></textarea>
-                    <div class="hint">Чем подробнее опишете, тем лучше получится произведение</div>
+                    <label for="content">Содержание *</label>
+                    <textarea id="content" name="content" required placeholder="Опишите подробно, что хотите видеть в произведении"></textarea>
                 </div>
-
-                <!-- Желаемая дата выполнения -->
+                
                 <div class="form-group">
                     <label for="deadline">Желаемая дата выполнения</label>
-                    <input type="date" id="deadline" name="deadline">
-                    <div class="hint">Когда нужно готовое произведение</div>
+                    <input type="date" id="deadline" name="deadline" placeholder="Когда нужно готовое произведение">
+                    <small>Когда нужно готовое произведение</small>
                 </div>
-
-                <button type="submit" class="btn-submit">Отправить заявку</button>
+                
+                <button type="submit" class="btn-submit">📬 Отправить заявку</button>
             </form>
-
-            <!-- Уведомление про VPN -->
-            <div class="vpn-notice">
-                <strong>🔐 Важно:</strong> Для отправки формы может потребоваться <strong>VPN</strong>. 
-                Если кнопка не реагирует — включите VPN и попробуйте снова.
+            
+            <div class="info-box">
+                <h3>🔐 Важно:</h3>
+                <p>Для отправки формы может потребоваться <strong>VPN</strong>.</p>
+                <p>Если кнопка не реагирует — включите VPN и попробуйте снова.</p>
             </div>
-
-            <!-- Блок контактов -->
-            <div class="contact-backup">
-                <p>Форма не отправляется?<br>(нет VPN или сбои интернета)</p>
-                <a href="tel:+79192353599" class="btn-phone">📞 Позвонить: +7 (919) 235-35-99</a>
-                <p style="margin-top: 15px; font-size: 13px;">Или напишите в мессенджер</p>
-            </div>
-
-            <!-- Ссылка возврата -->
-            <div class="back-link">
-                <a href="index.html">← Вернуться к портфолио</a>
-                <li><a href="feedback.html">Обратная связь</a></li>
-            </div>
-        </main>
+        </div>
+        
+        <div class="contact-box">
+            <h3>📞 Форма не отправляется?</h3>
+            <p>Нет VPN или сбои интернета?</p>
+            <p>Позвоните или напишите в мессенджер:</p>
+            <a href="tel:+79192353599" class="btn">📞 Позвонить: +7 (919) 235-35-99</a>
+            <br>
+            <a href="index.html" class="btn">← Вернуться на главную</a>
+            <a href="feedback.html" class="btn">💌 Обратная связь</a>
+        </div>
     </div>
 
-    <script>
-        // Маска для телефона
-        const phoneInput = document.getElementById('phone');
-        
-        phoneInput.addEventListener('input', function(e) {
-            let value = e.target.value.replace(/\D/g, '');
-            
-            if (value.length > 0) {
-                if (value[0] === '7' || value[0] === '8') {
-                    value = value.substring(1);
-                }
-                
-                let formattedValue = '+7';
-                
-                if (value.length > 0) {
-                    formattedValue += ' (' + value.substring(0, 3);
-                }
-                if (value.length >= 3) {
-                    formattedValue += ') ' + value.substring(3, 6);
-                }
-                if (value.length >= 6) {
-                    formattedValue += '-' + value.substring(6, 8);
-                }
-                if (value.length >= 8) {
-                    formattedValue += '-' + value.substring(8, 10);
-                }
-                
-                e.target.value = formattedValue;
-            }
-        });
-    </script>
+    <footer>
+        <p>© 2025 Ádel — Ангел Поэзии</p>
+    </footer>
 
 </body>
 </html>
