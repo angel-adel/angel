@@ -129,6 +129,34 @@
             min-height: 150px;
             resize: vertical;
         }
+        
+        /* STAR RATING */
+        .star-rating {
+            display: flex;
+            gap: 5px;
+            font-size: 2em;
+            direction: rtl;
+            justify-content: flex-start;
+        }
+        .star-rating input {
+            display: none;
+        }
+        .star-rating label {
+            cursor: pointer;
+            color: #ddd;
+            transition: color 0.3s;
+        }
+        .star-rating label:hover,
+        .star-rating label:hover ~ label,
+        .star-rating input:checked ~ label {
+            color: #ffd700;
+        }
+        .rating-label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+        
         .btn-submit {
             width: 100%;
             padding: 15px;
@@ -233,6 +261,23 @@
                 <div class="form-group">
                     <label for="message">Сообщение *</label>
                     <textarea id="message" name="message" required placeholder="Ваш отзыв, пожелания или вопрос..."></textarea>
+                </div>
+                
+                <!-- STAR RATING -->
+                <div class="form-group">
+                    <span class="rating-label">Оцените сайт:</span>
+                    <div class="star-rating">
+                        <input type="radio" id="star5" name="rating" value="5" />
+                        <label for="star5" title="5 звёзд">★</label>
+                        <input type="radio" id="star4" name="rating" value="4" />
+                        <label for="star4" title="4 звезды">★</label>
+                        <input type="radio" id="star3" name="rating" value="3" />
+                        <label for="star3" title="3 звезды">★</label>
+                        <input type="radio" id="star2" name="rating" value="2" />
+                        <label for="star2" title="2 звезды">★</label>
+                        <input type="radio" id="star1" name="rating" value="1" />
+                        <label for="star1" title="1 звезда">★</label>
+                    </div>
                 </div>
                 
                 <button type="submit" class="btn-submit">📬 Отправить сообщение</button>
