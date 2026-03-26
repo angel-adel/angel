@@ -1,69 +1,369 @@
-<form id="orderForm" 
-      action="https://formsubmit.co/adel2026@f5.si" 
-      method="POST">
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Заказ произведений | Ádel</title>
     
-    <!-- Скрытые настройки FormSubmit -->
-    <input type="hidden" name="_subject" value="📝 Новый заказ произведения | Ádel">
-    <input type="hidden" name="_captcha" value="false">
-    <input type="hidden" name="_next" value="https://angel-adel.github.io/angel/thank-you.html">
-    <input type="hidden" name="_template" value="table">
+    <!-- FAVICON -->
+    <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+    <link rel="icon" type="image/png" href="favicon.png">
     
-    <div class="form-group">
-        <label for="name">Ваше имя *</label>
-        <input type="text" id="name" name="name" required placeholder="Достаточно имени для связи">
+    <style>
+        body {
+            font-family: 'Georgia', 'Times New Roman', serif;
+            line-height: 1.6;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        header {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 2em;
+            font-weight: bold;
+            color: #764ba2;
+            text-decoration: none;
+        }
+        .logo-icon {
+            height: 40px;
+            width: auto;
+            display: block;
+        }
+        @media (max-width: 768px) {
+            .logo-icon {
+                height: 30px;
+            }
+            .logo {
+                font-size: 1.5em;
+            }
+        }
+        nav ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        nav a {
+            text-decoration: none;
+            color: #333;
+            font-weight: bold;
+            padding: 10px 15px;
+            border-radius: 5px;
+            transition: all 0.3s;
+        }
+        nav a:hover, nav a.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #fff;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+        .page-title {
+            text-align: center;
+            color: #fff;
+            font-size: 2.5em;
+            margin-bottom: 40px;
+        }
+        .form-card {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+        .form-card h2 {
+            color: #764ba2;
+            margin-bottom: 20px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #333;
+        }
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1em;
+            font-family: inherit;
+            box-sizing: border-box;
+        }
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #764ba2;
+        }
+        .form-group textarea {
+            min-height: 150px;
+            resize: vertical;
+        }
+        .form-group small {
+            color: #666;
+            font-style: italic;
+            display: block;
+            margin-top: 5px;
+        }
+        
+        /* STAR RATING */
+        .star-rating {
+            display: flex;
+            gap: 5px;
+            font-size: 2em;
+            direction: rtl;
+            justify-content: flex-start;
+        }
+        .star-rating input {
+            display: none;
+        }
+        .star-rating label {
+            cursor: pointer;
+            color: #ddd;
+            transition: color 0.3s;
+        }
+        .star-rating label:hover,
+        .star-rating label:hover ~ label,
+        .star-rating input:checked ~ label {
+            color: #ffd700;
+        }
+        .rating-label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+        
+        .btn-submit {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+        .btn-submit:hover {
+            transform: translateY(-3px);
+        }
+        .info-box {
+            background: rgba(102, 126, 234, 0.1);
+            border-left: 4px solid #667eea;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 30px;
+        }
+        .info-box h3 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+        .contact-box {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            margin-top: 30px;
+        }
+        .contact-box h3 {
+            color: #764ba2;
+            margin-bottom: 15px;
+        }
+        .btn {
+            display: inline-block;
+            padding: 15px 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #fff;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: bold;
+            margin: 10px;
+            transition: transform 0.3s;
+        }
+        .btn:hover {
+            transform: translateY(-3px);
+        }
+        footer {
+            text-align: center;
+            padding: 30px;
+            background: rgba(255, 255, 255, 0.95);
+            color: #764ba2;
+            margin-top: 50px;
+        }
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 20px;
+            }
+            .form-card {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="header-content">
+            <a href="index.html" class="logo">
+                <img src="favicon.png" alt="Ádel — Ангел Поэзии" class="logo-icon">
+                <span>Ádel</span>
+            </a>
+            <nav>
+                <ul>
+                    <li><a href="index.html">Главная</a></li>
+                    <li><a href="about.html">Об авторе</a></li>
+                    <li><a href="portfolio.html">Произведения</a></li>
+                    <li><a href="reviews.html">Рецензии</a></li>
+                    <li><a href="feedback.html">Обратная связь</a></li>
+                    <li><a href="order.html" class="active">Заказать</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <div class="container">
+        <h1 class="page-title">Заказ произведений</h1>
+        
+        <div class="form-card">
+            <h2>📝 Форма заказа</h2>
+            <form action="https://formsubmit.co/adel2026@f5.si" method="POST">
+                <!-- FormSubmit Settings -->
+                <input type="hidden" name="_subject" value="📝 Новый заказ произведения | Ádel">
+                <input type="hidden" name="_captcha" value="false">
+                <input type="hidden" name="_next" value="https://angel-adel.github.io/angel/thank-you.html">
+                <input type="hidden" name="_template" value="table">
+                
+                <div class="form-group">
+                    <label for="name">Ваше имя *</label>
+                    <input type="text" id="name" name="name" required placeholder="Достаточно имени для связи">
+                </div>
+                
+                <div class="form-group">
+                    <label for="phone">Телефон *</label>
+                    <input type="tel" id="phone" name="phone" required placeholder="+7 (___) ___-__-__">
+                </div>
+                
+                <div class="form-group">
+                    <label for="birthdate">Дата рождения</label>
+                    <input type="date" id="birthdate" name="birthdate">
+                    <small>Необязательно, для личных произведений</small>
+                </div>
+                
+                <div class="form-group">
+                    <label for="gender">Пол</label>
+                    <select id="gender" name="gender">
+                        <option value="male">Мужской</option>
+                        <option value="female">Женский</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="workType">Тип произведения *</label>
+                    <select id="workType" name="workType" required>
+                        <option value="">Выберите из списка...</option>
+                        <option value="poem">Стихотворение</option>
+                        <option value="song">Песня / Текст песни</option>
+                        <option value="greeting">Поздравление</option>
+                        <option value="dedication">Посвящение</option>
+                        <option value="humor">Шуточное произведение</option>
+                        <option value="lyric">Лирическое / О любви</option>
+                        <option value="birthday">На день рождения</option>
+                        <option value="wedding">На свадьбу</option>
+                        <option value="other">Другое</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="theme">Тема произведения *</label>
+                    <input type="text" id="theme" name="theme" required placeholder="О чем должно быть произведение">
+                    <small>Чем подробнее опишете, тем лучше получится произведение</small>
+                </div>
+                
+                <div class="form-group">
+                    <label for="content">Содержание *</label>
+                    <textarea id="content" name="content" required placeholder="Опишите подробно, что хотите видеть в произведении"></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="deadline">Желаемая дата выполнения</label>
+                    <input type="date" id="deadline" name="deadline">
+                    <small>Когда нужно готовое произведение</small>
+                </div>
+                
+                <div class="form-group">
+                    <span class="rating-label">Ваша оценка сложности заказа:</span>
+                    <div class="star-rating">
+                        <input type="radio" id="star5" name="rating" value="5" />
+                        <label for="star5" title="5 звёзд">★</label>
+                        <input type="radio" id="star4" name="rating" value="4" />
+                        <label for="star4" title="4 звезды">★</label>
+                        <input type="radio" id="star3" name="rating" value="3" />
+                        <label for="star3" title="3 звезды">★</label>
+                        <input type="radio" id="star2" name="rating" value="2" />
+                        <label for="star2" title="2 звезды">★</label>
+                        <input type="radio" id="star1" name="rating" value="1" />
+                        <label for="star1" title="1 звезда">★</label>
+                    </div>
+                </div>
+                
+                <button type="submit" class="btn-submit">📬 Отправить заявку</button>
+            </form>
+            
+            <div class="info-box">
+                <h3>🔐 Важно:</h3>
+                <p>Для отправки формы может потребоваться <strong>VPN</strong>.</p>
+                <p>Если кнопка не реагирует — включите VPN и попробуйте снова.</p>
+            </div>
+        </div>
+        
+        <div class="contact-box">
+            <h3>📞 Форма не отправляется?</h3>
+            <p>Нет VPN или сбои интернета?</p>
+            <p>Позвоните или напишите в мессенджер:</p>
+            <a href="tel:+79192353599" class="btn">📞 Позвонить: +7 (919) 235-35-99</a>
+            <br>
+            <a href="index.html" class="btn">← Вернуться на главную</a>
+            <a href="feedback.html" class="btn">💌 Обратная связь</a>
+        </div>
     </div>
-    
-    <div class="form-group">
-        <label for="phone">Телефон *</label>
-        <input type="tel" id="phone" name="phone" required placeholder="+7 (___) ___-__-__">
-    </div>
-    
-    <div class="form-group">
-        <label for="birthdate">Дата рождения</label>
-        <input type="date" id="birthdate" name="birthdate" placeholder="Необязательно, для личных произведений">
-        <small>Необязательно, для личных произведений</small>
-    </div>
-    
-    <div class="form-group">
-        <label for="gender">Пол</label>
-        <select id="gender" name="gender">
-            <option value="male">Мужской</option>
-            <option value="female">Женский</option>
-        </select>
-    </div>
-    
-    <div class="form-group">
-        <label for="workType">Тип произведения *</label>
-        <select id="workType" name="workType" required>
-            <option value="">Выберите из списка...</option>
-            <option value="poem">Стихотворение</option>
-            <option value="song">Песня / Текст песни</option>
-            <option value="greeting">Поздравление</option>
-            <option value="dedication">Посвящение</option>
-            <option value="humor">Шуточное произведение</option>
-            <option value="lyric">Лирическое / О любви</option>
-            <option value="birthday">На день рождения</option>
-            <option value="wedding">На свадьбу</option>
-            <option value="other">Другое</option>
-        </select>
-    </div>
-    
-    <div class="form-group">
-        <label for="theme">Тема произведения *</label>
-        <input type="text" id="theme" name="theme" required placeholder="О чем должно быть произведение">
-        <small>Чем подробнее опишете, тем лучше получится произведение</small>
-    </div>
-    
-    <div class="form-group">
-        <label for="content">Содержание *</label>
-        <textarea id="content" name="content" required placeholder="Опишите подробно, что хотите видеть в произведении"></textarea>
-    </div>
-    
-    <div class="form-group">
-        <label for="deadline">Желаемая дата выполнения</label>
-        <input type="date" id="deadline" name="deadline" placeholder="Когда нужно готовое произведение">
-        <small>Когда нужно готовое произведение</small>
-    </div>
-    
-    <button type="submit" class="btn-submit">📬 Отправить заявку</button>
-</form>
+
+    <footer>
+        <p>© 2025 Ádel — Ангел Поэзии</p>
+    </footer>
+
+</body>
+</html>
