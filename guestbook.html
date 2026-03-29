@@ -583,12 +583,25 @@
             return;
           }
 
-          data.sort((a, b) => new Date(b.date) - new Date(a.date));
+         // Сортировка: новые сверху
+data.sort((a, b) => {
+  const dateA = new Date(a.date);
+  const dateB = new Date(b.date);
+  return dateB - dateA;
+});
 
-          reviewsList.innerHTML = data.map(review => {
-            const date = new Date(review.date).toLocaleDateString('ru-RU', {
-              day: 'numeric', month: 'long', year: 'numeric'
-            });
+reviewsList.innerHTML = data.map(review => {
+  // Безопасная обработка даты
+  const dateObj = new Date(review.date);
+  const isValidDate = !isNaN(dateObj.getTime());
+  
+  const date = isValidDate 
+    ? dateObj.toLocaleDateString('ru-RU', {
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric'
+      })
+    : 'Только что';
             const typeClass = review.type === 'пожелание' ? 'type-wish' : 'type-review';
             const typeText = review.type === 'пожелание' ? '💡 Пожелание' : '⭐ Отзыв';
 
