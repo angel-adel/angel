@@ -504,9 +504,11 @@
     </p>
   </footer>
 
-  <!-- Скрипт -->
   <script>
-    // Показывать/скрывать поле "Тематика" в зависимости от типа обращения
+    // ✅ Твой URL от Google Apps Script
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyus8s3M1zmUPx1BFs0zCPUt83ibC-is_JG_5Rz73BFeWxDxxBsqj3D5INXt0WIEvlv3g/exec';
+
+    // Показывать/скрывать поле "Тематика"
     document.getElementById('type').addEventListener('change', function() {
       const themeGroup = document.getElementById('themeGroup');
       const themeSelect = document.getElementById('theme');
@@ -520,94 +522,100 @@
       }
     });
 
-    // Обработка отправки формы (заглушка)
+    // Отправка формы
     document.getElementById('guestbookForm').addEventListener('submit', function(e) {
       e.preventDefault();
       
       const submitBtn = document.getElementById('submitBtn');
       const formStatus = document.getElementById('formStatus');
+      const originalBtnText = submitBtn.textContent;
+      
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Отправка...';
+      
       const formData = {
         name: document.getElementById('name').value,
         type: document.getElementById('type').value,
         theme: document.getElementById('theme').value,
-        message: document.getElementById('message').value,
-        date: new Date().toISOString()
+        message: document.getElementById('message').value
       };
 
-      // Сохраняем в localStorage для тестирования
-      let reviews = JSON.parse(localStorage.getItem('guestbook_reviews') || '[]');
-      reviews.push(formData);
-      localStorage.setItem('guestbook_reviews', JSON.stringify(reviews));
-      // Показываем сообщение об успехе
-      submitBtn.disabled = true;
-      submitBtn.textContent = 'Отправлено ✓';
-      formStatus.textContent = '✅ Спасибо! Ваш отзыв будет опубликован после проверки.';
-      formStatus.className = 'form-status show success';
-
-      // Очищаем форму
-      this.reset();
-      document.getElementById('themeGroup').style.display = 'none';
-
-      // Возвращаем кнопку через 3 секунды
-      setTimeout(() => {
+      fetch(SCRIPT_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(formData)
+      })
+      .then(() => {
+        formStatus.textContent = '✅ Спасибо! Отзыв появится после проверки.';
+        formStatus.className = 'form-status show success';
+        document.getElementById('guestbookForm').reset();
+        document.getElementById('themeGroup').style.display = 'none';
+        
+        setTimeout(() => {
+          submitBtn.disabled = false;
+          submitBtn.textContent = originalBtnText;
+          formStatus.classList.remove('show');
+        }, 5000);
+      })
+      .catch(err => {
+        formStatus.textContent = '❌ Ошибка. Попробуйте позже.';
+        formStatus.className = 'form-status show error';
         submitBtn.disabled = false;
-        submitBtn.textContent = '📤 Отправить';
-        formStatus.classList.remove('show');
-      }, 3000);
-
-      // Обновляем список отзывов
-      loadReviews();
+        submitBtn.textContent = originalBtnText;
+      });
     });
 
     // Загрузка отзывов
     function loadReviews() {
       const reviewsList = document.getElementById('reviewsList');
-      const reviews = JSON.parse(localStorage.getItem('guestbook_reviews') || '[]');
+      
+      fetch(SCRIPT_URL)
+        .then(res => res.json())
+        .then(data => {
+          if (data.length === 0) {
+            reviewsList.innerHTML = `
+              <div class="empty-state">
+                <div class="empty-state-icon">✨</div>
+                <p>Пока нет отзывов. Будьте первым!</p>
+              </div>
+            `;
+            return;
+          }
 
-      if (reviews.length === 0) {
-        reviewsList.innerHTML = `
-          <div class="empty-state">
-            <div class="empty-state-icon">✨</div>
-            <p>Пока нет отзывов. Будьте первым, кто оставит свой след!</p>
-          </div>
-        `;
-        return;
-      }
+          data.sort((a, b) => new Date(b.date) - new Date(a.date));
 
-      // Сортируем по дате (новые сверху)
-      reviews.sort((a, b) => new Date(b.date) - new Date(a.date));
+          reviewsList.innerHTML = data.map(review => {
+            const date = new Date(review.date).toLocaleDateString('ru-RU', {
+              day: 'numeric', month: 'long', year: 'numeric'
+            });
+            const typeClass = review.type === 'пожелание' ? 'type-wish' : 'type-review';
+            const typeText = review.type === 'пожелание' ? '💡 Пожелание' : '⭐ Отзыв';
 
-      reviewsList.innerHTML = reviews.map(review => {
-        const date = new Date(review.date).toLocaleDateString('ru-RU', {
-          day: 'numeric',
-          month: 'long',
-          year: 'numeric'
+            return `
+              <div class="review-card">
+                <div class="review-header">
+                  <span class="review-author">${escapeHtml(review.name)}</span>
+                  <span class="review-date">${date}</span>
+                </div>
+                <span class="review-type ${typeClass}">${typeText}</span>
+                ${review.theme ? `<div class="review-theme">🏷️ ${escapeHtml(review.theme)}</div>` : ''}
+                <div class="review-message">${escapeHtml(review.message)}</div>
+              </div>
+            `;
+          }).join('');
+        })
+        .catch(err => {
+          reviewsList.innerHTML = '<div class="empty-state">⚠️ Не удалось загрузить отзывы</div>';
         });
-
-        const typeClass = review.type === 'пожелание' ? 'type-wish' : 'type-review';
-        const typeText = review.type === 'пожелание' ? '💡 Пожелание' : '⭐ Отзыв';
-        return `
-          <div class="review-card">
-            <div class="review-header">
-              <span class="review-author">${escapeHtml(review.name)}</span>
-              <span class="review-date">${date}</span>
-            </div>
-            <span class="review-type ${typeClass}">${typeText}</span>
-            ${review.theme ? `<div class="review-theme">🏷️ ${escapeHtml(review.theme)}</div>` : ''}
-            <div class="review-message">${escapeHtml(review.message)}</div>
-          </div>
-        `;
-      }).join('');
     }
 
-    // Экранирование HTML для безопасности
     function escapeHtml(text) {
       const div = document.createElement('div');
       div.textContent = text;
       return div.innerHTML;
     }
 
-    // Загружаем отзывы при загрузке страницы
     document.addEventListener('DOMContentLoaded', loadReviews);
   </script>
 
