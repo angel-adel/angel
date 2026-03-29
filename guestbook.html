@@ -606,15 +606,23 @@ reviewsList.innerHTML = data.map(review => {
   const dateObj = new Date(review.date);
   const isValidDate = !isNaN(dateObj.getTime());
   
-  const date = isValidDate 
+    const date = isValidDate 
     ? dateObj.toLocaleDateString('ru-RU', {
         day: 'numeric',
         month: 'long',
         year: 'numeric'
       })
     : 'Только что';
-            const typeClass = review.type === 'пожелание' ? 'type-wish' : 'type-review';
-            const typeText = review.type === 'пожелание' ? '💡 Пожелание' : '⭐ Отзыв';
+    
+  // 🔍 ОТЛАДКА - смотри в консоль (F12)
+  console.log('Получен отзыв:', review);
+  console.log('Type:', JSON.stringify(review.type));
+  console.log('Сравнение:', review.type === 'пожелание');
+  
+  // Безопасная обработка с trim()
+  const type = review.type ? review.type.trim().toLowerCase() : '';
+  const typeClass = type === 'пожелание' ? 'type-wish' : 'type-review';
+  const typeText = type === 'пожелание' ? '💡 Пожелание' : '⭐ Отзыв';;
 
             return `
               <div class="review-card">
