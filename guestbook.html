@@ -101,6 +101,229 @@
             }
         }
         /* END NAVIGATION */
+
+        /* PAGE STYLES */
+        .container {
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+        
+        .page-title {
+            text-align: center;
+            color: white;
+            font-size: 2.5em;
+            margin-bottom: 40px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        
+        .card-title {
+            color: #764ba2;
+            font-size: 1.5em;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* FORM STYLES */
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: 500;
+        }
+        
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+            box-sizing: border-box;
+        }
+        
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #764ba2;
+        }
+        
+        .form-group textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        
+        @media (max-width: 768px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 25px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(118, 75, 162, 0.4);
+        }
+        
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .form-status {
+            margin-top: 15px;
+            padding: 12px;
+            border-radius: 8px;
+            display: none;
+        }
+        
+        .form-status.show {
+            display: block;
+        }
+        
+        .form-status.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .form-status.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        /* END FORM STYLES */
+
+        /* REVIEW STYLES */
+        .review-card {
+            background: #f8f9fa;
+            border-left: 4px solid #764ba2;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+        }
+        
+        .review-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        
+        .review-author {
+            font-weight: bold;
+            color: #764ba2;
+            font-size: 1.1em;
+        }
+        
+        .review-date {
+            color: #888;
+            font-size: 0.9em;
+        }
+        
+        .review-type {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            margin-bottom: 10px;
+        }
+        
+        .type-wish {
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+        
+        .type-review {
+            background: #f3e5f5;
+            color: #7b1fa2;
+        }
+        
+        .review-theme {
+            color: #666;
+            font-size: 0.9em;
+            margin-bottom: 10px;
+            font-style: italic;
+        }
+        
+        .review-message {
+            color: #444;
+            line-height: 1.6;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: #888;
+        }
+        
+        .empty-state-icon {
+            font-size: 3em;
+            margin-bottom: 15px;
+        }
+        /* END REVIEW STYLES */
+
+        /* FOOTER */
+        footer {
+            background: rgba(255, 255, 255, 0.9);
+            text-align: center;
+            padding: 30px;
+            margin-top: 60px;
+        }
+        
+        footer p {
+            margin: 5px 0;
+            color: #666;
+        }
+        
+        footer a {
+            color: #764ba2;
+            text-decoration: none;
+        }
+        
+        footer a:hover {
+            text-decoration: underline;
+        }
+        /* END FOOTER */
     </style>
 </head>
 <body>
@@ -124,233 +347,212 @@
         </div>
     </header>
 
-  <!-- Основной контент -->
-  <div class="container">
-    <h1 class="page-title">📚 Гостевая книга</h1>
+    <div class="container">
+        <h1 class="page-title">📚 Гостевая книга</h1>
 
-    <!-- Форма -->
-    <div class="card">
-      <div class="card-title">
-        <span>✍️</span>
-        <span>Оставить отзыв или пожелание</span>
-      </div>
-      <p class="card-description">
-        Ваше мнение очень важно для меня! Поделитесь впечатлениями или закажите произведение на любую тему.
-      </p>
-
-      <form id="guestbookForm">
-        <div class="form-row">
-          <div class="form-group">
-            <label for="name">Ваше имя *</label>
-            <input 
-              type="text" 
-              id="name" 
-              name="name" 
-              required 
-              placeholder="Как к вам обращаться?"
-            >
-          </div>
-
-          <div class="form-group">            <label for="type">Тип обращения *</label>
-            <select id="type" name="type" required>
-              <option value="">-- Выберите --</option>
-              <option value="пожелание">💡 Пожелание / Заказ произведения</option>
-              <option value="отзыв">⭐ Отзыв о работе автора/сайта</option>
-            </select>
-          </div>
-        </div>
-
-        <div class="form-group" id="themeGroup" style="display: none;">
-          <label for="theme">Тематика произведения</label>
-          <select id="theme" name="theme">
-            <option value="">-- Необязательно --</option>
-            <option value="лирика">🌸 Лирика</option>
-            <option value="философия">🤔 Философия</option>
-            <option value="юмор">😄 Юмор</option>
-            <option value="проза">📖 Проза</option>
-            <option value="социальное">🌍 Социальные темы</option>
-            <option value="другое">✨ Другое</option>
-          </select>
-        </div>
-
-        <div class="form-group">
-          <label for="message">Ваше сообщение *</label>
-          <textarea 
-            id="message" 
-            name="message" 
-            required 
-            placeholder="Напишите здесь ваши мысли, пожелания или отзыв..."
-          ></textarea>
-        </div>
-
-        <button type="submit" class="btn btn-primary" id="submitBtn">
-          📤 Отправить
-        </button>
-        
-        <div id="formStatus" class="form-status"></div>
-      </form>
-    </div>
-
-    <!-- Список отзывов -->
-    <div class="card">
-      <div class="card-title">
-        <span>💬</span>
-        <span>Отзывы читателей</span>
-      </div>
-      
-      <div id="reviewsList">
-        <div class="empty-state">
-          <div class="empty-state-icon">✨</div>          <p>Пока нет отзывов. Будьте первым, кто оставит свой след!</p>
-        </div>
-      </div>
-    </div>
-
-  </div>
-
-  <!-- Футер -->
-  <footer>
-    <p>© 2025 Ádel — Ангел Поэзии</p>
-    <p style="margin-top: 10px;">
-      <a href="index.html">Главная</a> | 
-      <a href="guestbook.html">Гостевая книга</a>
-    </p>
-  </footer>
-
-  <script>
-    // ✅ Твой URL от Google Apps Script
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxhmH7vrTSs_GxhRwmTa6ppjiBicKmFSA978EGcTlj7A-3KBJh1aFgy1gtALQWDAe5i/exec';
-
-    // Показывать/скрывать поле "Тематика"
-    document.getElementById('type').addEventListener('change', function() {
-      const themeGroup = document.getElementById('themeGroup');
-      const themeSelect = document.getElementById('theme');
-      
-      if (this.value === 'пожелание') {
-        themeGroup.style.display = 'block';
-        themeSelect.required = false;
-      } else {
-        themeGroup.style.display = 'none';
-        themeSelect.value = '';
-      }
-    });
-
-    // Отправка формы
-    document.getElementById('guestbookForm').addEventListener('submit', function(e) {
-      e.preventDefault();
-      
-      const submitBtn = document.getElementById('submitBtn');
-      const formStatus = document.getElementById('formStatus');
-      const originalBtnText = submitBtn.textContent;
-      
-      submitBtn.disabled = true;
-      submitBtn.textContent = 'Отправка...';
-      
-      const formData = {
-        name: document.getElementById('name').value,
-        type: document.getElementById('type').value,
-        theme: document.getElementById('theme').value,
-        message: document.getElementById('message').value
-      };
-
-      fetch(SCRIPT_URL, {
-        method: 'POST',
-        mode: 'no-cors',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify(formData)
-      })
-      .then(() => {
-        formStatus.textContent = '✅ Спасибо! Отзыв появится после проверки.';
-        formStatus.className = 'form-status show success';
-        document.getElementById('guestbookForm').reset();
-        document.getElementById('themeGroup').style.display = 'none';
-        
-        setTimeout(() => {
-          submitBtn.disabled = false;
-          submitBtn.textContent = originalBtnText;
-          formStatus.classList.remove('show');
-        }, 5000);
-      })
-      .catch(err => {
-        formStatus.textContent = '❌ Ошибка. Попробуйте позже.';
-        formStatus.className = 'form-status show error';
-        submitBtn.disabled = false;
-        submitBtn.textContent = originalBtnText;
-      });
-    });
-
-    // Загрузка отзывов
-    function loadReviews() {
-      const reviewsList = document.getElementById('reviewsList');
-      
-      fetch(SCRIPT_URL)
-        .then(res => res.json())
-        .then(data => {
-          if (data.length === 0) {
-            reviewsList.innerHTML = `
-              <div class="empty-state">
-                <div class="empty-state-icon">✨</div>
-                <p>Пока нет отзывов. Будьте первым!</p>
-              </div>
-            `;
-            return;
-          }
-
-         // Сортировка: новые сверху
-data.sort((a, b) => {
-  const dateA = new Date(a.date);
-  const dateB = new Date(b.date);
-  return dateB - dateA;
-});
-
-reviewsList.innerHTML = data.map(review => {
-  // Безопасная обработка даты
-  const dateObj = new Date(review.date);
-  const isValidDate = !isNaN(dateObj.getTime());
-  
-    const date = isValidDate 
-    ? dateObj.toLocaleDateString('ru-RU', {
-        day: 'numeric',
-        month: 'long',
-        year: 'numeric'
-      })
-    : 'Только что';
-    
-  // 🔍 ОТЛАДКА - смотри в консоль (F12)
-  console.log('Получен отзыв:', review);
-  console.log('Type:', JSON.stringify(review.type));
-  console.log('Сравнение:', review.type === 'пожелание');
-  
-  // Безопасная обработка с trim()
-  const type = review.type ? review.type.trim().toLowerCase() : '';
-  const typeClass = type === 'пожелание' ? 'type-wish' : 'type-review';
-  const typeText = type === 'пожелание' ? '💡 Пожелание' : '⭐ Отзыв';;
-
-            return `
-              <div class="review-card">
-                <div class="review-header">
-                  <span class="review-author">${escapeHtml(review.name)}</span>
-                  <span class="review-date">${date}</span>
+        <!-- Форма -->
+        <div class="card">
+            <div class="card-title">
+                <span>✍️</span>
+                <span>Оставить отзыв или пожелание</span>
+            </div>
+            
+            <p>Ваше мнение очень важно для меня! Поделитесь впечатлениями или закажите произведение на любую тему.</p>
+            
+            <form id="guestbookForm">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="name">Ваше имя *</label>
+                        <input type="text" id="name" name="name" placeholder="Как к вам обращаться?" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="type">Тип обращения *</label>
+                        <select id="type" name="type" required>
+                            <option value="">-- Выберите --</option>
+                            <option value="отзыв">⭐ Отзыв</option>
+                            <option value="пожелание">💡 Пожелание (заказать произведение)</option>
+                        </select>
+                    </div>
                 </div>
-                <span class="review-type ${typeClass}">${typeText}</span>
-                ${review.theme ? `<div class="review-theme">🏷️ ${escapeHtml(review.theme)}</div>` : ''}
-                <div class="review-message">${escapeHtml(review.message)}</div>
-              </div>
-            `;
-          }).join('');
-        })
-        .catch(err => {
-          reviewsList.innerHTML = '<div class="empty-state">⚠️ Не удалось загрузить отзывы</div>';
+                
+                <div class="form-group" id="themeGroup" style="display: none;">
+                    <label for="theme">Тематика произведения</label>
+                    <select id="theme" name="theme">
+                        <option value="">-- Выберите тему --</option>
+                        <option value="любовная лирика">💕 Любовная лирика</option>
+                        <option value="философия">🤔 Философия</option>
+                        <option value="природа">🌿 Природа</option>
+                        <option value="духовное">🕊️ Духовное</option>
+                        <option value="социальное">✍️ Социальное</option>
+                        <option value="другое">📝 Другое</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="message">Ваше сообщение *</label>
+                    <textarea id="message" name="message" placeholder="Напишите здесь ваши мысли, пожелания или отзыв..." required></textarea>
+                </div>
+                
+                <button type="submit" class="btn" id="submitBtn">
+                    <span>📤</span> Отправить
+                </button>
+                
+                <div id="formStatus" class="form-status"></div>
+            </form>
+        </div>
+
+        <!-- Список отзывов -->
+        <div class="card">
+            <div class="card-title">
+                <span>💬</span>
+                <span>Отзывы читателей</span>
+            </div>
+            
+            <div id="reviewsList">
+                <div class="empty-state">
+                    <div class="empty-state-icon">✨</div>
+                    <p>Пока нет отзывов. Будьте первым!</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2025 Ádel — Ангел Поэзии</p>
+        <p><a href="index.html">Главная</a> | <a href="guestbook.html">Гостевая книга</a></p>
+    </footer>
+
+    <script>
+        // ✅ Твой URL от Google Apps Script
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxhmH7vrTSs_GxhRwmTa6ppjiBicKmFSA978EGcTlj7A-3KBJh1aFgy1gtALQWDAe5i/exec';
+
+        // Показывать/скрывать поле "Тематика"
+        document.getElementById('type').addEventListener('change', function() {
+            const themeGroup = document.getElementById('themeGroup');
+            const themeSelect = document.getElementById('theme');
+            
+            if (this.value === 'пожелание') {
+                themeGroup.style.display = 'block';
+                themeSelect.required = false;
+            } else {
+                themeGroup.style.display = 'none';
+                themeSelect.value = '';
+            }
         });
-    }
 
-    function escapeHtml(text) {
-      const div = document.createElement('div');
-      div.textContent = text;
-      return div.innerHTML;
-    }
+        // Отправка формы
+        document.getElementById('guestbookForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const submitBtn = document.getElementById('submitBtn');
+            const formStatus = document.getElementById('formStatus');
+            const originalBtnText = submitBtn.textContent;
+            
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Отправка...';
+            
+            const formData = {
+                name: document.getElementById('name').value,
+                type: document.getElementById('type').value,
+                theme: document.getElementById('theme').value,
+                message: document.getElementById('message').value
+            };
 
-    document.addEventListener('DOMContentLoaded', loadReviews);
-  </script>
+            fetch(SCRIPT_URL, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(formData)
+            })
+            .then(() => {
+                formStatus.textContent = '✅ Спасибо! Отзыв появится после проверки.';
+                formStatus.className = 'form-status show success';
+                document.getElementById('guestbookForm').reset();
+                document.getElementById('themeGroup').style.display = 'none';
+                
+                setTimeout(() => {
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = originalBtnText;
+                    formStatus.classList.remove('show');
+                }, 5000);
+            })
+            .catch(err => {
+                formStatus.textContent = '❌ Ошибка. Попробуйте позже.';
+                formStatus.className = 'form-status show error';
+                submitBtn.disabled = false;
+                submitBtn.textContent = originalBtnText;
+            });
+        });
 
+        // Загрузка отзывов
+        function loadReviews() {
+            const reviewsList = document.getElementById('reviewsList');
+            
+            fetch(SCRIPT_URL)
+                .then(res => res.json())
+                .then(data => {
+                    if (data.length === 0) {
+                        reviewsList.innerHTML = `
+                            <div class="empty-state">
+                                <div class="empty-state-icon">✨</div>
+                                <p>Пока нет отзывов. Будьте первым!</p>
+                            </div>
+                        `;
+                        return;
+                    }
+
+                    // Сортировка: новые сверху
+                    data.sort((a, b) => {
+                        const dateA = new Date(a.date);
+                        const dateB = new Date(b.date);
+                        return dateB - dateA;
+                    });
+
+                    reviewsList.innerHTML = data.map(review => {
+                        // Безопасная обработка даты
+                        const dateObj = new Date(review.date);
+                        const isValidDate = !isNaN(dateObj.getTime());
+                        
+                        const date = isValidDate 
+                            ? dateObj.toLocaleDateString('ru-RU', {
+                                day: 'numeric',
+                                month: 'long',
+                                year: 'numeric'
+                            })
+                            : 'Только что';
+                        
+                        // Безопасная обработка с trim()
+                        const type = review.type ? review.type.trim().toLowerCase() : '';
+                        const typeClass = type === 'пожелание' ? 'type-wish' : 'type-review';
+                        const typeText = type === 'пожелание' ? '💡 Пожелание' : '⭐ Отзыв';
+
+                        return `
+                            <div class="review-card">
+                                <div class="review-header">
+                                    <span class="review-author">${escapeHtml(review.name)}</span>
+                                    <span class="review-date">${date}</span>
+                                </div>
+                                <span class="review-type ${typeClass}">${typeText}</span>
+                                ${review.theme ? `<div class="review-theme">🏷️ ${escapeHtml(review.theme)}</div>` : ''}
+                                <div class="review-message">${escapeHtml(review.message)}</div>
+                            </div>
+                        `;
+                    }).join('');
+                })
+                .catch(err => {
+                    reviewsList.innerHTML = '<div class="empty-state">⚠️ Не удалось загрузить отзывы</div>';
+                    console.error('Error loading reviews:', err);
+                });
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        document.addEventListener('DOMContentLoaded', loadReviews);
+    </script>
 </body>
 </html>
