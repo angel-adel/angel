@@ -220,16 +220,14 @@
 
     <script>
         // ===== СПИСОК КАРТИНОК =====
-        // Добавляй новые картинки сюда (меняй только то, что между кавычек)
-      const images = [
-          { src: "Gallery/Picsart_26-03-30_10-04-30-926.png", caption: "Иллюстрация первая" },
-          { src: "Gallery/Picsart_26-04-04_18-47-22-947.jpg", caption: "Иллюстрация вторая" }
-];
+        const images = [
+            { src: "Gallery/Picsart_26-03-30_10-04-30-926.png", caption: "Ночь без луны" },
+            { src: "Gallery/Picsart_26-04-04_18-47-22-947.jpg", caption: "Иней на стекле" }
+        ];
         // ============================
 
         const gallery = document.getElementById('gallery');
         
-        // Заполняем галерею
         images.forEach(img => {
             const item = document.createElement('div');
             item.className = 'gallery-item';
@@ -247,7 +245,6 @@
             gallery.appendChild(item);
         });
         
-        // Закрытие модального окна
         document.querySelector('.close').onclick = () => {
             document.getElementById('imageModal').style.display = "none";
         };
@@ -256,31 +253,5 @@
             if (event.target === modal) modal.style.display = "none";
         };
     </script>
-
 </body>
-            </html>                    out.innerHTML = `<div class="error">📂 Папка пуста или нет доступа.</div>`;
-                    return;
-                }
-                const images = data.files.filter(f => f.mimeType.startsWith('image/'));
-                if (images.length === 0) {
-                    out.innerHTML = `<div class="error">🖼️ В папке нет изображений.</div>`;
-                    return;
-                }
-                let html = `<div class="success">✅ Найдено картинок: ${images.length}</div>`;
-                images.forEach(img => {
-                    html += `<div><strong>${img.name}</strong><br><img src="https://drive.google.com/uc?export=view&id=${img.id}"></div>`;
-                });
-                out.innerHTML = html;
-            } catch (err) {
-                out.innerHTML = `<div class="error">❌ Ошибка: ${err.message}</div>`;
-            }
-        }
-        test();
-    </script>
-</body>
-</html>страницы
-        loadImages();
-    </script>
-
-</body>
-  </html>
+</html>
