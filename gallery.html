@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Галерея иллюстраций | Ádel</title>
+    
+    <!-- FAVICON -->
+    <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+    <link rel="icon" type="image/png" href="favicon.png">
+    
+    <style>
+        body {
+            font-family: 'Georgia', 'Times New Roman', serif;
+            line-height: 1.6;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        header {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 2em;
+            font-weight: bold;
+            color: #764ba2;
+            text-decoration: none;
+        }
+        .logo-icon {
+            height: 40px;
+            width: auto;
+            display: block;
+        }
+        @media (max-width: 768px) {
+            .logo-icon {
+                height: 30px;
+            }
+            .logo {
+                font-size: 1.5em;
+            }
+        }
+        nav ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        nav a {
+            text-decoration: none;
+            color: #333;
+            font-weight: bold;
+            padding: 10px 15px;
+            border-radius: 5px;
+            transition: all 0.3s;
+        }
+        nav a:hover, nav a.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #fff;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+        .page-title {
+            text-align: center;
+            color: #fff;
+            font-size: 2.5em;
+            margin-bottom: 20px;
+        }
+        .subtitle {
+            text-align: center;
+            color: #f0e6ff;
+            font-size: 1.2em;
+            margin-bottom: 40px;
+        }
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px;
+            margin-top: 20px;
+        }
+        .gallery-item {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+            cursor: pointer;
+        }
+        .gallery-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+        .gallery-item img {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+            display: block;
+        }
+        .gallery-item-caption {
+            padding: 12px;
+            text-align: center;
+            font-size: 0.9em;
+            color: #555;
+            border-top: 1px solid #eee;
+        }
+        /* Модальное окно для увеличения */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.9);
+            cursor: pointer;
+        }
+        .modal-content {
+            margin: auto;
+            display: block;
+            max-width: 90%;
+            max-height: 90%;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+        .close {
+            position: absolute;
+            top: 20px;
+            right: 35px;
+            color: #fff;
+            font-size: 40px;
+            font-weight: bold;
+            cursor: pointer;
+            z-index: 1001;
+        }
+        .close:hover {
+            color: #bbb;
+        }
+        .loading {
+            text-align: center;
+            padding: 50px;
+            background: white;
+            border-radius: 15px;
+            font-size: 1.2em;
+            color: #764ba2;
+        }
+        footer {
+            text-align: center;
+            padding: 30px;
+            background: rgba(255, 255, 255, 0.95);
+            color: #764ba2;
+            margin-top: 50px;
+        }
+        @media (max-width: 768px) {
+            .gallery-grid {
+                gap: 15px;
+            }
+            .gallery-item img {
+                height: 200px;
+            }
+            .page-title {
+                font-size: 2em;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="header-content">
+            <a href="index.html" class="logo">
+                <img src="favicon.png" alt="Ádel — Ангел Поэзии" class="logo-icon">
+                <span>Ádel</span>
+            </a>
+            <nav>
+                <ul>
+                    <li><a href="index.html">Главная</a></li>
+                    <li><a href="about.html">Об авторе</a></li>
+                    <li><a href="portfolio.html">Произведения</a></li>
+                    <li><a href="reviews.html">Рецензии</a></li>
+                    <li><a href="guestbook.html">Гостевая книга</a></li>
+                    <li><a href="order.html">Заказать</a></li>
+                    <li><a href="gallery.html" class="active">Галерея</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <div class="container">
+        <h1 class="page-title">🎨 Поэтическая галерея</h1>
+        <div class="subtitle">Иллюстрации к стихам, открытки, вдохновение</div>
+        
+        <div id="gallery" class="gallery-grid">
+            <div class="loading">Загрузка иллюстраций... ✨</div>
+        </div>
+    </div>
+
+    <!-- Модальное окно -->
+    <div id="imageModal" class="modal">
+        <span class="close">&times;</span>
+        <img class="modal-content" id="modalImage">
+    </div>
+
+    <footer>
+        <p>© 2025 Ádel — Ангел Поэзии</p>
+    </footer>
+
+    <script>
+        // ID твоей папки на Google Drive
+        const FOLDER_ID = '1rI8ioxYMlF5OZTUyvaHKCZyWatVs6SPH';
+        // API ключ (публичный, ограничен только для чтения твоей папки)
+        const API_KEY = 'AIzaSyC6jDpvUzQwJ2_ITKj3Vv0xRTT5KqYbNps';
+        
+        async function loadImages() {
+            const gallery = document.getElementById('gallery');
+            gallery.innerHTML = '<div class="loading">Загрузка иллюстраций... ✨</div>';
+            
+            try {
+                const url = `https://www.googleapis.com/drive/v3/files?q='${FOLDER_ID}'+in+parents&key=${API_KEY}&fields=files(id,name,mimeType,webContentLink)&orderBy=name`;
+                const response = await fetch(url);
+                const data = await response.json();
+                
+                if (!data.files || data.files.length === 0) {
+                    gallery.innerHTML = '<div class="loading">Пока нет иллюстраций. Скоро они появятся! 🌸</div>';
+                    return;
+                }
+                
+                // Фильтруем только изображения
+                const imageFiles = data.files.filter(file => file.mimeType.startsWith('image/'));
+                
+                if (imageFiles.length === 0) {
+                    gallery.innerHTML = '<div class="loading">Пока нет иллюстраций. Скоро они появятся! 🌸</div>';
+                    return;
+                }
+                
+                gallery.innerHTML = '';
+                
+                imageFiles.forEach(file => {
+                    // Получаем прямую ссылку на изображение
+                    const imageUrl = `https://drive.google.com/uc?export=view&id=${file.id}`;
+                    const fileName = file.name.replace(/\.[^/.]+$/, ''); // убираем расширение
+                    
+                    const item = document.createElement('div');
+                    item.className = 'gallery-item';
+                    item.innerHTML = `
+                        <img src="${imageUrl}" alt="${fileName}" loading="lazy">
+                        <div class="gallery-item-caption">${fileName}</div>
+                    `;
+                    item.onclick = () => openModal(imageUrl, fileName);
+                    gallery.appendChild(item);
+                });
+                
+            } catch (error) {
+                console.error('Ошибка загрузки:', error);
+                gallery.innerHTML = '<div class="loading">Не удалось загрузить галерею. Попробуйте позже. 🌹</div>';
+            }
+        }
+        
+        function openModal(imageUrl, caption) {
+            const modal = document.getElementById('imageModal');
+            const modalImg = document.getElementById('modalImage');
+            modal.style.display = "block";
+            modalImg.src = imageUrl;
+            modalImg.alt = caption;
+        }
+        
+        // Закрытие модального окна
+        document.querySelector('.close').onclick = function() {
+            document.getElementById('imageModal').style.display = "none";
+        }
+        
+        window.onclick = function(event) {
+            const modal = document.getElementById('imageModal');
+            if (event.target === modal) {
+                modal.style.display = "none";
+            }
+        }
+        
+        // Загружаем изображения при открытии страницы
+        loadImages();
+    </script>
+
+</body>
+  </html>
