@@ -37,8 +37,6 @@
             align-items: center;
             flex-wrap: wrap;
         }
-        
-        /* LOGO STYLES */
         .logo {
             display: flex;
             align-items: center;
@@ -48,23 +46,15 @@
             color: #764ba2;
             text-decoration: none;
         }
-        
         .logo-icon {
             height: 40px;
             width: auto;
             display: block;
         }
-        
         @media (max-width: 768px) {
-            .logo-icon {
-                height: 30px;
-            }
-            .logo {
-                font-size: 1.5em;
-            }
+            .logo-icon { height: 30px; }
+            .logo { font-size: 1.5em; }
         }
-        /* END LOGO STYLES */
-        
         nav ul {
             list-style: none;
             margin: 0;
@@ -96,14 +86,25 @@
             font-size: 2.5em;
             margin-bottom: 30px;
         }
-        .filters {
-            text-align: center;
+        .filters-section {
+            background: rgba(255,255,255,0.1);
+            border-radius: 20px;
+            padding: 15px;
             margin-bottom: 30px;
+        }
+        .filter-group {
+            text-align: center;
+            margin-bottom: 15px;
+        }
+        .filter-group h3 {
+            color: white;
+            margin: 0 0 10px 0;
+            font-size: 1.2em;
         }
         .filter-btn {
             background: rgba(255, 255, 255, 0.95);
             border: 2px solid #764ba2;
-            padding: 10px 20px;
+            padding: 8px 20px;
             margin: 5px;
             border-radius: 25px;
             cursor: pointer;
@@ -243,190 +244,267 @@
 </head>
 <body>
 
-    <header>
-        <div class="header-content">
-            <a href="index.html" class="logo">
-                <img src="favicon.png" alt="Ádel — Ангел Поэзии" class="logo-icon">
-                <span>Ádel</span>
-            </a>
-            <nav>
-                <ul>
-                    <li><a href="index.html">Главная</a></li>
-                    <li><a href="about.html">Об авторе</a></li>
-                    <li><a href="portfolio.html" class="active">Произведения</a></li>
-                    <li><a href="reviews.html">Рецензии</a></li>
-                    <li><a href="order.html">Заказать</a></li>
-                    <li><a href="guestbook.html">Гостевая книга</a></li>
-                </ul>
-            </nav>
-        </div>
-    </header>
-
-    <div class="container">
-        <h1 class="page-title">Все произведения</h1>
-        
-        <div class="filters">
-            <button class="filter-btn active" onclick="filterPoems('all')">Все</button>
-            <button class="filter-btn" onclick="filterPoems('love')">💜 Любовная</button>
-            <button class="filter-btn" onclick="filterPoems('philosophy')">🤔 Философская</button>
-            <button class="filter-btn" onclick="filterPoems('landscape')">🌿 Пейзажная</button>
-            <button class="filter-btn" onclick="filterPoems('civic')">🇷🇺 Гражданская</button>
-            <button class="filter-btn" onclick="filterPoems('song')">🎸 Авторская песня</button>
-            <button class="filter-btn" onclick="filterPoems('free')">📝 Белый стих</button>
-        </div>
-        <!-- SEARCH BOX -->
-<div style="text-align: center; margin: 30px 0;">
-    <input type="text" id="searchInput" placeholder="🔍 Поиск по названию или тексту..." 
-           style="max-width: 500px; width: 100%; padding: 15px 20px; font-size: 1em; border: 2px solid #764ba2; border-radius: 50px; outline: none;">
-</div>
-        
-        <div id="poemsGrid" class="poems-grid">
-            <p style="text-align: center; color: #fff; font-size: 1.2em;">Загрузка произведений...</p>
-        </div>
-        
-        <div class="cta-section">
-            <h2>📚 Хотите прочитать больше?</h2>
-            <p style="font-size: 1.1em; color: #666;">
-                На сайте представлена часть произведений автора.<br>
-                Если вы хотите ознакомиться с полным собранием сочинений,<br>
-                напишите нам через форму заказа или обратную связь.
-            </p>
-            <div class="cta-buttons">
-                <a href="order.html" class="btn">📝 Заказать произведение</a>
-                <a href="feedback.html" class="btn">💌 Обратная связь</a>
-            </div>
-        </div>
+<header>
+    <div class="header-content">
+        <a href="index.html" class="logo">
+            <img src="favicon.png" alt="Ádel — Ангел Поэзии" class="logo-icon">
+            <span>Ádel</span>
+        </a>
+        <nav>
+            <ul>
+                <li><a href="index.html">Главная</a></li>
+                <li><a href="about.html">Об авторе</a></li>
+                <li><a href="portfolio.html" class="active">Произведения</a></li>
+                <li><a href="reviews.html">Рецензии</a></li>
+                <li><a href="feedback.html">Обратная связь</a></li>
+                <li><a href="order.html">Заказать</a></li>
+            </ul>
+        </nav>
     </div>
+</header>
 
-    <div id="poemModal" class="modal">
-        <div class="modal-content">
-            <span class="modal-close" onclick="closeModal()">&times;</span>
-            <h2 id="modalTitle" class="modal-title"></h2>
-            <p id="modalGenre" class="modal-genre"></p>
-            <div id="modalText" class="modal-text"></div>
-        </div>
-    </div>
-
-    <footer>
-        <p>© 2025 Ádel — Ангел Поэзии</p>
-    </footer>
-
-    <script>
-        const files = [
-            'poems-part1.json',
-            'poems-part2.json',
-            'poems-part3.json',
-            'poems-part4.json',
-            'poems-part5.json',
-            'poems-part6.json'
-        ];
-        
-        let allPoems = [];
-        
-        async function loadPoems() {
-            try {
-                for (const file of files) {
-                    const response = await fetch(file);
-                    const poems = await response.json();
-                    allPoems = allPoems.concat(poems);
-                }
-                displayPoems(allPoems);
-                updateCount();
-            } catch (error) {
-                console.error('Error loading poems:', error);
-                document.getElementById('poemsGrid').innerHTML = 
-                    '<p style="text-align: center; color: #fff;">Ошибка загрузки произведений</p>';
-            }
-        }
-        
-        function displayPoems(poems) {
-            const grid = document.getElementById('poemsGrid');
-            grid.innerHTML = poems.map(poem => `
-                <div class="poem-card" onclick="openModal(${poem.id})" data-genre="${getGenreKey(poem.genre)}">
-                    <h3 class="poem-title">${poem.title}</h3>
-                    <p class="poem-excerpt">${poem.excerpt}</p>
-                    <span class="poem-genre">${poem.genre}</span>
-                </div>
-            `).join('');
-        }
-        
-        function getGenreKey(genre) {
-            const genres = {
-                'любовная лирика': 'love',
-                'философская лирика': 'philosophy',
-                'пейзажная лирика': 'landscape',
-                'гражданская лирика': 'civic',
-                'авторская песня': 'song',
-                'белый и вольный стих': 'free',
-                'юмор': 'free'
-            };
-            return genres[genre.toLowerCase()] || 'all';
-        }
-        
-        function filterPoems(genre) {
-            const buttons = document.querySelectorAll('.filter-btn');
-            buttons.forEach(btn => btn.classList.remove('active'));
-            event.target.classList.add('active');
-            
-            if (genre === 'all') {
-                displayPoems(allPoems);
-            } else {
-                const filtered = allPoems.filter(poem => getGenreKey(poem.genre) === genre);
-                displayPoems(filtered);
-            }
-            updateCount();
-        }
-        
-        function updateCount() {
-            const count = document.querySelectorAll('.poem-card').length;
-            document.querySelector('.page-title').textContent = `Все произведения — Всего: ${count}`;
-        }
-        
-        function openModal(id) {
-            const poem = allPoems.find(p => p.id === id);
-            if (poem) {
-                document.getElementById('modalTitle').textContent = poem.title;
-                document.getElementById('modalGenre').textContent = poem.genre;
-                document.getElementById('modalText').textContent = poem.fullText;
-                document.getElementById('poemModal').style.display = 'block';
-                document.body.style.overflow = 'hidden';
-            }
-        }
-        
-        function closeModal() {
-            document.getElementById('poemModal').style.display = 'none';
-            document.body.style.overflow = 'auto';
-        }
-        
-        window.onclick = function(event) {
-            const modal = document.getElementById('poemModal');
-            if (event.target === modal) {
-                closeModal();
-            }
-        }
-        
-        document.addEventListener('DOMContentLoaded', loadPoems);
-        // SEARCH FUNCTIONALITY
-const searchInput = document.getElementById('searchInput');
-searchInput.addEventListener('input', function(e) {
-    const searchTerm = e.target.value.toLowerCase();
+<div class="container">
+    <h1 class="page-title" id="pageTitle">Все произведения</h1>
     
-    if (searchTerm === '') {
-        displayPoems(allPoems);
-        updateCount();
-        return;
+    <div class="filters-section">
+        <!-- Фильтр по языку -->
+        <div class="filter-group">
+            <h3>🌐 Язык</h3>
+            <button class="filter-btn active" data-lang="all">🌍 Все</button>
+            <button class="filter-btn" data-lang="ru">🇷🇺 Русский</button>
+            <button class="filter-btn" data-lang="es">🇪🇸 Español</button>
+            <button class="filter-btn" data-lang="en">🇬🇧 English</button>
+        </div>
+        
+        <!-- Фильтр по жанру -->
+        <div class="filter-group">
+            <h3>📖 Жанр</h3>
+            <button class="filter-btn active" data-genre="all">📚 Все жанры</button>
+            <button class="filter-btn" data-genre="love">💜 Любовная</button>
+            <button class="filter-btn" data-genre="philosophy">🤔 Философская</button>
+            <button class="filter-btn" data-genre="landscape">🌿 Пейзажная</button>
+            <button class="filter-btn" data-genre="civic">🇷🇺 Гражданская</button>
+            <button class="filter-btn" data-genre="song">🎸 Авторская песня</button>
+            <button class="filter-btn" data-genre="free">📝 Белый стих</button>
+        </div>
+    </div>
+
+    <!-- Поиск -->
+    <div style="text-align: center; margin: 20px 0 30px;">
+        <input type="text" id="searchInput" placeholder="🔍 Поиск по названию или тексту..." 
+               style="max-width: 500px; width: 100%; padding: 15px 20px; font-size: 1em; border: 2px solid #764ba2; border-radius: 50px; outline: none;">
+    </div>
+    
+    <div id="poemsGrid" class="poems-grid">
+        <p style="text-align: center; color: #fff; font-size: 1.2em;">Загрузка произведений...</p>
+    </div>
+    
+    <div class="cta-section">
+        <h2>📚 Хотите прочитать больше?</h2>
+        <p style="font-size: 1.1em; color: #666;">
+            На сайте представлена часть произведений автора.<br>
+            Если вы хотите ознакомиться с полным собранием сочинений,<br>
+            напишите нам через форму заказа или обратную связь.
+        </p>
+        <div class="cta-buttons">
+            <a href="order.html" class="btn">📝 Заказать произведение</a>
+            <a href="feedback.html" class="btn">💌 Обратная связь</a>
+        </div>
+    </div>
+</div>
+
+<div id="poemModal" class="modal">
+    <div class="modal-content">
+        <span class="modal-close" onclick="closeModal()">&times;</span>
+        <h2 id="modalTitle" class="modal-title"></h2>
+        <p id="modalGenre" class="modal-genre"></p>
+        <div id="modalText" class="modal-text"></div>
+    </div>
+</div>
+
+<footer>
+    <p>© 2025 Ádel — Ангел Поэзии</p>
+</footer>
+
+<script>
+    const files = [
+        'poems-part1.json',
+        'poems-part2.json',
+        'poems-part3.json',
+        'poems-part4.json',
+        'poems-part5.json',
+        'poems-part6.json'
+    ];
+    
+    let allPoems = [];
+    let currentLang = 'all';
+    let currentGenre = 'all';
+    let currentSearch = '';
+    
+    // Определение языка произведения
+    function detectLanguage(poem) {
+        const text = (poem.title + ' ' + poem.fullText).toLowerCase();
+        // Испанская диакритика
+        const spanishChars = /[áéíóúñü]/i;
+        // Латиница без русских букв
+        const hasLatin = /[a-z]/i.test(text);
+        const hasRussian = /[а-яё]/i.test(text);
+        
+        if (spanishChars.test(text)) {
+            return 'es';
+        } else if (hasLatin && !hasRussian) {
+            return 'en';
+        } else {
+            return 'ru';
+        }
     }
     
-    const filtered = allPoems.filter(poem => 
-        poem.title.toLowerCase().includes(searchTerm) ||
-        poem.excerpt.toLowerCase().includes(searchTerm) ||
-        poem.fullText.toLowerCase().includes(searchTerm)
-    );
+    function getGenreKey(genre) {
+        const genres = {
+            'любовная лирика': 'love',
+            'философская лирика': 'philosophy',
+            'пейзажная лирика': 'landscape',
+            'гражданская лирика': 'civic',
+            'авторская песня': 'song',
+            'белый и вольный стих': 'free',
+            'юмор': 'free'
+        };
+        return genres[genre.toLowerCase()] || 'all';
+    }
     
-    displayPoems(filtered);
-    updateCount();
-});
-    </script>
+    async function loadPoems() {
+        try {
+            for (const file of files) {
+                const response = await fetch(file);
+                const poems = await response.json();
+                allPoems = allPoems.concat(poems);
+            }
+            applyFilters();
+        } catch (error) {
+            console.error('Error loading poems:', error);
+            document.getElementById('poemsGrid').innerHTML = 
+                '<p style="text-align: center; color: #fff;">Ошибка загрузки произведений</p>';
+        }
+    }
+    
+    function applyFilters() {
+        let filtered = [...allPoems];
+        
+        // Фильтр по языку
+        if (currentLang !== 'all') {
+            filtered = filtered.filter(poem => detectLanguage(poem) === currentLang);
+        }
+        
+        // Фильтр по жанру
+        if (currentGenre !== 'all') {
+            filtered = filtered.filter(poem => getGenreKey(poem.genre) === currentGenre);
+        }
+        
+        // Поиск
+        if (currentSearch.trim() !== '') {
+            const searchLower = currentSearch.toLowerCase();
+            filtered = filtered.filter(poem => 
+                poem.title.toLowerCase().includes(searchLower) ||
+                poem.excerpt.toLowerCase().includes(searchLower) ||
+                poem.fullText.toLowerCase().includes(searchLower)
+            );
+        }
+        
+        displayPoems(filtered);
+        updateCount(filtered.length);
+    }
+    
+    function displayPoems(poems) {
+        const grid = document.getElementById('poemsGrid');
+        if (poems.length === 0) {
+            grid.innerHTML = '<p style="text-align: center; color: #fff; font-size: 1.2em;">😔 Ничего не найдено</p>';
+            return;
+        }
+        grid.innerHTML = poems.map(poem => `
+            <div class="poem-card" onclick="openModal(${poem.id})">
+                <h3 class="poem-title">${escapeHtml(poem.title)}</h3>
+                <p class="poem-excerpt">${escapeHtml(poem.excerpt)}</p>
+                <span class="poem-genre">${escapeHtml(poem.genre)}</span>
+            </div>
+        `).join('');
+    }
+    
+    function escapeHtml(str) {
+        return str.replace(/[&<>]/g, function(m) {
+            if (m === '&') return '&amp;';
+            if (m === '<') return '&lt;';
+            if (m === '>') return '&gt;';
+            return m;
+        });
+    }
+    
+    function updateCount(count) {
+        const title = document.getElementById('pageTitle');
+        let langText = '';
+        if (currentLang === 'ru') langText = ' — Русские';
+        else if (currentLang === 'es') langText = ' — Español';
+        else if (currentLang === 'en') langText = ' — English';
+        title.textContent = `Все произведения${langText} — Всего: ${count}`;
+    }
+    
+    function openModal(id) {
+        const poem = allPoems.find(p => p.id === id);
+        if (poem) {
+            document.getElementById('modalTitle').textContent = poem.title;
+            document.getElementById('modalGenre').textContent = poem.genre;
+            document.getElementById('modalText').textContent = poem.fullText;
+            document.getElementById('poemModal').style.display = 'block';
+            document.body.style.overflow = 'hidden';
+        }
+    }
+    
+    function closeModal() {
+        document.getElementById('poemModal').style.display = 'none';
+        document.body.style.overflow = 'auto';
+    }
+    
+    window.onclick = function(event) {
+        const modal = document.getElementById('poemModal');
+        if (event.target === modal) {
+            closeModal();
+        }
+    }
+    
+    // Назначение обработчиков фильтров
+    function initFilters() {
+        // Кнопки языка
+        document.querySelectorAll('[data-lang]').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                document.querySelectorAll('[data-lang]').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                currentLang = btn.getAttribute('data-lang');
+                applyFilters();
+            });
+        });
+        
+        // Кнопки жанра
+        document.querySelectorAll('[data-genre]').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                document.querySelectorAll('[data-genre]').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                currentGenre = btn.getAttribute('data-genre');
+                applyFilters();
+            });
+        });
+        
+        // Поиск
+        const searchInput = document.getElementById('searchInput');
+        searchInput.addEventListener('input', (e) => {
+            currentSearch = e.target.value;
+            applyFilters();
+        });
+    }
+    
+    document.addEventListener('DOMContentLoaded', () => {
+        initFilters();
+        loadPoems();
+    });
+</script>
 
 </body>
-</html>
+    </html>
