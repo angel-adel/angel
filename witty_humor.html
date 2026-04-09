@@ -320,7 +320,6 @@ document.querySelectorAll('.share-btn').forEach(btn => {
             shareUrl = `https://connect.ok.ru/dk?st.cmd=WidgetSharePreview&st.shareUrl=${url}&st.comments=${text}`;
         } else if (this.classList.contains('share-tg')) {
             shareUrl = `https://t.me/share/url?url=${url}&text=${text}`;
-        } 
         window.open(shareUrl, '_blank', 'width=600,height=400');
     });
 });
