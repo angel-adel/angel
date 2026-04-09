@@ -184,6 +184,31 @@
             .feature-card {
                 padding: 20px;
             }
+            .joke-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 15px;
+    padding-top: 10px;
+    border-top: 1px dashed #ccc;
+}
+.copy-btn, .share-btn {
+    padding: 6px 12px;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    text-decoration: none;
+    display: inline-block;
+    background: #f0f0f0;
+    color: #333;
+    transition: 0.2s;
+}
+.copy-btn:hover, .share-btn:hover {
+    background: #e0e0e0;
+    transform: scale(1.02);
+            }
+            }
         }
     </style>
 </head>
@@ -219,16 +244,22 @@
     </div>
 
     <div class="feature-card">
-         <div class="feature-card">
-            <h3>🍔 Священный бургер</h3>
-            <div class="joke-text">
-                <p>— Почему бургер кислый?</p>
-                <p>— Меньше похмеляться перед вкушением Святого Бургера.</p>
-                <p>— А может, курьер с заказом в церковь заходил?</p>
-                <p>— Боже, Бургер храни!!!</p>
-            </div>
-        </div>
-
+    <h3>🍔 Священный бургер</h3>
+    <div class="joke-text">
+        <p>— Почему бургер кислый?</p>
+        <p>— Меньше похмеляться перед вкушением.</p>
+        <p>— А может, курьер с заказом в церковь заходил?</p>
+        <p>— Боже, Бургер храни!!!</p>
+    </div>
+    <div class="joke-actions">
+        <button class="copy-btn" onclick="copyJoke(this)">📋 Скопировать шутку</button>
+        <a href="#" class="share-btn share-vk" target="_blank">📘 ВК</a>
+        <a href="#" class="share-btn share-ok" target="_blank">👥 ОК</a>
+        <a href="#" class="share-btn share-tg" target="_blank">📨 Telegram</a>
+        <a href="#" class="share-btn share-max" target="_blank">💬 MAX</a>
+    </div>
+        
+    </div>
         <div class="feature-card">
             <h3>🔥 Шаурма-детектор</h3>
             <div class="joke-text">
@@ -236,8 +267,14 @@
                 <p>— Видимо, делают из сырого, а клиент сам дожаривает. Овощи отдали веганам, мясо — Ростиксу на байтсы.</p>
                 <p>— Но шаверма в палатке теплее…</p>
                 <p>— Ещё бы. Если не гавкает — холодная. А если визжит и бежит из пакета — самое то.</p>
-            </div>
-        </div>
+            <div class="joke-actions">
+        <button class="copy-btn" onclick="copyJoke(this)">📋 Скопировать шутку</button>
+        <a href="#" class="share-btn share-vk" target="_blank">📘 ВК</a>
+        <a href="#" class="share-btn share-ok" target="_blank">👥 ОК</a>
+        <a href="#" class="share-btn share-tg" target="_blank">📨 Telegram</a>
+        <a href="#" class="share-btn share-max" target="_blank">💬 MAX</a>
+      </div>
+    </div>
 
     
         <!-- Здесь будут новые анекдоты. Добавляй по образцу выше -->
