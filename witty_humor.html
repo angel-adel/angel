@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Witty Humor — Анекдоты на крыльях</title>
+    <meta name="description" content="Короткие, добрые и остроумные мини-сценки из жизни. Юмор на крыльях от Адель.">
+    
+    <!-- FAVICON -->
+    <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+    <link rel="icon" type="image/png" href="favicon.png">
+    
+    <style>
+        body {
+            font-family: 'Georgia', 'Times New Roman', serif;
+            line-height: 1.6;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        header {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        /* LOGO STYLES */
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 2em;
+            font-weight: bold;
+            color: #764ba2;
+            text-decoration: none;
+        }
+        
+        .logo-icon {
+            height: 40px;
+            width: auto;
+            display: block;
+        }
+        
+        @media (max-width: 768px) {
+            .logo-icon {
+                height: 30px;
+            }
+            .logo {
+                font-size: 1.5em;
+            }
+        }
+        /* END LOGO STYLES */
+        
+        nav ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        nav a {
+            text-decoration: none;
+            color: #333;
+            font-weight: bold;
+            padding: 10px 15px;
+            border-radius: 5px;
+            transition: all 0.3s;
+        }
+        nav a:hover, nav a.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #fff;
+        }
+        .hero {
+            text-align: center;
+            padding: 60px 20px;
+            color: #fff;
+        }
+        .hero h1 {
+            font-size: 3em;
+            margin-bottom: 20px;
+        }
+        .hero p {
+            font-size: 1.3em;
+            margin-bottom: 40px;
+        }
+        .features {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+        .feature-card {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
+        }
+        .feature-card:hover {
+            transform: translateY(-5px);
+        }
+        .feature-card h3 {
+            color: #764ba2;
+            margin-bottom: 15px;
+            font-size: 1.5em;
+            border-left: 4px solid #667eea;
+            padding-left: 15px;
+        }
+        .joke-text {
+            font-style: normal;
+            color: #444;
+            margin-bottom: 10px;
+            line-height: 1.7;
+        }
+        .joke-text p {
+            margin: 8px 0;
+        }
+        .joke-divider {
+            height: 1px;
+            background: linear-gradient(90deg, transparent, #764ba2, transparent);
+            margin: 20px 0 0 0;
+        }
+        .cta-buttons {
+            text-align: center;
+            padding: 40px 20px;
+        }
+        .btn {
+            display: inline-block;
+            padding: 15px 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #fff;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: bold;
+            margin: 10px;
+            transition: transform 0.3s;
+        }
+        .btn:hover {
+            transform: translateY(-3px);
+        }
+        footer {
+            text-align: center;
+            padding: 30px;
+            background: rgba(255, 255, 255, 0.95);
+            color: #764ba2;
+            margin-top: 50px;
+        }
+        footer a {
+            color: #667eea;
+            text-decoration: none;
+        }
+        footer a:hover {
+            text-decoration: underline;
+        }
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2em;
+            }
+            .hero p {
+                font-size: 1.1em;
+            }
+            .header-content {
+                flex-direction: column;
+                gap: 20px;
+            }
+            .feature-card {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="header-content">
+            <a href="index.html" class="logo">
+                <img src="favicon.png" alt="Ádel — Ангел Поэзии" class="logo-icon">
+                <span>Ádel</span>
+            </a>
+            <nav>
+                <ul>
+                    <li><a href="index.html">Главная</a></li>
+                    <li><a href="about.html">Об авторе</a></li>
+                    <li><a href="portfolio.html">Произведения</a></li>
+                    <li><a href="reviews.html">Рецензии</a></li>
+                    <li><a href="feedback.html">Обратная связь</a></li>
+                    <li><a href="order.html">Заказать</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Рубрика Witty Humor -->
+    <div class="hero">
+        <h1>Witty Humor</h1>
+        <p>Анекдоты на крыльях — добрые, короткие, для улыбки ♥️</p>
+    </div>
+
+    <div class="features">
+        
+        <div class="feature-card">
+            <h3>🍔 Священный бургер</h3>
+            <div class="joke-text">
+                <p>— Почему бургер кислый?</p>
+                <p>— Меньше похмеляться перед вкушением Святого Бургера.</p>
+                <p>— А может, курьер с заказом в церковь заходил?</p>
+                <p>— Боже, Бургер храни!!!</p>
+            </div>
+        </div>
+
+        <div class="feature-card">
+            <h3>🔥 Шаурма-детектор</h3>
+            <div class="joke-text">
+                <p>— Почему в этих заведениях всё холодное?</p>
+                <p>— Видимо, делают из сырого, а клиент сам дожаривает. Овощи отдали веганам, мясо — Ростиксу на байтсы.</p>
+                <p>— Но шаверма в палатке теплее…</p>
+                <p>— Ещё бы. Если не гавкает — холодная. А если визжит и бежит из пакета — самое то.</p>
+            </div>
+        </div>
+
+        <div class="feature-card">
+            <h3>🐈 Тёплое — не значит живое</h3>
+            <div class="joke-text">
+                <p>— Парой шаверма теплее в шавермане где-нибудь, чем в этих заведениях.</p>
+                <p>— Если не гавкает — холодная, а если визжит и бежит из пакета — самое то.</p>
+            </div>
+        </div>
+
+        <div class="feature-card">
+            <h3>🙏 Боже, Бургер храни</h3>
+            <div class="joke-text">
+                <p>Вопрос от гостя: почему бургер кислый?</p>
+                <p>Ответ: меньше похмеляться надо перед вкушением Святого Бургера.</p>
+                <p>Уточнение: может, курьер с заказом в церковь заходил?</p>
+                <p>Резюме: Боже, Бургер храни! 😂</p>
+            </div>
+        </div>
+
+        <!-- Здесь будут новые анекдоты. Добавляй по образцу выше -->
+        
+    </div>
+
+    <div class="cta-buttons">
+        <a href="index.html" class="btn">← На главную</a>
+        <a href="feedback.html" class="btn">Предложить свою шутку</a>
+    </div>
+
+    <footer>
+        <p>© 2026 Ádel — Ангел Поэзии | <a href="witty_humor.html">Witty Humor — Анекдоты на крыльях</a> | Добрый юмор без обид ♥️</p>
+    </footer>
+
+</body>
+      </html>
