@@ -370,62 +370,28 @@
         };
         return genres[genre.toLowerCase()] || 'all';
     }
-    
-    async function loadPoems() {
-        try {
-            for (const file of files) {
-                const response = await fetch(file);
-                const poems = await response.json();
-                allPoems = allPoems.concat(poems);
-            }
-            applyFilters();
-        } catch (error) {
-            console.error('Error loading poems:', error);
-            document.getElementById('poemsGrid').innerHTML = 
-                '<p style="text-align: center; color: #fff;">Ошибка загрузки произведений</p>';
-        }
-    }
-    
-    function applyFilters() {
-        let filtered = [...allPoems];
-        
-        // Фильтр по языку
-        if (currentLang !== 'all') {
-            filtered = filtered.filter(poem => detectLanguage(poem) === currentLang);
-        }
-        
-        // Фильтр по жанру
-        if (currentGenre !== 'all') {
-            filtered = filtered.filter(poem => getGenreKey(poem.genre) === currentGenre);
-        }
-        
-        // Поиск
-        if (currentSearch.trim() !== '') {
-            const searchLower = currentSearch.toLowerCase();
-            filtered = filtered.filter(poem => 
-                poem.title.toLowerCase().includes(searchLower) ||
-                poem.excerpt.toLowerCase().includes(searchLower) ||
-                poem.fullText.toLowerCase().includes(searchLower)
-            );
-        }
-        
-        displayPoems(filtered);
-        updateCount(filtered.length);
-    }
-    
-    function displayPoems(poems) {
-        const grid = document.getElementById('poemsGrid');
-        if (poems.length === 0) {
-            grid.innerHTML = '<p style="text-align: center; color: #fff; font-size: 1.2em;">😔 Ничего не найдено</p>';
-            return;
-        }
-        grid.innerHTML = poems.map(poem => `
-            <div class="poem-card" onclick="openModal(${poem.id})">
-                <h3 class="poem-title">${escapeHtml(poem.title)}</h3>
-                <p class="poem-excerpt">${escapeHtml(poem.excerpt)}</p>
-                <span class="poem-genre">${escapeHtml(poem.genre)}</span>
+  async function loadPoems() {
+    const grid = document.getElementById('poemsGrid');
+    grid.innerHTML = `
+        <div style="text-align: center; padding: 60px 20px; background: rgba(255,255,255,0.95); border-radius: 15px;">
+            <h2 style="color: #764ba2;">🔧 Технические работы</h2>
+            <p style="font-size: 1.2em; margin: 20px 0;">
+                Раздел «Произведения» временно недоступен.<br>
+                Мы обновляем структуру и добавляем новые стихи.
+            </p>
+            <p style="color: #666;">
+                Приносим извинения за неудобства.<br>
+                Форма заказа и обратная связь работают в обычном режиме.
+            </p>
+            <div style="margin-top: 30px;">
+                <a href="order.html" class="btn">📝 Заказать произведение</a>
+                <a href="feedback.html" class="btn">💌 Обратная связь</a>
             </div>
-        `).join('');
+        </div>
+    `;
+    // Скрываем фильтры и поиск (чтобы не сбивали с толку)
+    document.querySelector('.filters').style.display = 'none';
+    document.getElementById('searchInput').style.display = 'none';
     }
     
     function escapeHtml(str) {
