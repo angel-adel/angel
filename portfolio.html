@@ -3,395 +3,212 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Произведения | Ádel</title>
-    
-    <!-- FAVICON -->
-    <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
-    <link rel="icon" type="image/png" href="favicon.png">
-    
+    <title>Портфолио | Ádel (Ангел поэзии)</title>
     <style>
         body {
-            font-family: 'Georgia', 'Times New Roman', serif;
-            line-height: 1.6;
-            color: #333;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f9f7f5;
             margin: 0;
-            padding: 0;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-        }
-        header {
-            background: rgba(255, 255, 255, 0.95);
             padding: 20px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-        .header-content {
-            max-width: 1200px;
-            margin: 0 auto;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-        }
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-size: 2em;
-            font-weight: bold;
-            color: #764ba2;
-            text-decoration: none;
-        }
-        .logo-icon {
-            height: 40px;
-            width: auto;
-            display: block;
-        }
-        @media (max-width: 768px) {
-            .logo-icon { height: 30px; }
-            .logo { font-size: 1.5em; }
-        }
-        nav ul {
-            list-style: none;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            gap: 20px;
-            flex-wrap: wrap;
-        }
-        nav a {
-            text-decoration: none;
-            color: #333;
-            font-weight: bold;
-            padding: 10px 15px;
-            border-radius: 5px;
-            transition: all 0.3s;
-        }
-        nav a:hover, nav a.active {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: #fff;
+            color: #2c2c2c;
         }
         .container {
             max-width: 1200px;
             margin: 0 auto;
-            padding: 40px 20px;
         }
-        .page-title {
+        h1 {
             text-align: center;
-            color: #fff;
-            font-size: 2.5em;
-            margin-bottom: 30px;
+            color: #6b4e3a;
         }
-        .filters-section {
-            background: rgba(255,255,255,0.1);
-            border-radius: 20px;
-            padding: 15px;
-            margin-bottom: 30px;
-        }
-        .filter-group {
+        .filters {
             text-align: center;
-            margin-bottom: 15px;
-        }
-        .filter-group h3 {
-            color: white;
-            margin: 0 0 10px 0;
-            font-size: 1.2em;
+            margin: 20px 0;
         }
         .filter-btn {
-            background: rgba(255, 255, 255, 0.95);
-            border: 2px solid #764ba2;
+            background: #e0d6cf;
+            border: none;
             padding: 8px 20px;
-            margin: 5px;
-            border-radius: 25px;
+            margin: 0 5px;
+            font-size: 1rem;
             cursor: pointer;
-            font-weight: bold;
-            color: #764ba2;
-            transition: all 0.3s;
+            border-radius: 30px;
+            transition: all 0.2s;
+            color: #4a2e1e;
         }
-        .filter-btn:hover, .filter-btn.active {
-            background: #764ba2;
-            color: #fff;
+        .filter-btn.active {
+            background: #9b6a4b;
+            color: white;
         }
-        .poems-grid {
+        .poems-list {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 20px;
-            margin-bottom: 40px;
+            gap: 25px;
         }
         .poem-card {
-            background: rgba(255, 255, 255, 0.95);
-            padding: 25px;
-            border-radius: 15px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            cursor: pointer;
-            transition: transform 0.3s;
-        }
-        .poem-card:hover {
-            transform: translateY(-5px);
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            border-left: 5px solid #9b6a4b;
         }
         .poem-title {
-            color: #764ba2;
-            font-size: 1.3em;
-            margin-bottom: 10px;
+            margin: 0 0 10px;
+            color: #5c3a24;
+            font-size: 1.4rem;
         }
-        .poem-excerpt {
-            color: #666;
-            font-style: italic;
+        .poem-content {
+            white-space: pre-wrap;
+            font-family: 'Georgia', serif;
+            line-height: 1.6;
             margin-bottom: 15px;
         }
-        .poem-genre {
-            display: inline-block;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: #fff;
-            padding: 5px 15px;
-            border-radius: 15px;
-            font-size: 0.85em;
+        .poem-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
         }
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.8);
-            z-index: 1000;
-            overflow-y: auto;
-        }
-        .modal-content {
-            background: #fff;
-            max-width: 800px;
-            margin: 50px auto;
-            padding: 40px;
-            border-radius: 15px;
-            position: relative;
-        }
-        .modal-close {
-            position: absolute;
-            top: 15px;
-            right: 20px;
-            font-size: 30px;
+        .action-btn {
+            background: #f0ebe6;
+            border: none;
+            padding: 5px 12px;
+            border-radius: 20px;
             cursor: pointer;
-            color: #764ba2;
+            font-size: 0.8rem;
+            transition: 0.2s;
+            color: #5c3a24;
         }
-        .modal-close:hover {
-            color: #667eea;
+        .action-btn:hover {
+            background: #e0d6cf;
         }
-        .modal-title {
-            color: #764ba2;
-            font-size: 2em;
-            margin-bottom: 10px;
-        }
-        .modal-genre {
-            color: #666;
-            margin-bottom: 20px;
-            font-style: italic;
-        }
-        .modal-text {
-            white-space: pre-line;
-            line-height: 2;
-            margin-top: 20px;
-        }
-        .cta-section {
-            background: rgba(255, 255, 255, 0.95);
-            padding: 40px;
-            border-radius: 15px;
+        .alert {
+            background: #fff3e0;
+            border-left: 5px solid #c49a6c;
+            padding: 30px 20px;
             text-align: center;
-            margin-top: 40px;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            color: #6b4e3a;
         }
-        .cta-section h2 {
-            color: #764ba2;
-            margin-bottom: 20px;
-        }
-        .cta-buttons {
-            margin-top: 30px;
-        }
-        .btn {
-            display: inline-block;
-            padding: 15px 30px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: #fff;
-            text-decoration: none;
-            border-radius: 50px;
-            font-weight: bold;
-            margin: 10px;
-            transition: transform 0.3s;
-        }
-        .btn:hover {
-            transform: translateY(-3px);
+        .alert strong {
+            color: #9b6a4b;
         }
         footer {
             text-align: center;
-            padding: 30px;
-            background: rgba(255, 255, 255, 0.95);
-            color: #764ba2;
-            margin-top: 50px;
+            margin-top: 40px;
+            color: #aaa;
+            font-size: 0.8rem;
         }
-        @media (max-width: 768px) {
-            .header-content {
-                flex-direction: column;
-                gap: 20px;
-            }
-            .poems-grid {
-                grid-template-columns: 1fr;
-            }
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #2c2c2c;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 30px;
+            font-size: 0.8rem;
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.3s;
+            pointer-events: none;
+        }
+        .toast.show {
+            opacity: 1;
         }
     </style>
 </head>
 <body>
-
-<header>
-    <div class="header-content">
-        <a href="index.html" class="logo">
-            <img src="favicon.png" alt="Ádel — Ангел Поэзии" class="logo-icon">
-            <span>Ádel</span>
-        </a>
-        <nav>
-            <ul>
-                <li><a href="index.html" class="active">Главная</a></li>
-                    <li><a href="about.html">Об авторе</a></li>
-                    <li><a href="portfolio.html">Произведения</a></li>
-                    <li><a href="reviews.html">Рецензии</a></li>
-                    <li><a href="gallery.html">Галерея</a></li>
-                    <li><a href="witty_humor.html">Крылатый юмор</a></li>
-                    <li><a href="order.html">Заказать</a></li>
-                    <li><a href="guestbook.html">Гостевая книга</a></li>
-                    <li><a href="contacts.html">Контакты</a></li>
-                    <li><a href="https://angel-adel.github.io/angel/download.html">Скачать</a></li>
-            </ul>
-        </nav>
-    </div>
-</header>
-
 <div class="container">
-    <h1 class="page-title" id="pageTitle">Все произведения</h1>
-    
-    <div class="filters-section">
-        <!-- Фильтр по языку -->
-        <div class="filter-group">
-            <h3>🌐 Язык</h3>
-            <button class="filter-btn active" data-lang="all">🌍 Все</button>
-            <button class="filter-btn" data-lang="ru">🇷🇺 Русский</button>
-            <button class="filter-btn" data-lang="es">🇪🇸 Español</button>
-            <button class="filter-btn" data-lang="en">🇬🇧 English</button>
-        </div>
-        
-        <!-- Фильтр по жанру -->
-        <div class="filter-group">
-            <h3>📖 Жанр</h3>
-            <button class="filter-btn active" data-genre="all">📚 Все жанры</button>
-            <button class="filter-btn" data-genre="love">💜 Любовная</button>
-            <button class="filter-btn" data-genre="philosophy">🤔 Философская</button>
-            <button class="filter-btn" data-genre="landscape">🌿 Пейзажная</button>
-            <button class="filter-btn" data-genre="civic">🇷🇺 Гражданская</button>
-            <button class="filter-btn" data-genre="song">🎸 Авторская песня</button>
-            <button class="filter-btn" data-genre="free">📝 Белый стих</button>
-        </div>
+    <h1>📖 Мои стихи</h1>
+    <div class="filters">
+        <button class="filter-btn" data-lang="es">🇪🇸 Испанский</button>
+        <button class="filter-btn" data-lang="en">🇬🇧 Английский</button>
+        <button class="filter-btn" data-lang="ru">🇷🇺 Русский</button>
     </div>
-
-    <!-- Поиск -->
-    <div style="text-align: center; margin: 20px 0 30px;">
-        <input type="text" id="searchInput" placeholder="🔍 Поиск по названию или тексту..." 
-               style="max-width: 500px; width: 100%; padding: 15px 20px; font-size: 1em; border: 2px solid #764ba2; border-radius: 50px; outline: none;">
+    <div id="poems-container" class="poems-list">
+        <div class="alert">Загрузка стихов...</div>
     </div>
-    
-    <div id="poemsGrid" class="poems-grid">
-        <p style="text-align: center; color: #fff; font-size: 1.2em;">Загрузка произведений...</p>
-    </div>
-    
-    <div class="cta-section">
-        <h2>📚 Хотите прочитать больше?</h2>
-        <p style="font-size: 1.1em; color: #666;">
-            На сайте представлена часть произведений автора.<br>
-            Если вы хотите ознакомиться с полным собранием сочинений,<br>
-            напишите нам через форму заказа или обратную связь.
-        </p>
-        <div class="cta-buttons">
-            <a href="order.html" class="btn">📝 Заказать произведение</a>
-            <a href="feedback.html" class="btn">💌 Обратная связь</a>
-        </div>
-    </div>
+    <footer>
+        Ádel (Ángel de la poesía) | Поэзия без границ
+    </footer>
 </div>
-
-<div id="poemModal" class="modal">
-    <div class="modal-content">
-        <span class="modal-close" onclick="closeModal()">&times;</span>
-        <h2 id="modalTitle" class="modal-title"></h2>
-        <p id="modalGenre" class="modal-genre"></p>
-        <div id="modalText" class="modal-text"></div>
-    </div>
-</div>
-
-<footer>
-    <p>© 2025 Ádel — Ангел Поэзии</p>
-</footer>
+<div id="toast" class="toast">✓ Скопировано в буфер</div>
 
 <script>
-    const files = [
-        'poems-all.json'
-    ];
-    
-    let allPoems = [];
-    let currentLang = 'all';
-    let currentGenre = 'all';
-    let currentSearch = '';
-    
-    // Определение языка произведения
-    function detectLanguage(poem) {
-        const text = (poem.title + ' ' + poem.fullText).toLowerCase();
-        // Испанская диакритика
-        const spanishChars = /[áéíóúñü]/i;
-        // Латиница без русских букв
-        const hasLatin = /[a-z]/i.test(text);
-        const hasRussian = /[а-яё]/i.test(text);
-        
-        if (spanishChars.test(text)) {
-            return 'es';
-        } else if (hasLatin && !hasRussian) {
-            return 'en';
-        } else {
-            return 'ru';
+    function showToast(message) {
+        const toast = document.getElementById('toast');
+        toast.textContent = message || '✓ Скопировано в буфер';
+        toast.classList.add('show');
+        setTimeout(() => toast.classList.remove('show'), 2000);
+    }
+
+    async function copyPoem(content, title) {
+        try {
+            await navigator.clipboard.writeText(`${title}\n\n${content}`);
+            showToast('✓ Стих скопирован');
+        } catch (err) {
+            showToast('❌ Не удалось скопировать');
         }
     }
-    
-    function getGenreKey(genre) {
-        const genres = {
-            'любовная лирика': 'love',
-            'философская лирика': 'philosophy',
-            'пейзажная лирика': 'landscape',
-            'гражданская лирика': 'civic',
-            'авторская песня': 'song',
-            'белый и вольный стих': 'free',
-            'юмор': 'free'
-        };
-        return genres[genre.toLowerCase()] || 'all';
+
+    function sharePoem(title, content) {
+        const text = `${title}\n\n${content}`;
+        if (navigator.share) {
+            navigator.share({
+                title: title,
+                text: text,
+            }).catch(() => showToast('❌ Отмена шаринга'));
+        } else {
+            copyPoem(content, title);
+            showToast('📋 Стих скопирован (шаринг не поддерживается)');
+        }
     }
-  async function loadPoems() {
-    const grid = document.getElementById('poemsGrid');
-    grid.innerHTML = `
-        <div style="text-align: center; padding: 60px 20px; background: rgba(255,255,255,0.95); border-radius: 15px;">
-            <h2 style="color: #764ba2;">🔧 Технические работы</h2>
-            <p style="font-size: 1.2em; margin: 20px 0;">
-                Раздел «Произведения» временно недоступен.<br>
-                Мы обновляем структуру и добавляем новые стихи.
-            </p>
-            <p style="color: #666;">
-                Приносим извинения за неудобства.<br>
-                Форма заказа и обратная связь работают в обычном режиме.
-            </p>
-            <div style="margin-top: 30px;">
-                <a href="order.html" class="btn">📝 Заказать произведение</a>
-                <a href="feedback.html" class="btn">💌 Обратная связь</a>
+
+    // Загружаем иностранный JSON
+    fetch('poems_bilingual.json')
+        .then(response => response.json())
+        .then(data => {
+            window.poemsData = data;
+            setActiveFilter('es');
+        })
+        .catch(error => {
+            console.error('Ошибка загрузки:', error);
+            document.getElementById('poems-container').innerHTML = '<div class="alert">❌ Не удалось загрузить стихи. Попробуйте позже.</div>';
+        });
+
+    function renderPoems(language) {
+        const container = document.getElementById('poems-container');
+        
+        if (language === 'ru') {
+            container.innerHTML = `
+                <div class="alert">
+                    <strong>🛠️ Русские стихи временно недоступны</strong><br><br>
+                    Ведутся технические работы по переносу и очистке данных.<br>
+                    Ориентировочный срок — 2–4 дня.<br><br>
+                    Спасибо за понимание.<br>
+                    🌹 <em>Ваша Ádel</em>
+                </div>
+            `;
+            return;
+        }
+        
+        const filtered = window.poemsData.filter(poem => poem.language === language);
+        
+        if (filtered.length === 0) {
+            container.innerHTML = '<div class="alert">😔 Нет стихов на выбранном языке.</div>';
+            return;
+        }
+        
+        container.innerHTML = filtered.map(poem => `
+            <div class="poem-card">
+                <h2 class="poem-title">${escapeHtml(poem.title)}</h2>
+                <div class="poem-content">${escapeHtml(poem.content).replace(/\n/g, '<br>')}</div>
+                <div class="poem-actions">
+                    <button class="action-btn" onclick="copyPoem(\`${escapeHtmlForAttr(poem.content)}\`, \`${escapeHtmlForAttr(poem.title)}\`)">📋 Скопировать</button>
+                    <button class="action-btn" onclick="sharePoem(\`${escapeHtmlForAttr(poem.title)}\`, \`${escapeHtmlForAttr(poem.content)}\`)">📤 Поделиться</button>
+                </div>
             </div>
-        </div>
-    `;
-    // Скрываем фильтры и поиск (чтобы не сбивали с толку)
-    document.querySelector('.filters').style.display = 'none';
-    document.getElementById('searchInput').style.display = 'none';
+        `).join('');
     }
     
     function escapeHtml(str) {
@@ -400,76 +217,39 @@
             if (m === '<') return '&lt;';
             if (m === '>') return '&gt;';
             return m;
+        }).replace(/[\uD800-\uDBFF][\uDC00-\uDFFF]/g, function(c) {
+            return c;
         });
     }
     
-    function updateCount(count) {
-        const title = document.getElementById('pageTitle');
-        let langText = '';
-        if (currentLang === 'ru') langText = ' — Русские';
-        else if (currentLang === 'es') langText = ' — Español';
-        else if (currentLang === 'en') langText = ' — English';
-        title.textContent = `Все произведения${langText} — Всего: ${count}`;
+    function escapeHtmlForAttr(str) {
+        return str.replace(/[&<>`]/g, function(m) {
+            if (m === '&') return '&amp;';
+            if (m === '<') return '&lt;';
+            if (m === '>') return '&gt;';
+            if (m === '`') return '\\`';
+            return m;
+        }).replace(/[\uD800-\uDBFF][\uDC00-\uDFFF]/g, function(c) {
+            return c;
+        });
     }
     
-    function openModal(id) {
-        const poem = allPoems.find(p => p.id === id);
-        if (poem) {
-            document.getElementById('modalTitle').textContent = poem.title;
-            document.getElementById('modalGenre').textContent = poem.genre;
-            document.getElementById('modalText').textContent = poem.fullText;
-            document.getElementById('poemModal').style.display = 'block';
-            document.body.style.overflow = 'hidden';
-        }
-    }
-    
-    function closeModal() {
-        document.getElementById('poemModal').style.display = 'none';
-        document.body.style.overflow = 'auto';
-    }
-    
-    window.onclick = function(event) {
-        const modal = document.getElementById('poemModal');
-        if (event.target === modal) {
-            closeModal();
-        }
-    }
-    
-    // Назначение обработчиков фильтров
-    function initFilters() {
-        // Кнопки языка
-        document.querySelectorAll('[data-lang]').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                document.querySelectorAll('[data-lang]').forEach(b => b.classList.remove('active'));
+    function setActiveFilter(lang) {
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            if (btn.getAttribute('data-lang') === lang) {
                 btn.classList.add('active');
-                currentLang = btn.getAttribute('data-lang');
-                applyFilters();
-            });
+            } else {
+                btn.classList.remove('active');
+            }
         });
-        
-        // Кнопки жанра
-        document.querySelectorAll('[data-genre]').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                document.querySelectorAll('[data-genre]').forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-                currentGenre = btn.getAttribute('data-genre');
-                applyFilters();
-            });
-        });
-        
-        // Поиск
-        const searchInput = document.getElementById('searchInput');
-        searchInput.addEventListener('input', (e) => {
-            currentSearch = e.target.value;
-            applyFilters();
-        });
+        renderPoems(lang);
     }
     
-    document.addEventListener('DOMContentLoaded', () => {
-        initFilters();
-        loadPoems();
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            setActiveFilter(btn.getAttribute('data-lang'));
+        });
     });
 </script>
-
 </body>
     </html>
