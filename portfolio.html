@@ -141,6 +141,11 @@
             font-style: italic;
             margin-bottom: 15px;
             flex-grow: 1;
+            white-space: pre-wrap;
+            overflow: hidden;
+            display: -webkit-box;
+            -webkit-line-clamp: 4;
+            -webkit-box-orient: vertical;
         }
         .poem-actions {
             display: flex;
@@ -279,6 +284,12 @@
         .toast.show {
             opacity: 1;
         }
+        .loading {
+            text-align: center;
+            color: #fff;
+            font-size: 1.2em;
+            padding: 50px;
+        }
     </style>
 </head>
 <body>
@@ -309,7 +320,7 @@
         <div class="filters">
             <button class="filter-btn" data-lang="es">🇪🇸 Испанский</button>
             <button class="filter-btn" data-lang="en">🇬🇧 Английский</button>
-            <button class="filter-btn" data-lang="ru">🇷🇺 Русский</button>
+            <button class="filter-btn" data-lang="ru" class="active">🇷🇺 Русский</button>
         </div>
         
         <!-- Поиск -->
@@ -319,7 +330,7 @@
         </div>
         
         <div id="poemsGrid" class="poems-grid">
-            <p style="text-align: center; color: #fff; font-size: 1.2em;">Загрузка произведений...</p>
+            <div class="loading">📖 Загрузка произведений...</div>
         </div>
         
         <div class="cta-section">
@@ -356,10 +367,9 @@
 
     <script>
         let allPoems = [];
-        let currentFilterLang = 'es';
+        let currentFilterLang = 'ru';
         let currentSearchTerm = '';
         
-        // Утилиты
         function showToast(message) {
             const toast = document.getElementById('toast');
             toast.textContent = message || '✓ Скопировано в буфер';
@@ -399,45 +409,65 @@
             });
         }
         
-        // Загрузка JSON
+        // Безопасная версия строки для передачи в onclick
+        function safeForOnclick(str) {
+            return str.replace(/\\/g, '\\\\').replace(/`/g, '\\`').replace(/\$/g, '\\$');
+        }
+        
         async function loadPoems() {
             try {
-                const response = await fetch('poems-bilingual.json');
-                allPoems = await response.json();
+                const response = await fetch('russian_poems_only.json');
+                const russianPoems = await response.json();
+                
+                allPoems = russianPoems.map((poem, index) => ({
+                    id: index + 1,
+                    title: poem.title,
+                    content: poem.content,
+                    language: 'ru',
+                    is_placeholder_title: poem.is_placeholder_title || false
+                }));
+                
+                console.log(`Загружено ${allPoems.length} русских произведений`);
                 applyFiltersAndSearch();
             } catch (error) {
                 console.error('Error loading poems:', error);
                 document.getElementById('poemsGrid').innerHTML = 
-                    '<p style="text-align: center; color: #fff;">Ошибка загрузки произведений</p>';
+                    '<div class="alert">❌ Ошибка загрузки произведений. Пожалуйста, обновите страницу.</div>';
             }
         }
         
-        // Отображение стихов (с учётом фильтра языка и поиска)
         function displayPoems(poems) {
             const grid = document.getElementById('poemsGrid');
             
             if (poems.length === 0) {
-                grid.innerHTML = '<div class="alert">😔 Нет стихов, соответствующих критериям.</div>';
+                grid.innerHTML = '<div class="alert">😔 Нет стихов, соответствующих критериям поиска.</div>';
                 document.querySelector('.page-title').textContent = 'Все произведения — Всего: 0';
                 return;
             }
             
-            grid.innerHTML = poems.map(poem => `
-                <div class="poem-card" data-id="${poem.id}">
-                    <h3 class="poem-title">${escapeHtml(poem.title)}</h3>
-                    <div class="poem-excerpt">${escapeHtml(poem.content.substring(0, 150))}...</div>
-                    <div class="poem-actions">
-                        <button class="action-btn" onclick="copyPoem(\`${escapeHtml(poem.content).replace(/`/g, '\\`')}\`, \`${escapeHtml(poem.title).replace(/`/g, '\\`')}\`)">📋 Скопировать</button>
-                        <button class="action-btn" onclick="sharePoem(\`${escapeHtml(poem.title).replace(/`/g, '\\`')}\`, \`${escapeHtml(poem.content).replace(/`/g, '\\`')}\`)">📤 Поделиться</button>
-                        <button class="action-btn" onclick="openModal(${poem.id})">📖 Читать</button>
+            grid.innerHTML = poems.map(poem => {
+                const safeTitle = escapeHtml(poem.title);
+                const excerpt = poem.content.length > 150 ? poem.content.substring(0, 150) + '...' : poem.content;
+                const safeExcerpt = escapeHtml(excerpt);
+                const safeContent = safeForOnclick(poem.content);
+                const safeTitleForOnclick = safeForOnclick(poem.title);
+                
+                return `
+                    <div class="poem-card" data-id="${poem.id}">
+                        <h3 class="poem-title">${safeTitle}</h3>
+                        <div class="poem-excerpt">${safeExcerpt}</div>
+                        <div class="poem-actions">
+                            <button class="action-btn" onclick="copyPoem(\`${safeContent}\`, \`${safeTitleForOnclick}\`)">📋 Скопировать</button>
+                            <button class="action-btn" onclick="sharePoem(\`${safeTitleForOnclick}\`, \`${safeContent}\`)">📤 Поделиться</button>
+                            <button class="action-btn" onclick="openModal(${poem.id})">📖 Читать</button>
+                        </div>
                     </div>
-                </div>
-            `).join('');
+                `;
+            }).join('');
             
             document.querySelector('.page-title').textContent = `Все произведения — Всего: ${poems.length}`;
         }
         
-        // Открытие модального окна
         function openModal(id) {
             const poem = allPoems.find(p => p.id === id);
             if (poem) {
@@ -446,11 +476,9 @@
                 document.getElementById('poemModal').style.display = 'block';
                 document.body.style.overflow = 'hidden';
                 
-                // Навешиваем обработчики на кнопки в модалке
                 const modalCopyBtn = document.getElementById('modalCopyBtn');
                 const modalShareBtn = document.getElementById('modalShareBtn');
                 
-                // Убираем старые обработчики, чтобы не дублировались
                 const newCopyBtn = modalCopyBtn.cloneNode(true);
                 const newShareBtn = modalShareBtn.cloneNode(true);
                 modalCopyBtn.parentNode.replaceChild(newCopyBtn, modalCopyBtn);
@@ -466,16 +494,13 @@
             document.body.style.overflow = 'auto';
         }
         
-        // Фильтрация и поиск
         function applyFiltersAndSearch() {
             let filtered = [...allPoems];
             
-            // Фильтр по языку
             if (currentFilterLang !== 'all') {
                 filtered = filtered.filter(poem => poem.language === currentFilterLang);
             }
             
-            // Поиск
             if (currentSearchTerm) {
                 const term = currentSearchTerm.toLowerCase();
                 filtered = filtered.filter(poem => 
@@ -484,25 +509,9 @@
                 );
             }
             
-            // Если выбран русский язык — показываем заглушку
-            if (currentFilterLang === 'ru') {
-                document.getElementById('poemsGrid').innerHTML = `
-                    <div class="alert">
-                        <strong>🛠️ Русские стихи временно недоступны</strong><br><br>
-                        Ведутся технические работы по переносу и очистке данных.<br>
-                        Ориентировочный срок — 2–4 дня.<br><br>
-                        Спасибо за понимание.<br>
-                        🌹 <em>Ваша Ádel</em>
-                    </div>
-                `;
-                document.querySelector('.page-title').textContent = 'Все произведения — Русские стихи временно недоступны';
-                return;
-            }
-            
             displayPoems(filtered);
         }
         
-        // Установка активного фильтра
         function setActiveFilter(lang) {
             currentFilterLang = lang;
             document.querySelectorAll('.filter-btn').forEach(btn => {
@@ -515,7 +524,6 @@
             applyFiltersAndSearch();
         }
         
-        // Обработчики событий
         document.querySelectorAll('.filter-btn').forEach(btn => {
             btn.addEventListener('click', () => {
                 setActiveFilter(btn.getAttribute('data-lang'));
@@ -535,9 +543,8 @@
             }
         }
         
-        // Загружаем стихи при старте
         loadPoems();
     </script>
 
 </body>
-    </html>
+                    </html>
