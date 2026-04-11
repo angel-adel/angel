@@ -415,25 +415,42 @@
         }
         
         async function loadPoems() {
-            try {
-                const response = await fetch('russian_poems_only.json');
-                const russianPoems = await response.json();
-                
-                allPoems = russianPoems.map((poem, index) => ({
-                    id: index + 1,
-                    title: poem.title,
-                    content: poem.content,
-                    language: 'ru',
-                    is_placeholder_title: poem.is_placeholder_title || false
-                }));
-                
-                console.log(`Загружено ${allPoems.length} русских произведений`);
-                applyFiltersAndSearch();
-            } catch (error) {
-                console.error('Error loading poems:', error);
-                document.getElementById('poemsGrid').innerHTML = 
-                    '<div class="alert">❌ Ошибка загрузки произведений. Пожалуйста, обновите страницу.</div>';
-            }
+    try {
+        // Загружаем русские стихи
+        const ruResponse = await fetch('russian_poems_only.json');
+        const russianPoems = await ruResponse.json();
+        
+        // Загружаем испанские/английские стихи
+        const bilingualResponse = await fetch('poems-bilingual.json');
+        const bilingualPoems = await bilingualResponse.json();
+        
+        // Добавляем ID и нормализуем структуру
+        const ruWithIds = russianPoems.map((poem, index) => ({
+            id: index + 1,
+            title: poem.title,
+            content: poem.content,
+            language: 'ru',
+            is_placeholder_title: poem.is_placeholder_title || false
+        }));
+        
+        const bilingualWithIds = bilingualPoems.map((poem, index) => ({
+            id: ruWithIds.length + index + 1,
+            title: poem.title,
+            content: poem.content,
+            language: poem.language || 'es', // если поле language есть, иначе определяем по тексту
+            is_placeholder_title: false
+        }));
+        
+        // Объединяем оба массива
+        allPoems = [...ruWithIds, ...bilingualWithIds];
+        
+        console.log(`Загружено произведений: русских ${ruWithIds.length}, иностранных ${bilingualWithIds.length}, всего ${allPoems.length}`);
+        applyFiltersAndSearch();
+    } catch (error) {
+        console.error('Error loading poems:', error);
+        document.getElementById('poemsGrid').innerHTML = 
+            '<div class="alert">❌ Ошибка загрузки произведений. Пожалуйста, обновите страницу.</div>';
+    }
         }
         
         function displayPoems(poems) {
