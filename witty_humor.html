@@ -38,6 +38,7 @@
             align-items: center;
             flex-wrap: wrap;
         }
+        
         .logo {
             display: flex;
             align-items: center;
@@ -47,15 +48,22 @@
             color: #764ba2;
             text-decoration: none;
         }
+        
         .logo-icon {
             height: 40px;
             width: auto;
             display: block;
         }
+        
         @media (max-width: 768px) {
-            .logo-icon { height: 30px; }
-            .logo { font-size: 1.5em; }
+            .logo-icon {
+                height: 30px;
+            }
+            .logo {
+                font-size: 1.5em;
+            }
         }
+        
         nav ul {
             list-style: none;
             margin: 0;
@@ -81,8 +89,14 @@
             padding: 60px 20px;
             color: #fff;
         }
-        .hero h1 { font-size: 3em; margin-bottom: 20px; }
-        .hero p { font-size: 1.3em; margin-bottom: 40px; }
+        .hero h1 {
+            font-size: 3em;
+            margin-bottom: 20px;
+        }
+        .hero p {
+            font-size: 1.3em;
+            margin-bottom: 40px;
+        }
         .features {
             max-width: 900px;
             margin: 0 auto;
@@ -98,7 +112,9 @@
             box-shadow: 0 4px 15px rgba(0,0,0,0.1);
             transition: transform 0.3s;
         }
-        .feature-card:hover { transform: translateY(-5px); }
+        .feature-card:hover {
+            transform: translateY(-5px);
+        }
         .feature-card h3 {
             color: #764ba2;
             margin-bottom: 15px;
@@ -106,12 +122,14 @@
             border-left: 4px solid #667eea;
             padding-left: 15px;
         }
-        .joke-text { font-style: normal; color: #444; margin-bottom: 10px; line-height: 1.7; }
-        .joke-text p { margin: 8px 0; }
-        .joke-divider {
-            height: 1px;
-            background: linear-gradient(90deg, transparent, #764ba2, transparent);
-            margin: 20px 0 0 0;
+        .joke-text {
+            font-style: normal;
+            color: #444;
+            margin-bottom: 10px;
+            line-height: 1.7;
+        }
+        .joke-text p {
+            margin: 8px 0;
         }
         .joke-actions {
             display: flex;
@@ -137,7 +155,10 @@
             background: #e0e0e0;
             transform: scale(1.02);
         }
-        .cta-buttons { text-align: center; padding: 40px 20px; }
+        .cta-buttons {
+            text-align: center;
+            padding: 40px 20px;
+        }
         .btn {
             display: inline-block;
             padding: 15px 30px;
@@ -149,7 +170,9 @@
             margin: 10px;
             transition: transform 0.3s;
         }
-        .btn:hover { transform: translateY(-3px); }
+        .btn:hover {
+            transform: translateY(-3px);
+        }
         footer {
             text-align: center;
             padding: 30px;
@@ -157,30 +180,44 @@
             color: #764ba2;
             margin-top: 50px;
         }
-        footer a { color: #667eea; text-decoration: none; }
-        footer a:hover { text-decoration: underline; }
+        footer a {
+            color: #667eea;
+            text-decoration: none;
+        }
+        footer a:hover {
+            text-decoration: underline;
+        }
+        .loading {
+            text-align: center;
+            color: #fff;
+            font-size: 1.2em;
+            padding: 50px;
+        }
+        .alert {
+            background: #fff3e0;
+            border-left: 5px solid #c49a6c;
+            padding: 30px 20px;
+            text-align: center;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            color: #6b4e3a;
+            margin: 20px;
+        }
         @media (max-width: 768px) {
-            .hero h1 { font-size: 2em; }
-            .hero p { font-size: 1.1em; }
-            .header-content { flex-direction: column; gap: 20px; }
-            .feature-card { padding: 20px; }
+            .hero h1 {
+                font-size: 2em;
+            }
+            .hero p {
+                font-size: 1.1em;
+            }
+            .header-content {
+                flex-direction: column;
+                gap: 20px;
+            }
+            .feature-card {
+                padding: 20px;
+            }
         }
-        .toast {
-            position: fixed;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: #2c2c2c;
-            color: white;
-            padding: 8px 16px;
-            border-radius: 30px;
-            font-size: 0.8rem;
-            z-index: 1000;
-            opacity: 0;
-            transition: opacity 0.3s;
-            pointer-events: none;
-        }
-        .toast.show { opacity: 1; }
     </style>
 </head>
 <body>
@@ -210,109 +247,116 @@
 
 <div class="hero">
     <h1>Witty Humor</h1>
-    <p>Анекдоты на крыльях — добрые, короткие, для улыбки ♥️</p>
+    <p>Анекдоты на крыльях — добрые, короткие, для улыбки ❤️</p>
 </div>
 
-<div class="features">
-    <div class="feature-card">
-        <h3>🍔 Священный бургер</h3>
-        <div class="joke-text">
-            <p>— Почему бургер кислый?</p>
-            <p>— Меньше похмеляться перед вкушением.</p>
-            <p>— А может, курьер с заказом в церковь заходил?</p>
-            <p>— Боже, Бургер храни!!!</p>
-        </div>
-        <div class="joke-actions">
-            <button class="copy-btn">📋 Скопировать шутку</button>
-            <button class="share-btn share-vk">📘 ВК</button>
-            <button class="share-btn share-ok">👥 ОК</button>
-            <button class="share-btn share-tg">📨 Telegram</button>
-        </div>
-    </div>
-
-    <div class="feature-card">
-        <h3>🔥 Шаурма-детектор</h3>
-        <div class="joke-text">
-            <p>— Почему в этих заведениях всё холодное?</p>
-            <p>— Видимо, делают из сырого, а клиент сам дожаривает. Овощи отдали веганам, мясо — Ростиксу на байтсы.</p>
-            <p>— Но шаверма в палатке теплее…</p>
-            <p>— Ещё бы. Если не гавкает — холодная. А если визжит и бежит из пакета — самое то.</p>
-        </div>
-        <div class="joke-actions">
-            <button class="copy-btn">📋 Скопировать шутку</button>
-            <button class="share-btn share-vk">📘 ВК</button>
-            <button class="share-btn share-ok">👥 ОК</button>
-            <button class="share-btn share-tg">📨 Telegram</button>
-        </div>
-    </div>
-    <!-- Добавляй новые анекдоты по этому шаблону -->
+<div class="features" id="jokesContainer">
+    <div class="loading">📖 Загрузка анекдотов...</div>
 </div>
 
 <div class="cta-buttons">
     <a href="index.html" class="btn">← На главную</a>
-    <a href="guestbook.html" class="btn">Предложить свою шутку</a>
+    <a href="guestbook.html" class="btn">💌 Предложить свою шутку</a>
 </div>
 
 <footer>
     <p>© 2026 Ádel — Ангел Поэзии | <a href="witty_humor.html">Witty Humor — Анекдоты на крыльях</a> | Добрый юмор без обид ♥️</p>
 </footer>
 
-<div id="toast" class="toast">✓ Скопировано</div>
-
 <script>
-    function showToast(msg) {
-        const toast = document.getElementById('toast');
-        toast.textContent = msg || '✓ Скопировано';
-        toast.classList.add('show');
-        setTimeout(() => toast.classList.remove('show'), 2000);
+    let allJokes = [];
+
+    function escapeHtml(str) {
+        if (!str) return '';
+        return str.replace(/[&<>]/g, function(m) {
+            if (m === '&') return '&amp;';
+            if (m === '<') return '&lt;';
+            if (m === '>') return '&gt;';
+            return m;
+        });
     }
 
-    function getJokeText(card) {
-        const title = card.querySelector('h3').innerText;
-        const paragraphs = card.querySelectorAll('.joke-text p');
-        let jokeText = title + '\n\n';
-        paragraphs.forEach(p => jokeText += p.innerText + '\n');
-        return jokeText.trim();
+    function formatJokeText(content) {
+        // Преобразуем переносы \n в <p>
+        if (!content) return '';
+        const paragraphs = content.split('\n').filter(p => p.trim());
+        return paragraphs.map(p => `<p>${escapeHtml(p)}</p>`).join('');
     }
 
-    // Копирование
-    document.querySelectorAll('.copy-btn').forEach(btn => {
-        btn.addEventListener('click', function(e) {
-            const card = this.closest('.feature-card');
-            const jokeText = getJokeText(card);
-            navigator.clipboard.writeText(jokeText).then(() => {
-                showToast('✓ Шутка скопирована');
-            }).catch(() => {
-                showToast('❌ Не удалось скопировать');
-            });
+    function copyJoke(button, title, content) {
+        const jokeText = `${title}\n\n${content}`;
+        navigator.clipboard.writeText(jokeText).then(() => {
+            button.textContent = '✅ Скопировано!';
+            setTimeout(() => button.textContent = '📋 Скопировать шутку', 2000);
+        }).catch(() => {
+            button.textContent = '❌ Ошибка';
+            setTimeout(() => button.textContent = '📋 Скопировать шутку', 2000);
         });
-    });
+    }
 
-    // Поделиться (ВК, ОК, Telegram)
-    document.querySelectorAll('.share-btn').forEach(btn => {
-        btn.addEventListener('click', function(e) {
-            e.preventDefault();
-            const card = this.closest('.feature-card');
-            const jokeText = getJokeText(card);
-            const url = encodeURIComponent(window.location.href);
-            const text = encodeURIComponent(jokeText);
-            let shareUrl = '';
+    function shareJoke(platform, title, content) {
+        const jokeText = `${title}\n\n${content}`;
+        const url = encodeURIComponent(window.location.href);
+        const text = encodeURIComponent(jokeText);
+        
+        let shareUrl = '';
+        if (platform === 'vk') {
+            shareUrl = `https://vk.com/share.php?url=${url}&title=${text}`;
+        } else if (platform === 'ok') {
+            shareUrl = `https://connect.ok.ru/dk?st.cmd=WidgetSharePreview&st.shareUrl=${url}&st.comments=${text}`;
+        } else if (platform === 'tg') {
+            shareUrl = `https://t.me/share/url?url=${url}&text=${text}`;
+        }
+        
+        if (shareUrl) {
+            window.open(shareUrl, '_blank', 'width=600,height=400');
+        }
+    }
 
-            if (this.classList.contains('share-vk')) {
-                shareUrl = `https://vk.com/share.php?url=${url}&title=${text}`;
-            } else if (this.classList.contains('share-ok')) {
-                shareUrl = `https://connect.ok.ru/dk?st.cmd=WidgetSharePreview&st.shareUrl=${url}&st.comments=${text}`;
-            } else if (this.classList.contains('share-tg')) {
-                shareUrl = `https://t.me/share/url?url=${url}&text=${text}`;
-            }
+    async function loadJokes() {
+        try {
+            const response = await fetch('humor.json');
+            if (!response.ok) throw new Error('Файл не найден');
+            allJokes = await response.json();
+            displayJokes(allJokes);
+        } catch (error) {
+            console.error('Error loading jokes:', error);
+            document.getElementById('jokesContainer').innerHTML = 
+                '<div class="alert">❌ Ошибка загрузки анекдотов. Пожалуйста, обновите страницу.</div>';
+        }
+    }
 
-            if (shareUrl) {
-                window.open(shareUrl, '_blank', 'width=600,height=400');
-            } else {
-                showToast('❌ Ошибка шаринга');
-            }
-        });
-    });
+    function displayJokes(jokes) {
+        const container = document.getElementById('jokesContainer');
+        
+        if (!jokes || jokes.length === 0) {
+            container.innerHTML = '<div class="alert">😔 Пока нет анекдотов. Но вы можете предложить свой!</div>';
+            return;
+        }
+        
+        container.innerHTML = jokes.map((joke, index) => {
+            const title = escapeHtml(joke.title);
+            const content = joke.content;
+            const formattedContent = formatJokeText(content);
+            
+            return `
+                <div class="feature-card" data-id="${index}">
+                    <h3>${title}</h3>
+                    <div class="joke-text">
+                        ${formattedContent}
+                    </div>
+                    <div class="joke-actions">
+                        <button class="copy-btn" onclick="copyJoke(this, \`${title.replace(/`/g, '\\`')}\`, \`${content.replace(/`/g, '\\`')}\`)">📋 Скопировать шутку</button>
+                        <button class="share-btn" onclick="shareJoke('vk', \`${title.replace(/`/g, '\\`')}\`, \`${content.replace(/`/g, '\\`')}\`)">📘 ВК</button>
+                        <button class="share-btn" onclick="shareJoke('ok', \`${title.replace(/`/g, '\\`')}\`, \`${content.replace(/`/g, '\\`')}\`)">👥 ОК</button>
+                        <button class="share-btn" onclick="shareJoke('tg', \`${title.replace(/`/g, '\\`')}\`, \`${content.replace(/`/g, '\\`')}\`)">📨 Telegram</button>
+                    </div>
+                </div>
+            `;
+        }).join('');
+    }
+
+    loadJokes();
 </script>
 </body>
     </html>
