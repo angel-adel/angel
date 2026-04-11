@@ -326,4 +326,56 @@ footer {
     .about-card, .poem-card, .joke-card, .review-card {
         padding: 20px;
     }
+   /* ===== ЖЁСТКИЕ ПРАВКИ ===== */
+.about-card, .poem-card, .joke-card, .review-card {
+    background: rgba(255, 255, 255, 0.95) !important;
+    padding: 25px !important;
+    border-radius: 15px !important;
+    margin-bottom: 30px !important;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1) !important;
+}
+
+.poem-actions, .joke-actions {
+    display: flex !important;
+    gap: 10px !important;
+    margin-top: 15px !important;
+    justify-content: flex-end !important;
+}
+
+.action-btn, .copy-btn, .share-btn {
+    background: #f0ebe6 !important;
+    border: none !important;
+    padding: 5px 12px !important;
+    border-radius: 20px !important;
+    cursor: pointer !important;
+    font-size: 0.8rem !important;
+    color: #5c3a24 !important;
+    text-decoration: none !important;
+    display: inline-block !important;
+}
+
+.action-btn:hover, .copy-btn:hover, .share-btn:hover {
+    background: #e0d6cf !important;
+    transform: scale(1.02) !important;
+}
+
+/* Имена в рецензиях */
+.review-card strong, .review-card b, .review-author {
+    color: #764ba2 !important;
+    font-weight: bold !important;
+}
+
+/* Отступы для текста */
+.container {
+    max-width: 1200px !important;
+    margin: 0 auto !important;
+    padding: 40px 20px !important;
+}
+
+.page-title {
+    text-align: center !important;
+    color: #fff !important;
+    font-size: 2.5em !important;
+    margin-bottom: 30px !important;
+    } 
   }
