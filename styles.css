@@ -90,7 +90,9 @@ nav a:hover, nav a.active {
     text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
 }
 
-.about-card, .poem-card, .joke-card, .review-card {
+/* Универсальные карточки для всех страниц */
+.about-card, .poem-card, .joke-card, .review-card,
+.container > div:not(.author-photo):not(.poems-grid):not(.jokes-grid) {
     background: rgba(255, 255, 255, 0.95);
     padding: 25px;
     border-radius: 15px;
@@ -103,18 +105,19 @@ nav a:hover, nav a.active {
     transform: translateY(-5px);
 }
 
-.about-card h2, .poem-card h3, .joke-card h3 {
+.about-card h2, .poem-card h3, .joke-card h3,
+.container > div h2, .container > div h3 {
     color: #764ba2;
     margin-bottom: 15px;
     border-left: 4px solid #667eea;
     padding-left: 15px;
 }
 
-.about-card ul {
+.about-card ul, .container ul {
     margin-left: 25px;
 }
 
-.about-card li {
+.about-card li, .container li {
     margin: 8px 0;
 }
 
@@ -156,7 +159,9 @@ nav a:hover, nav a.active {
     transform: translateY(-3px);
 }
 
-.action-btn, .copy-btn, .share-btn {
+.action-btn, .copy-btn, .share-btn,
+button:contains("Скопировать"), button:contains("Копировать"),
+a.share-vk, a.share-ok, a.share-tg {
     background: #f0ebe6;
     border: none;
     padding: 5px 12px;
@@ -169,7 +174,8 @@ nav a:hover, nav a.active {
     display: inline-block;
 }
 
-.action-btn:hover, .copy-btn:hover, .share-btn:hover {
+.action-btn:hover, .copy-btn:hover, .share-btn:hover,
+a.share-vk:hover, a.share-ok:hover, a.share-tg:hover {
     background: #e0d6cf;
     transform: scale(1.02);
 }
@@ -190,7 +196,7 @@ footer {
     margin-top: 50px;
 }
 
-/* ===== ГАМБУРГЕР (ДОБАВЛЕНО) ===== */
+/* ===== ГАМБУРГЕР ===== */
 .mobile-menu-toggle {
     display: none;
     background: none;
@@ -323,4 +329,26 @@ footer {
     text-align: right;
     color: #667eea;
     font-weight: bold;
+}
+
+/* ===== КОНТАКТЫ ===== */
+.contacts-info {
+    background: rgba(255, 255, 255, 0.95);
+    padding: 25px;
+    border-radius: 15px;
+    margin-bottom: 30px;
+}
+
+.contacts-info p {
+    margin: 15px 0;
+}
+
+.contacts-info a {
+    color: #667eea;
+    text-decoration: none;
+    word-break: break-all;
+}
+
+.contacts-info a:hover {
+    text-decoration: underline;
     }
