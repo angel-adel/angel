@@ -13,6 +13,26 @@ body {
     min-height: 100vh;
 }
 
+/* ===== КОНТЕЙНЕР ===== */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 40px 20px;
+}
+
+/* ===== ЗАГОЛОВКИ ===== */
+.page-title {
+    text-align: center;
+    color: #fff;
+    font-size: 2.5em;
+    margin-bottom: 30px;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+}
+
+h1, h2, h3 {
+    color: #764ba2;
+}
+
 /* ===== ШАПКА ===== */
 header {
     background: rgba(255, 255, 255, 0.95);
@@ -48,7 +68,7 @@ header {
     width: auto;
 }
 
-/* ===== НАВИГАЦИЯ (ДЕСКТОП) ===== */
+/* ===== НАВИГАЦИЯ ===== */
 nav ul {
     list-style: none;
     display: flex;
@@ -70,7 +90,7 @@ nav a:hover, nav a.active {
     color: #fff;
 }
 
-/* ===== КНОПКА ГАМБУРГЕРА (по умолчанию скрыта) ===== */
+/* ===== ГАМБУРГЕР (мобильная версия) ===== */
 .mobile-menu-toggle {
     display: none;
     background: none;
@@ -81,7 +101,6 @@ nav a:hover, nav a.active {
     padding: 5px 10px;
 }
 
-/* ===== МОБИЛЬНАЯ ВЕРСИЯ ===== */
 @media (max-width: 768px) {
     .logo-icon {
         height: 30px;
@@ -120,21 +139,45 @@ nav a:hover, nav a.active {
     }
 }
 
-/* ===== КОНТЕЙНЕРЫ И КАРТОЧКИ ===== */
-.container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 40px 20px;
-}
-
-.page-title {
-    text-align: center;
-    color: #fff;
-    font-size: 2.5em;
+/* ===== КАРТОЧКИ (для стихов, анекдотов, about-card) ===== */
+.about-card, .poem-card, .joke-card, .review-card {
+    background: rgba(255, 255, 255, 0.95);
+    padding: 25px;
+    border-radius: 15px;
     margin-bottom: 30px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    transition: transform 0.3s;
 }
 
-/* Карточки стихов и анекдотов */
+.about-card:hover, .poem-card:hover, .joke-card:hover, .review-card:hover {
+    transform: translateY(-5px);
+}
+
+.about-card h2, .poem-card h3, .joke-card h3 {
+    color: #764ba2;
+    margin-bottom: 15px;
+    border-left: 4px solid #667eea;
+    padding-left: 15px;
+}
+
+.about-card ul {
+    margin: 15px 0 0 25px;
+}
+
+.about-card li {
+    margin: 8px 0;
+}
+
+.about-card a, .poem-card a {
+    color: #667eea;
+    text-decoration: none;
+}
+
+.about-card a:hover, .poem-card a:hover {
+    text-decoration: underline;
+}
+
+/* ===== СЕТКИ ===== */
 .poems-grid, .jokes-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
@@ -142,32 +185,23 @@ nav a:hover, nav a.active {
     margin-bottom: 40px;
 }
 
-.poem-card, .joke-card {
-    background: rgba(255, 255, 255, 0.95);
-    padding: 25px;
-    border-radius: 15px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+/* ===== КНОПКИ ===== */
+.btn {
+    display: inline-block;
+    padding: 12px 25px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: #fff;
+    text-decoration: none;
+    border-radius: 50px;
+    font-weight: bold;
+    margin: 10px;
     transition: transform 0.3s;
-    display: flex;
-    flex-direction: column;
+    border: none;
+    cursor: pointer;
 }
 
-.poem-card:hover, .joke-card:hover {
-    transform: translateY(-5px);
-}
-
-.poem-title, .joke-title {
-    color: #764ba2;
-    font-size: 1.3em;
-    margin-bottom: 10px;
-}
-
-/* Кнопки действий */
-.poem-actions, .joke-actions {
-    display: flex;
-    gap: 10px;
-    margin-top: 15px;
-    justify-content: flex-end;
+.btn:hover {
+    transform: translateY(-3px);
 }
 
 .action-btn, .copy-btn, .share-btn {
@@ -188,7 +222,73 @@ nav a:hover, nav a.active {
     transform: scale(1.02);
 }
 
-/* Модальное окно */
+/* ===== ФОТО АВТОРА ===== */
+.author-photo {
+    text-align: center;
+    margin: 30px 0;
+}
+
+.author-photo img {
+    max-width: 250px;
+    border-radius: 50%;
+    border: 5px solid #fff;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+}
+
+/* ===== ПОДВАЛ ===== */
+footer {
+    text-align: center;
+    padding: 30px;
+    background: rgba(255, 255, 255, 0.95);
+    color: #764ba2;
+    margin-top: 50px;
+}
+
+footer a {
+    color: #667eea;
+    text-decoration: none;
+}
+
+/* ===== УВЕДОМЛЕНИЯ ===== */
+.alert {
+    background: #fff3e0;
+    border-left: 5px solid #c49a6c;
+    padding: 30px 20px;
+    text-align: center;
+    border-radius: 12px;
+    font-size: 1.1rem;
+    color: #6b4e3a;
+    margin: 20px;
+}
+
+.loading {
+    text-align: center;
+    color: #fff;
+    font-size: 1.2em;
+    padding: 50px;
+}
+
+.toast {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #2c2c2c;
+    color: white;
+    padding: 8px 16px;
+    border-radius: 30px;
+    font-size: 0.8rem;
+    z-index: 1000;
+    opacity: 0;
+    transition: opacity 0.3s;
+    pointer-events: none;
+}
+
+.toast.show {
+    opacity: 1;
+}
+
+/* ===== МОДАЛЬНОЕ ОКНО ===== */
 .modal {
     display: none;
     position: fixed;
@@ -230,101 +330,26 @@ nav a:hover, nav a.active {
     line-height: 1.8;
 }
 
-/* CTA секции и кнопки */
-.cta-section {
-    background: rgba(255, 255, 255, 0.95);
-    padding: 40px;
-    border-radius: 15px;
-    text-align: center;
-    margin-top: 40px;
-}
-
-.btn {
-    display: inline-block;
-    padding: 15px 30px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: #fff;
-    text-decoration: none;
-    border-radius: 50px;
-    font-weight: bold;
-    margin: 10px;
-    transition: transform 0.3s;
-    border: none;
-    cursor: pointer;
-}
-
-.btn:hover {
-    transform: translateY(-3px);
-}
-
-/* Уведомления */
-.alert {
-    background: #fff3e0;
-    border-left: 5px solid #c49a6c;
-    padding: 30px 20px;
-    text-align: center;
-    border-radius: 12px;
-    font-size: 1.1rem;
-    color: #6b4e3a;
-}
-
-.loading {
-    text-align: center;
-    color: #fff;
-    font-size: 1.2em;
-    padding: 50px;
-}
-
-.toast {
-    position: fixed;
-    bottom: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: #2c2c2c;
-    color: white;
-    padding: 8px 16px;
-    border-radius: 30px;
-    font-size: 0.8rem;
-    z-index: 1000;
-    opacity: 0;
-    transition: opacity 0.3s;
-    pointer-events: none;
-}
-
-.toast.show {
-    opacity: 1;
-}
-
-/* Подвал */
-footer {
-    text-align: center;
-    padding: 30px;
-    background: rgba(255, 255, 255, 0.95);
-    color: #764ba2;
-    margin-top: 50px;
-}
-
-footer a {
-    color: #667eea;
-    text-decoration: none;
-}
-
-/* Адаптация для мобильных */
+/* ===== АДАПТАЦИЯ ДЛЯ МОБИЛЬНЫХ ===== */
 @media (max-width: 768px) {
+    .container {
+        padding: 20px 15px;
+    }
+    
+    .page-title {
+        font-size: 1.8em;
+    }
+    
     .poems-grid, .jokes-grid {
         grid-template-columns: 1fr;
     }
+    
     .modal-content {
         margin: 20px;
         padding: 25px;
     }
-    .container {
-        padding: 20px 15px;
+    
+    .about-card, .poem-card, .joke-card, .review-card {
+        padding: 20px;
     }
-    .page-title {
-        font-size: 1.8em;
     }
-    .cta-section {
-        padding: 25px;
-    }
-}
