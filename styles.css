@@ -1,3 +1,13 @@
+body {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+}
+
+.about-card, .poem-card, .joke-card, .review-card {
+    background: rgba(255, 255, 255, 0.95) !important;
+    padding: 25px !important;
+    border-radius: 15px !important;
+    margin-bottom: 30px !important;
+}
 /* ===== RESET ===== */
 * {
     margin: 0;
