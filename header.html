@@ -1,47 +1,21 @@
-// menu.js — полностью рабочий бургер-меню
-
-document.addEventListener('DOMContentLoaded', function() {
-    initMobileMenu();
-});
-
-// Функция инициализации (можно вызывать несколько раз — защита от дублирования)
-function initMobileMenu() {
-    const toggleBtn = document.getElementById('menuToggle');
-    const nav = document.querySelector('nav');
-    
-    if (!toggleBtn || !nav) return;
-    
-    // Защита от повторной инициализации
-    if (toggleBtn.hasListener) return;
-    toggleBtn.hasListener = true;
-    
-    // Обработчик клика по бургеру
-    toggleBtn.addEventListener('click', function(e) {
-        e.preventDefault();
-        e.stopPropagation();
-        
-        nav.classList.toggle('open');
-        
-        // Меняем иконку: ☰ → ✕
-        if (nav.classList.contains('open')) {
-            toggleBtn.textContent = '✕';
-            toggleBtn.style.fontSize = '28px';
-        } else {
-            toggleBtn.textContent = '☰';
-        }
-    });
-    
-    // Закрываем меню при клике на любую ссылку
-    const links = nav.querySelectorAll('a');
-    links.forEach(link => {
-        link.addEventListener('click', function() {
-            nav.classList.remove('open');
-            toggleBtn.textContent = '☰';
-        });
-    });
-}
-
-// Если шапка подгружается динамически (через fetch или innerHTML),
-// вызываем инициализацию ещё раз через небольшую задержку
-setTimeout(initMobileMenu, 150);
-setTimeout(initMobileMenu, 500);
+<div class="header-content">
+    <a href="index.html" class="logo">
+        <img src="favicon.png" alt="Ádel — Ангел Поэзии" class="logo-icon">
+        <span>Ádel</span>
+    </a>
+    <button class="mobile-menu-toggle" id="menuToggle" aria-label="Меню">☰</button>
+    <nav>
+        <ul id="mainMenu">
+            <li><a href="index.html">Главная</a></li>
+            <li><a href="about.html">Об авторе</a></li>
+            <li><a href="portfolio.html">Произведения</a></li>
+            <li><a href="reviews.html">Рецензии</a></li>
+            <li><a href="gallery.html">Галерея</a></li>
+            <li><a href="witty_humor.html">Крылатый юмор</a></li>
+            <li><a href="order.html">Заказать</a></li>
+            <li><a href="guestbook.html">Гостевая книга</a></li>
+            <li><a href="contacts.html">Контакты</a></li>
+            <li><a href="download.html">Скачать</a></li>
+        </ul>
+    </nav>
+</div>
