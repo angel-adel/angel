@@ -1,19 +1,39 @@
-// Загрузка шапки и настройка гамбургера
-fetch('header.html')
-    .then(response => response.text())
-    .then(data => {
-        document.getElementById('mainHeader').innerHTML = data;
+// Мобильное меню — бургер
+document.addEventListener('DOMContentLoaded', function() {
+    const toggleBtn = document.getElementById('menuToggle');
+    const nav = document.querySelector('nav');
+    
+    // Проверяем, существуют ли элементы
+    if (toggleBtn && nav) {
+        // Убираем возможные старые обработчики
+        const newToggle = toggleBtn.cloneNode(true);
+        toggleBtn.parentNode.replaceChild(newToggle, toggleBtn);
         
-        const menuToggle = document.getElementById('menuToggle');
-        const mainMenu = document.getElementById('mainMenu');
-        
-        if (menuToggle && mainMenu) {
-            menuToggle.addEventListener('click', () => mainMenu.classList.toggle('show'));
-            mainMenu.querySelectorAll('a').forEach(link => {
-                link.addEventListener('click', () => {
-                    if (window.innerWidth <= 768) mainMenu.classList.remove('show');
-                });
-            });
-        }
-    })
-    .catch(error => console.error('Ошибка загрузки шапки:', error));
+        newToggle.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            nav.classList.toggle('open');
+            
+            // Меняем иконку (☰ → ✕)
+            if (nav.classList.contains('open')) {
+                newToggle.textContent = '✕';
+                newToggle.style.fontSize = '28px';
+            } else {
+                newToggle.textContent = '☰';
+            }
+        });
+    }
+    
+    // Закрываем меню при клике на ссылку
+    const navLinks = document.querySelectorAll('nav a');
+    navLinks.forEach(link => {
+        link.addEventListener('click', function() {
+            const nav = document.querySelector('nav');
+            const toggleBtn = document.getElementById('menuToggle');
+            if (nav && nav.classList.contains('open')) {
+                nav.classList.remove('open');
+                if (toggleBtn) toggleBtn.textContent = '☰';
+            }
+        });
+    });
+});
