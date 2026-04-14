@@ -1,4 +1,4 @@
-/* ===== ОСНОВНЫЕ СТИЛИ ===== */
+/* ===== МЯГКИЕ, ПАСТЕЛЬНЫЕ СТИЛИ ===== */
 * {
     margin: 0;
     padding: 0;
@@ -7,9 +7,9 @@
 
 body {
     font-family: 'Georgia', 'Times New Roman', 'Segoe UI', serif;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: #333;
-    line-height: 1.6;
+    background: linear-gradient(135deg, #e6f0fa 0%, #f0e6f5 100%);
+    color: #2d3748;
+    line-height: 1.7;
     min-height: 100vh;
 }
 
@@ -19,20 +19,20 @@ body {
     padding: 40px 20px;
 }
 
-/* ===== ШАПКА И НАВИГАЦИЯ ===== */
+/* ===== ШАПКА ===== */
 header {
-    background: rgba(255, 255, 255, 0.98);
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    background: rgba(255, 255, 255, 0.92);
+    backdrop-filter: blur(8px);
+    box-shadow: 0 2px 15px rgba(0, 0, 0, 0.05);
     position: sticky;
     top: 0;
     z-index: 1000;
-    backdrop-filter: blur(5px);
 }
 
 .header-content {
     max-width: 1200px;
     margin: 0 auto;
-    padding: 15px 20px;
+    padding: 12px 20px;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -44,255 +44,183 @@ header {
     align-items: center;
     gap: 12px;
     text-decoration: none;
-    font-size: 1.8em;
+    font-size: 1.6em;
     font-weight: bold;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
+    color: #8b6b9d;
 }
 
 .logo-icon {
-    height: 45px;
+    height: 42px;
     width: auto;
 }
 
 nav ul {
     list-style: none;
     display: flex;
-    gap: 15px;
+    gap: 12px;
     flex-wrap: wrap;
 }
 
 nav a {
     text-decoration: none;
-    color: #555;
+    color: #4a5568;
     font-weight: 500;
-    padding: 8px 16px;
-    border-radius: 25px;
+    padding: 8px 18px;
+    border-radius: 30px;
     transition: all 0.3s ease;
+    font-size: 0.95em;
 }
 
 nav a:hover {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    transform: translateY(-2px);
+    background: #d9c7e8;
+    color: #5a4a6e;
 }
 
-/* Мобильное меню */
 .mobile-menu-toggle {
     display: none;
     background: none;
     border: none;
     font-size: 28px;
     cursor: pointer;
-    color: #764ba2;
+    color: #8b6b9d;
 }
 
 @media (max-width: 768px) {
     .mobile-menu-toggle {
         display: block;
     }
-    
     nav {
         display: none;
         width: 100%;
     }
-    
     nav.open {
         display: block;
     }
-    
     nav ul {
         flex-direction: column;
         align-items: center;
         padding: 20px 0;
     }
-    
-    .header-content {
-        flex-wrap: wrap;
-    }
 }
 
-/* ===== ГЛАВНЫЙ ЭКРАН (HERO) ===== */
+/* ===== ГЛАВНЫЙ ЭКРАН ===== */
 .hero {
     text-align: center;
-    padding: 80px 20px;
-    color: white;
+    padding: 70px 20px;
+    background: rgba(255, 255, 255, 0.5);
+    margin: 30px 20px;
+    border-radius: 40px;
 }
 
 .hero h1 {
-    font-size: 3em;
-    margin-bottom: 20px;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+    font-size: 2.8em;
+    color: #7a6b8a;
+    margin-bottom: 15px;
+    font-weight: normal;
 }
 
 .hero p {
     font-size: 1.3em;
-    opacity: 0.95;
+    color: #6b7b8f;
 }
 
-/* ===== КАРТОЧКИ (FEATURES) ===== */
+/* ===== КАРТОЧКИ ===== */
 .features {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 30px;
+    gap: 25px;
     max-width: 1200px;
     margin: 0 auto;
-    padding: 40px 20px;
+    padding: 20px;
 }
 
-.feature-card, .poem-card, .review-card {
-    background: rgba(255, 255, 255, 0.95);
-    border-radius: 20px;
-    padding: 25px;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+.feature-card, .poem-card, .review-card, .about-card, .form-card, .card, .contact-card {
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(2px);
+    border-radius: 28px;
+    padding: 28px;
+    transition: all 0.3s ease;
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
 }
 
-.feature-card:hover, .poem-card:hover {
+.feature-card:hover, .poem-card:hover, .contact-card:hover {
     transform: translateY(-5px);
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+    background: rgba(255, 255, 255, 0.95);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
 }
 
-.feature-card h3, .poem-card h3 {
-    color: #764ba2;
-    margin-bottom: 15px;
-    font-size: 1.5em;
+.feature-card h3, .poem-card h3, .about-card h2 {
+    color: #9b7bb5;
+    margin-bottom: 18px;
+    font-size: 1.4em;
+    font-weight: 500;
 }
 
 /* ===== ЗАГОЛОВКИ СТРАНИЦ ===== */
 .page-title {
     text-align: center;
-    color: white;
-    font-size: 2.5em;
+    color: #8b6b9d;
+    font-size: 2.2em;
     margin-bottom: 40px;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
-}
-
-/* ===== КАРТОЧКА ОБ АВТОРЕ ===== */
-.author-photo {
-    text-align: center;
-    margin-bottom: 30px;
-}
-
-.author-photo img {
-    max-width: 250px;
-    border-radius: 50%;
-    border: 5px solid white;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-}
-
-.about-card {
-    background: rgba(255, 255, 255, 0.95);
-    border-radius: 20px;
-    padding: 30px;
-    margin-bottom: 30px;
-}
-
-.about-card h2 {
-    color: #764ba2;
-    margin-bottom: 20px;
-}
-
-.about-card ul {
-    padding-left: 25px;
-    margin: 15px 0;
-}
-
-.about-card a {
-    color: #667eea;
-    text-decoration: none;
-}
-
-.about-card a:hover {
-    text-decoration: underline;
+    font-weight: normal;
 }
 
 /* ===== КНОПКИ ===== */
-.btn, .cta-buttons .btn, .btn-submit, .back-button {
+.btn, .cta-buttons .btn, .action-btn, .filter-btn {
     display: inline-block;
-    padding: 12px 30px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
+    padding: 10px 24px;
+    background: #e2d4ed;
+    color: #6b5a7e;
     text-decoration: none;
-    border-radius: 50px;
-    font-weight: bold;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border-radius: 40px;
+    font-weight: 500;
+    transition: all 0.3s ease;
     border: none;
     cursor: pointer;
-    font-size: 1em;
+    font-size: 0.95em;
 }
 
-.btn:hover, .cta-buttons .btn:hover, .btn-submit:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+.btn:hover, .cta-buttons .btn:hover, .action-btn:hover, .filter-btn:hover {
+    background: #d1bfe2;
+    transform: translateY(-2px);
 }
 
 .cta-buttons {
     text-align: center;
-    padding: 40px 20px;
+    padding: 30px 20px;
     display: flex;
-    gap: 20px;
+    gap: 15px;
     justify-content: center;
     flex-wrap: wrap;
 }
 
-/* ===== СЕКЦИЯ ОТЗЫВОВ (ПРЕВЬЮ) ===== */
-.reviews-preview {
-    max-width: 800px;
-    margin: 0 auto;
-    padding: 40px 20px;
-}
-
-.reviews-preview .review-card {
-    background: rgba(255, 255, 255, 0.95);
-    text-align: center;
-}
-
-.review-author {
-    margin-top: 15px;
-    color: #764ba2;
-    font-weight: bold;
-}
-
-/* ===== ФИЛЬТРЫ И ПОИСК ===== */
+/* ===== ФИЛЬТРЫ ===== */
 .filters {
     display: flex;
     justify-content: center;
-    gap: 15px;
+    gap: 12px;
     flex-wrap: wrap;
     margin-bottom: 30px;
 }
 
-.filter-btn {
-    padding: 10px 25px;
-    background: rgba(255, 255, 255, 0.2);
-    border: 2px solid white;
-    border-radius: 30px;
+.filter-btn.active {
+    background: #cbb5df;
     color: white;
-    cursor: pointer;
-    font-weight: bold;
-    transition: all 0.3s ease;
-}
-
-.filter-btn:hover, .filter-btn.active {
-    background: white;
-    color: #764ba2;
 }
 
 /* ===== СЕТКА ПРОИЗВЕДЕНИЙ ===== */
 .poems-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
     gap: 25px;
     margin: 40px 0;
 }
 
 .poem-excerpt {
-    color: #666;
+    color: #5a6a7a;
     margin: 15px 0;
-    line-height: 1.5;
+    line-height: 1.6;
 }
 
 .poem-actions {
@@ -300,21 +228,6 @@ nav a:hover {
     gap: 10px;
     flex-wrap: wrap;
     margin-top: 15px;
-}
-
-.action-btn {
-    padding: 8px 16px;
-    background: #f0f0f0;
-    border: none;
-    border-radius: 20px;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    font-size: 0.9em;
-}
-
-.action-btn:hover {
-    background: #764ba2;
-    color: white;
 }
 
 /* ===== МОДАЛЬНОЕ ОКНО ===== */
@@ -326,17 +239,16 @@ nav a:hover {
     top: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.8);
-    overflow: auto;
+    background: rgba(0, 0, 0, 0.5);
 }
 
 .modal-content {
     background: white;
-    margin: 5% auto;
+    margin: 8% auto;
     padding: 30px;
     width: 90%;
-    max-width: 700px;
-    border-radius: 20px;
+    max-width: 650px;
+    border-radius: 28px;
     position: relative;
 }
 
@@ -346,49 +258,22 @@ nav a:hover {
     top: 15px;
     font-size: 28px;
     cursor: pointer;
-    color: #999;
+    color: #aaa;
 }
 
 .modal-title {
-    color: #764ba2;
+    color: #9b7bb5;
     margin-bottom: 20px;
-    padding-right: 30px;
 }
 
 .modal-text {
     white-space: pre-wrap;
     line-height: 1.8;
-    max-height: 500px;
+    max-height: 450px;
     overflow-y: auto;
-    margin: 20px 0;
-}
-
-/* ===== ТОСТ-УВЕДОМЛЕНИЕ ===== */
-.toast {
-    position: fixed;
-    bottom: 30px;
-    left: 50%;
-    transform: translateX(-50%) translateY(100px);
-    background: #333;
-    color: white;
-    padding: 12px 24px;
-    border-radius: 50px;
-    z-index: 3000;
-    transition: transform 0.3s ease;
-}
-
-.toast.show {
-    transform: translateX(-50%) translateY(0);
 }
 
 /* ===== ФОРМЫ ===== */
-.form-card, .card, .contact-box {
-    background: rgba(255, 255, 255, 0.95);
-    border-radius: 20px;
-    padding: 30px;
-    margin-bottom: 30px;
-}
-
 .form-group {
     margin-bottom: 20px;
 }
@@ -396,103 +281,109 @@ nav a:hover {
 .form-group label {
     display: block;
     margin-bottom: 8px;
-    font-weight: bold;
-    color: #555;
+    font-weight: 500;
+    color: #5a6a7a;
 }
 
 .form-group input,
 .form-group select,
 .form-group textarea {
     width: 100%;
-    padding: 12px;
-    border: 2px solid #ddd;
-    border-radius: 12px;
+    padding: 12px 16px;
+    border: 1px solid #d0c0dc;
+    border-radius: 24px;
     font-size: 1em;
-    transition: border-color 0.3s;
+    background: white;
+    transition: all 0.3s;
 }
 
 .form-group input:focus,
 .form-group select:focus,
 .form-group textarea:focus {
     outline: none;
-    border-color: #764ba2;
-}
-
-.form-group textarea {
-    min-height: 120px;
-    resize: vertical;
-}
-
-.form-status {
-    margin-top: 15px;
-    padding: 10px;
-    border-radius: 8px;
-    display: none;
-}
-
-.form-status.show {
-    display: block;
-}
-
-.form-status.success {
-    background: #d4edda;
-    color: #155724;
-}
-
-.form-status.error {
-    background: #f8d7da;
-    color: #721c24;
+    border-color: #cbb5df;
+    box-shadow: 0 0 0 3px rgba(155, 123, 181, 0.2);
 }
 
 /* ===== КОНТАКТЫ ===== */
 .contacts-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 30px;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 25px;
     max-width: 1000px;
     margin: 40px auto;
     padding: 0 20px;
 }
 
 .contact-card {
-    background: rgba(255, 255, 255, 0.95);
-    border-radius: 20px;
-    padding: 30px;
     text-align: center;
     text-decoration: none;
-    transition: transform 0.3s;
     display: block;
 }
 
-.contact-card:hover {
-    transform: translateY(-5px);
-}
-
 .contact-card .icon {
-    font-size: 3em;
+    font-size: 2.8em;
+    display: block;
+    margin-bottom: 10px;
 }
 
 .contact-card h3 {
-    color: #764ba2;
-    margin: 15px 0;
+    color: #9b7bb5;
+    margin: 12px 0;
 }
 
 .contact-card .link {
-    color: #667eea;
+    color: #7a9dca;
+    font-weight: 500;
+}
+
+/* ===== ГОСТЕВАЯ КНИГА ===== */
+.review-header {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    margin-bottom: 8px;
+}
+
+.review-author {
     font-weight: bold;
+    color: #9b7bb5;
+}
+
+.review-date {
+    color: #aaa;
+    font-size: 0.85em;
+}
+
+.review-type {
+    display: inline-block;
+    padding: 4px 14px;
+    border-radius: 20px;
+    font-size: 0.8em;
+    margin: 10px 0;
+}
+
+.type-review {
+    background: #d9e8d9;
+    color: #4a6e4a;
+}
+
+.type-wish {
+    background: #f5e6c8;
+    color: #8b6b3d;
 }
 
 /* ===== ПОДВАЛ ===== */
 footer {
     text-align: center;
     padding: 30px;
-    background: rgba(255, 255, 255, 0.95);
-    color: #764ba2;
+    background: rgba(255, 255, 255, 0.7);
+    color: #8b6b9d;
     margin-top: 50px;
 }
 
 footer a {
-    color: #667eea;
+    color: #7a9dca;
     text-decoration: none;
 }
 
@@ -501,118 +392,30 @@ footer a {
     .hero h1 {
         font-size: 2em;
     }
-    
-    .hero p {
-        font-size: 1.1em;
-    }
-    
     .page-title {
         font-size: 1.8em;
     }
-    
     .poems-grid {
         grid-template-columns: 1fr;
     }
-    
     .modal-content {
-        margin: 20% auto;
-        padding: 20px;
-    }
-    
-    .cta-buttons {
-        flex-direction: column;
-        align-items: center;
-    }
-    
-    .btn, .cta-buttons .btn {
-        width: 80%;
-        text-align: center;
+        margin: 25% auto;
     }
 }
 
-/* ===== СЕКЦИЯ CTA (ПРИЗЫВ) ===== */
-.cta-section {
-    background: rgba(255, 255, 255, 0.95);
-    border-radius: 20px;
-    padding: 40px;
-    text-align: center;
-    margin: 40px 0;
+.toast {
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%) translateY(100px);
+    background: #5a6a7a;
+    color: white;
+    padding: 10px 22px;
+    border-radius: 40px;
+    transition: transform 0.3s;
+    z-index: 3000;
 }
 
-.cta-section h2 {
-    color: #764ba2;
-    margin-bottom: 20px;
-}
-
-/* ===== ГОСТЕВАЯ КНИГА ===== */
-.review-card {
-    margin-bottom: 20px;
-}
-
-.review-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap;
-    margin-bottom: 10px;
-}
-
-.review-author {
-    font-weight: bold;
-    color: #764ba2;
-    font-size: 1.1em;
-}
-
-.review-date {
-    color: #999;
-    font-size: 0.85em;
-}
-
-.review-type {
-    display: inline-block;
-    padding: 4px 12px;
-    border-radius: 20px;
-    font-size: 0.85em;
-    margin: 10px 0;
-}
-
-.type-review {
-    background: #d4edda;
-    color: #155724;
-}
-
-.type-wish {
-    background: #fff3cd;
-    color: #856404;
-}
-
-.review-theme {
-    color: #667eea;
-    margin: 5px 0;
-    font-size: 0.9em;
-}
-
-.review-message {
-    margin-top: 10px;
-    line-height: 1.6;
-}
-
-.empty-state {
-    text-align: center;
-    padding: 40px;
-    color: #999;
-}
-
-.empty-state-icon {
-    font-size: 3em;
-    margin-bottom: 10px;
-}
-
-/* ===== ЗАГРУЗКА И АЛЕРТЫ ===== */
-.loading, .alert {
-    text-align: center;
-    padding: 40px;
-    background: rgba(255, 255, 255, 0.9);
-    border-radius: 20px;
-    color: #764ba2;
+.toast.show {
+    transform: translateX(-50%) translateY(0);
 }
