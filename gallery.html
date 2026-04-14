@@ -4,102 +4,200 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Галерея | Ádel</title>
+    
+    <!-- FAVICON -->
     <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
-    <link rel="icon" type="image/png" href="favicon.png"
+    <link rel="icon" type="image/png" href="favicon.png">
     <link rel="stylesheet" href="styles.css">
+    
+    <style>
+        /* Дополнительные стили только для галереи */
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px;
+            margin: 40px 0;
+        }
+        
+        .gallery-item {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(2px);
+            border-radius: 28px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            cursor: pointer;
+        }
+        
+        .gallery-item:hover {
+            transform: translateY(-5px);
+            background: rgba(255, 255, 255, 0.95);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+        }
+        
+        .gallery-item img {
+            width: 100%;
+            height: 220px;
+            object-fit: cover;
+            display: block;
+            transition: transform 0.4s ease;
+        }
+        
+        .gallery-item:hover img {
+            transform: scale(1.03);
+        }
+        
+        .gallery-caption {
+            padding: 18px;
+            text-align: center;
+            color: #6b5a7e;
+            font-weight: 500;
+            border-top: 1px solid rgba(155, 123, 181, 0.2);
+        }
+        
+        /* Модальное окно для просмотра фото */
+        .gallery-modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.9);
+            cursor: pointer;
+        }
+        
+        .gallery-modal-content {
+            margin: auto;
+            display: block;
+            max-width: 90%;
+            max-height: 90%;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            border-radius: 20px;
+        }
+        
+        .gallery-modal-close {
+            position: absolute;
+            top: 20px;
+            right: 35px;
+            color: #f1f1f1;
+            font-size: 40px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        
+        .gallery-modal-close:hover {
+            color: #cbb5df;
+        }
+        
+        .empty-gallery {
+            text-align: center;
+            padding: 60px;
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 28px;
+            color: #8b6b9d;
+        }
+        
+        @media (max-width: 768px) {
+            .gallery-grid {
+                grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+                gap: 15px;
+            }
+            .gallery-item img {
+                height: 160px;
+            }
+            .gallery-caption {
+                padding: 12px;
+                font-size: 0.85em;
+            }
+        }
+    </style>
 </head>
 <body>
 
-    <header id="mainHeader"></header>
+<header id="mainHeader"></header>
 
-    <div class="container">
-        <h1 class="page-title">🎨 Поэтическая галерея</h1>
-        <div class="subtitle">Иллюстрации к стихам, открытки, вдохновение</div>
-        <div class="gallery-grid" id="gallery"></div>
+<div class="container">
+    <h1 class="page-title">📸 Галерея</h1>
+    
+    <div id="galleryGrid" class="gallery-grid">
+        <div class="empty-gallery">
+            <p>✨ Загрузка изображений...</p>
+        </div>
     </div>
+</div>
 
-    <div id="imageModal" class="modal">
-        <span class="close">&times;</span>
-        <img class="modal-content" id="modalImage">
-    </div>
+<footer>
+    <p>© 2025 Ádel — Ангел Поэзии</p>
+    <p><a href="index.html">Главная</a> | <a href="gallery.html">Галерея</a></p>
+</footer>
 
-    <footer>
-        <p>© 2025 Ádel — Ангел Поэзии</p>
-    </footer>
+<!-- Модальное окно для просмотра фото -->
+<div id="galleryModal" class="gallery-modal" onclick="closeGalleryModal()">
+    <span class="gallery-modal-close">&times;</span>
+    <img class="gallery-modal-content" id="modalImage">
+</div>
 
-    <script>
-        // СПИСОК КАРТИНОК (ДОБАВЛЯЙ СЮДА НОВЫЕ)
-        const images = [
-            { src: "Gallery/2025-01-22 15-10-46.JPG", caption: "22.01.2025" },
-            { src: "Gallery/2025-03-31 11-57-36.JPG", caption: "31.03.2025" },
-            { src: "Gallery/2025-06-13 00-30-17.JPG", caption: "13.06.2025" },
-            { src: "Gallery/2025-07-17 09-40-21.JPEG", caption: "17.07.2025" },
-            { src: "Gallery/2025-07-29 13-08-25.JPEG", caption: "29.07.2025" },
-            { src: "Gallery/2025-08-03 13-58-24.JPG", caption: "03.08.2025" },
-            { src: "Gallery/2025-08-10 08-39-38.JPG", caption: "10.08.2025" },
-            { src: "Gallery/2025-08-24 00-16-29.JPG", caption: "24.08.2025" },
-            { src: "Gallery/2025-09-01 12-19-17.JPG", caption: "01.09.2025" },
-            { src: "Gallery/2025-09-01 12-19-17_1758061804.JPG", caption: "01.09.2025" },
-            { src: "Gallery/2025-09-01 12-19-17_1758061806.JPG", caption: "01.09.2025" },
-{ src: "Gallery/2025-09-01 12-19-18.JPG", caption: "01.09.2025" },
-{ src: "Gallery/2025-09-01 12-19-18_1758061424.JPG", caption: "01.09.2025" },
-{ src: "Gallery/2025-09-01 12-19-18_1758061427.JPG", caption: "01.09.2025" },
-{ src: "Gallery/2025-09-01 12-19-18_1758061432.JPG", caption: "01.09.2025" },
-{ src: "Gallery/2025-09-01 12-19-18_1758061450.JPG", caption: "01.09.2025" },
-{ src: "Gallery/2025-09-01 12-19-18_1758061735.JPG", caption: "01.09.2025" },
-{ src: "Gallery/2025-09-01 12-19-18_1758061742.JPG", caption: "01.09.2025" },
-{ src: "Gallery/2025-09-01 12-19-18_1758061752.JPG", caption: "01.09.2025" },
-{ src: "Gallery/2025-09-01 12-19-18_1758061779.JPG", caption: "01.09.2025" },
-{ src: "Gallery/2025-09-01 12-19-18_1758061781.JPG", caption: "01.09.2025" },
-{ src: "Gallery/2025-09-01 12-19-18_1758061784.JPG", caption: "01.09.2025" },
-{ src: "Gallery/2025-09-01 12-19-18_1758061791.JPG", caption: "01.09.2025" },
-{ src: "Gallery/2025-09-01 12-19-18_1758061794.JPG", caption: "01.09.2025" },
-{ src: "Gallery/2025-09-01 12-19-18_1758061796.JPG", caption: "01.09.2025" },
-{ src: "Gallery/2025-09-01 12-19-18_1758061798.JPG", caption: "01.09.2025" },
-{ src: "Gallery/2025-09-06 09-28-53.JPG", caption: "06.09.2025" },
-{ src: "Gallery/2025-09-11 10-04-50.JPG", caption: "11.09.2025" },
-{ src: "Gallery/2025-09-18 21-15-17.JPG", caption: "18.09.2025" },
-{ src: "Gallery/2025-09-24 09-13-11.JPEG", caption: "24.09.2025" },
-{ src: "Gallery/2025-10-01 13-54-43.JPG", caption: "01.10.2025" },
-{ src: "Gallery/IMG_20260405_211457.jpg", caption: "05.04.2026" },
-{ src: "Gallery/IMG_20260405_211518.jpg", caption: "05.04.2026" },
-{ src: "Gallery/IMG_20260405_211600.jpg", caption: "05.04.2026" },
-{ src: "Gallery/Picsart_26-03-30_10-04-30-926.png", caption: "30.03.2026" },
-{ src: "Gallery/Picsart_26-04-04_07-48-46-984.jpg", caption: "04.04.2026" },
-{ src: "Gallery/Picsart_26-04-04_18-47-22-947.jpg", caption: "04.04.2026" },
-{ src: "Gallery/Picsart_26-04-06_12-03-52-393.jpg", caption: "06.04.2026" },
-        { src: "Gallery/Picsart_26-04-08_18-04-41-259.jpg", caption: "08.04.2026" }
-            ];
-        const gallery = document.getElementById('gallery');
-        const modal = document.getElementById('imageModal');
+<script src="menu.js"></script>
+<script>
+    // Список изображений для галереи
+    // Добавь сюда свои фото — просто перечисли имена файлов
+    const galleryImages = [
+        { src: "IMG_20260320_010101_069.jpg", caption: "Ádel — Ангел Поэзии" },
+        // Добавляй новые фото по этому образцу:
+        // { src: "имя_файла.jpg", caption: "Подпись к фото" },
+    ];
+    
+    function openGalleryModal(imgSrc) {
+        const modal = document.getElementById('galleryModal');
         const modalImg = document.getElementById('modalImage');
-
-        // Отрисовка галереи
-        images.forEach(img => {
-            const item = document.createElement('div');
-            item.className = 'gallery-item';
-            item.innerHTML = `
-                <img src="${img.src}" alt="${img.caption}" loading="lazy">
-                <div class="gallery-item-caption">${img.caption}</div>
+        modal.style.display = "block";
+        modalImg.src = imgSrc;
+        document.body.style.overflow = "hidden";
+    }
+    
+    function closeGalleryModal() {
+        document.getElementById('galleryModal').style.display = "none";
+        document.body.style.overflow = "auto";
+    }
+    
+    function displayGallery() {
+        const grid = document.getElementById('galleryGrid');
+        
+        if (!galleryImages || galleryImages.length === 0) {
+            grid.innerHTML = `
+                <div class="empty-gallery">
+                    <p>📷 В галерее пока нет изображений.</p>
+                    <p style="font-size: 0.9em; margin-top: 10px;">Скоро они здесь появятся ✨</p>
+                </div>
             `;
-            item.onclick = () => {
-                modal.style.display = "block";
-                modalImg.src = img.src;
-                modalImg.alt = img.caption;
-            };
-            gallery.appendChild(item);
-        });
+            return;
+        }
+        
+        grid.innerHTML = galleryImages.map(item => `
+            <div class="gallery-item" onclick="openGalleryModal('${item.src}')">
+                <img src="${item.src}" alt="${item.caption}" loading="lazy">
+                <div class="gallery-caption">${item.caption}</div>
+            </div>
+        `).join('');
+    }
+    
+    // Закрытие по Escape
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            closeGalleryModal();
+        }
+    });
+    
+    displayGallery();
+</script>
 
-        // Закрытие модального окна
-        document.querySelector('.close').onclick = () => {
-            modal.style.display = "none";
-        };
-        window.onclick = (event) => {
-            if (event.target === modal) modal.style.display = "none";
-        };
-    </script>
-        <script src="menu.js"></script>
 </body>
-    </html>
+</html>
