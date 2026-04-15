@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Произведения | Ádel</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="icon" type="image/png" href="favicon.png">
+</head>
+<body>
+
+<header id="mainHeader"></header>
+
+<div class="container">
+    <h1 class="page-title">📖 Все произведения</h1>
+    
+    <div class="filters">
+        <button class="filter-btn active" data-lang="all">🌍 Все</button>
+        <button class="filter-btn" data-lang="ru">🇷🇺 Русские</button>
+        <button class="filter-btn" data-lang="es">🇪🇸 Испанские</button>
+        <button class="filter-btn" data-lang="en">🇬🇧 Английские</button>
+    </div>
+    
+    <div style="text-align:center; margin:20px 0;">
+        <input type="text" id="searchInput" placeholder="🔍 Поиск по названию..." style="padding:12px 20px; width:100%; max-width:400px; border-radius:40px; border:1px solid #d0c0dc;">
+    </div>
+    
+    <div id="poemsGrid" class="poems-grid">
+        <div style="text-align:center; padding:40px;">📖 Загрузка произведений...</div>
+    </div>
+</div>
+
+<div id="poemModal" class="modal" style="display:none;">
+    <div class="modal-content">
+        <span class="modal-close" onclick="closeModal()">&times;</span>
+        <h2 id="modalTitle" style="color:#9b7bb5;"></h2>
+        <div id="modalText" style="white-space:pre-wrap; line-height:1.8; max-height:400px; overflow-y:auto;"></div>
+        <div style="display:flex; gap:10px; margin-top:20px;">
+            <button id="modalCopyBtn" class="action-btn">📋 Скопировать</button>
+            <button id="modalShareBtn" class="action-btn">📤 Поделиться</button>
+        </div>
+    </div>
+</div>
+
+<footer>
+    <p>© 2025 Ádel — Ангел Поэзии</p>
+</footer>
+
+<script src="menu.js"></script>
+<script>
+    let allPoems = [];
+    let currentLang = 'all';
+    let searchTerm = '';
+    
+    function escapeHtml(str) {
+        if (!str) return '';
+        return str.replace(/[&<>]/g, function(m) {
+            if (m === '&') return '&amp;';
+            if (m === '<') return '&lt;';
+            if (m === '>') return '&gt;';
+            return m;
+        });
+    }
+    
+    async function copyPoem(title, content) {
+        try {
+            await navigator.clipboard.writeText(`${title}\n\n${content}`);
+            showToast('✅ Скопировано');
+        } catch(e) { showToast('❌ Ошибка'); }
+    }
+    
+    function sharePoem(title, content) {
+        const text = `${title}\n\n${content}`;
+        if (navigator.share) navigator.share({title, text});
+        else copyPoem(title, content);
+    }
+    
+    function showToast(msg) {
+        let toast = document.getElementById('toast');
+        if (!toast) {
+            toast = document.createElement('div');
+            toast.id = 'toast';
+            toast.style.cssText = 'position:fixed; bottom:30px; left:50%; transform:translateX(-50%); background:#5a6a7a; color:white; padding:10px 20px; border-radius:40px; z-index:3000; opacity:0; transition:0.3s;';
+            document.body.appendChild(toast);
+        }
+        toast.textContent = msg;
+        toast.style.opacity = '1';
+        setTimeout(() => toast.style.opacity = '0', 2000);
+    }
+    
+    async function loadPoems() {
+        try {
+            const [ru, bi] = await Promise.all([
+                fetch('russian_poems_only.json').then(r => r.json()),
+                fetch('poems-bilingual.json').then(r => r.json())
+            ]);
+            allPoems = [
+                ...ru.map((p, i) => ({ id: i+1, title: p.title, content: p.content, language: 'ru' })),
+                ...bi.map((p, i) => ({ id: ru.length + i + 1, title: p.title, content: p.content, language: p.language || 'es' }))
+            ];
+            applyFilters();
+        } catch(e) {
+            document.getElementById('poemsGrid').innerHTML = '<div style="text-align:center; padding:40px;">❌ Ошибка загрузки</div>';
+        }
+    }
+    
+    function applyFilters() {
+        let filtered = allPoems;
+        if (currentLang !== 'all') filtered = filtered.filter(p => p.language === currentLang);
+        if (searchTerm) filtered = filtered.filter(p => p.title.toLowerCase().includes(searchTerm));
+        displayPoems(filtered);
+    }
+    
+    function displayPoems(poems) {
+        const grid = document.getElementById('poemsGrid');
+        if (!poems.length) {
+            grid.innerHTML = '<div style="text-align:center; padding:40px;">😔 Ничего не найдено</div>';
+            return;
+        }
+        grid.innerHTML = poems.map(poem => `
+            <div class="poem-card">
+                <h3>${escapeHtml(poem.title)}</h3>
+                <div class="poem-excerpt">${escapeHtml(poem.content.substring(0, 150))}...</div>
+                <div class="poem-actions">
+                    <button class="action-btn" onclick="copyPoem(\`${poem.title.replace(/`/g, '\\`')}\`, \`${poem.content.replace(/`/g, '\\`')}\`)">📋 Скопировать</button>
+                    <button class="action-btn" onclick="sharePoem(\`${poem.title.replace(/`/g, '\\`')}\`, \`${poem.content.replace(/`/g, '\\`')}\`)">📤 Поделиться</button>
+                    <button class="action-btn" onclick="openModal(${poem.id})">📖 Читать</button>
+                </div>
+            </div>
+        `).join('');
+    }
+    
+    function openModal(id) {
+        const poem = allPoems.find(p => p.id === id);
+        if (!poem) return;
+        document.getElementById('modalTitle').textContent = poem.title;
+        document.getElementById('modalText').textContent = poem.content;
+        document.getElementById('poemModal').style.display = 'block';
+        document.body.style.overflow = 'hidden';
+        
+        const copyBtn = document.getElementById('modalCopyBtn');
+        const shareBtn = document.getElementById('modalShareBtn');
+        copyBtn.onclick = () => copyPoem(poem.title, poem.content);
+        shareBtn.onclick = () => sharePoem(poem.title, poem.content);
+    }
+    
+    function closeModal() {
+        document.getElementById('poemModal').style.display = 'none';
+        document.body.style.overflow = 'auto';
+    }
+    
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            currentLang = btn.dataset.lang;
+            applyFilters();
+        });
+    });
+    
+    document.getElementById('searchInput').addEventListener('input', e => {
+        searchTerm = e.target.value.toLowerCase();
+        applyFilters();
+    });
+    
+    window.onclick = e => { if (e.target === document.getElementById('poemModal')) closeModal(); };
+    loadPoems();
+</script>
+</body>
+</html>
