@@ -1,1 +1,236 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Произведения | Ádel</title>
+    
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+    
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
 
+<header>
+    <div class="header-content">
+        <a href="index.html" class="logo">
+            <img src="favicon.png" alt="Ádel" class="logo-icon">
+            <span>Ádel</span>
+        </a>
+        <button class="mobile-menu-toggle" id="menuToggle" aria-label="Меню">☰</button>
+        <nav>
+            <ul>
+                <li><a href="index.html">Главная</a></li>
+                <li><a href="about.html">Об авторе</a></li>
+                <li><a href="portfolio.html">Произведения</a></li>
+                <li><a href="gallery.html">Галерея</a></li>
+                <li><a href="witty_humor.html">Крылатый юмор</a></li>
+                <li><a href="order.html">Заказать</a></li>
+                <li><a href="guestbook.html">Гостевая книга</a></li>
+                <li><a href="contacts.html">Контакты</a></li>
+                <li><a href="download.html">Скачать</a></li>
+            </ul>
+        </nav>
+    </div>
+</header>
+
+<div class="container">
+    <h1 class="page-title">📖 Все произведения</h1>
+    
+    <div class="filters">
+        <button class="filter-btn active" data-lang="all">🌍 Все</button>
+        <button class="filter-btn" data-lang="ru">🇷🇺 Русские</button>
+        <button class="filter-btn" data-lang="es">🇪🇸 Испанские</button>
+        <button class="filter-btn" data-lang="en">🇬🇧 Английские</button>
+    </div>
+    
+    <div style="text-align:center; margin:20px 0;">
+        <input type="text" id="searchInput" placeholder="🔍 Поиск по названию..." style="padding:12px 20px; width:100%; max-width:400px; border-radius:40px; border:1px solid #d0c0dc;">
+    </div>
+    
+    <div id="poemsGrid" class="poems-grid">
+        <div style="text-align:center; padding:40px;">📖 Загрузка произведений...</div>
+    </div>
+</div>
+
+<div id="poemModal" style="display:none; position:fixed; z-index:2000; left:0; top:0; width:100%; height:100%; background:rgba(0,0,0,0.8);">
+    <div style="background:white; margin:10% auto; padding:30px; width:90%; max-width:650px; border-radius:28px; position:relative;">
+        <span onclick="closeModal()" style="position:absolute; right:20px; top:15px; font-size:28px; cursor:pointer;">&times;</span>
+        <h2 id="modalTitle" style="color:#9b7bb5;"></h2>
+        <div id="modalText" style="white-space:pre-wrap; line-height:1.8; max-height:400px; overflow-y:auto; margin:20px 0;"></div>
+        <div style="display:flex; gap:10px;">
+            <button id="modalCopyBtn" class="action-btn">📋 Скопировать</button>
+            <button id="modalShareBtn" class="action-btn">📤 Поделиться</button>
+        </div>
+    </div>
+</div>
+
+<footer>
+    <p>© 2025 Ádel — Ангел Поэзии</p>
+</footer>
+
+<script src="menu.js"></script>
+<script>
+    let allPoems = [];
+    let currentLang = 'all';
+    let searchTerm = '';
+
+    function escapeHtml(str) {
+        if (!str) return '';
+        return str.replace(/[&<>]/g, function(m) {
+            if (m === '&') return '&amp;';
+            if (m === '<') return '&lt;';
+            if (m === '>') return '&gt;';
+            return m;
+        });
+    }
+
+    function showToast(msg) {
+        let toast = document.getElementById('toast');
+        if (!toast) {
+            toast = document.createElement('div');
+            toast.id = 'toast';
+            toast.style.cssText = 'position:fixed; bottom:30px; left:50%; transform:translateX(-50%); background:#5a6a7a; color:white; padding:10px 20px; border-radius:40px; z-index:3000; opacity:0; transition:0.3s;';
+            document.body.appendChild(toast);
+        }
+        toast.textContent = msg;
+        toast.style.opacity = '1';
+        setTimeout(() => toast.style.opacity = '0', 2000);
+    }
+
+    async function copyPoem(title, content) {
+        try {
+            await navigator.clipboard.writeText(title + "\n\n" + content);
+            showToast('✅ Скопировано');
+        } catch(e) {
+            showToast('❌ Ошибка копирования');
+        }
+    }
+
+    function sharePoem(title, content) {
+        const text = title + "\n\n" + content;
+        if (navigator.share) {
+            navigator.share({title: title, text: text});
+        } else {
+            copyPoem(title, content);
+        }
+    }
+
+    async function loadPoems() {
+        try {
+            const ruRes = await fetch('russian_poems_only.json');
+            const biRes = await fetch('poems-bilingual.json');
+            
+            if (!ruRes.ok || !biRes.ok) throw new Error('Файлы не найдены');
+            
+            const ru = await ruRes.json();
+            const bi = await biRes.json();
+            
+            allPoems = [];
+            for (let i = 0; i < ru.length; i++) {
+                allPoems.push({ id: i+1, title: ru[i].title, content: ru[i].content, language: 'ru' });
+            }
+            for (let i = 0; i < bi.length; i++) {
+                allPoems.push({ id: ru.length + i + 1, title: bi[i].title, content: bi[i].content, language: bi[i].language || 'es' });
+            }
+            
+            applyFilters();
+        } catch(e) {
+            document.getElementById('poemsGrid').innerHTML = '<div style="text-align:center; padding:40px;">❌ Ошибка загрузки стихов</div>';
+            console.error('Load error:', e);
+        }
+    }
+
+    function applyFilters() {
+        let filtered = allPoems.slice();
+        if (currentLang !== 'all') {
+            filtered = filtered.filter(p => p.language === currentLang);
+        }
+        if (searchTerm) {
+            filtered = filtered.filter(p => p.title.toLowerCase().includes(searchTerm));
+        }
+        displayPoems(filtered);
+    }
+
+    function displayPoems(poems) {
+        const grid = document.getElementById('poemsGrid');
+        if (!poems.length) {
+            grid.innerHTML = '<div style="text-align:center; padding:40px;">😔 Ничего не найдено</div>';
+            return;
+        }
+        
+        let html = '';
+        for (let i = 0; i < poems.length; i++) {
+            const poem = poems[i];
+            const safeTitle = escapeHtml(poem.title);
+            const safeExcerpt = escapeHtml(poem.content.substring(0, 150));
+            const safeTitleAttr = poem.title.replace(/`/g, '\\`').replace(/\\/g, '\\\\');
+            const safeContentAttr = poem.content.replace(/`/g, '\\`').replace(/\\/g, '\\\\');
+            
+            html += `
+                <div class="poem-card" data-id="${poem.id}">
+                    <h3>${safeTitle}</h3>
+                    <div class="poem-excerpt">${safeExcerpt}...</div>
+                    <div class="poem-actions">
+                        <button class="action-btn" onclick="copyPoem(\`${safeTitleAttr}\`, \`${safeContentAttr}\`)">📋 Скопировать</button>
+                        <button class="action-btn" onclick="sharePoem(\`${safeTitleAttr}\`, \`${safeContentAttr}\`)">📤 Поделиться</button>
+                        <button class="action-btn" onclick="openModal(${poem.id})">📖 Читать</button>
+                    </div>
+                </div>
+            `;
+        }
+        grid.innerHTML = html;
+    }
+
+    function openModal(id) {
+        const poem = allPoems.find(p => p.id === id);
+        if (!poem) return;
+        
+        document.getElementById('modalTitle').innerHTML = escapeHtml(poem.title);
+        document.getElementById('modalText').innerHTML = escapeHtml(poem.content);
+        document.getElementById('poemModal').style.display = 'block';
+        document.body.style.overflow = 'hidden';
+        
+        const copyBtn = document.getElementById('modalCopyBtn');
+        const shareBtn = document.getElementById('modalShareBtn');
+        
+        const newCopyBtn = copyBtn.cloneNode(true);
+        const newShareBtn = shareBtn.cloneNode(true);
+        copyBtn.parentNode.replaceChild(newCopyBtn, copyBtn);
+        shareBtn.parentNode.replaceChild(newShareBtn, shareBtn);
+        
+        newCopyBtn.onclick = () => copyPoem(poem.title, poem.content);
+        newShareBtn.onclick = () => sharePoem(poem.title, poem.content);
+    }
+
+    function closeModal() {
+        document.getElementById('poemModal').style.display = 'none';
+        document.body.style.overflow = 'auto';
+    }
+
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+            currentLang = this.getAttribute('data-lang');
+            applyFilters();
+        });
+    });
+
+    document.getElementById('searchInput').addEventListener('input', function(e) {
+        searchTerm = e.target.value.toLowerCase();
+        applyFilters();
+    });
+
+    window.onclick = function(e) {
+        const modal = document.getElementById('poemModal');
+        if (e.target === modal) closeModal();
+    };
+
+    loadPoems();
+</script>
+</body>
+</html>
