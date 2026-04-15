@@ -195,3 +195,39 @@ footer {
     .hero h1 { font-size: 2em; }
     .features { grid-template-columns: 1fr; }
 }
+
+/* Увеличенные поля для форм на телефонах */
+.form-group input,
+.form-group select,
+.form-group textarea {
+    font-size: 16px;  /* Чтобы на телефоне не срабатывало автоматическое масштабирование */
+    padding: 14px 18px;
+    border-radius: 16px;
+}
+
+/* Кнопки в формах — покрупнее */
+.form-card .btn,
+#guestbookForm .btn,
+#orderForm .btn {
+    padding: 14px 28px;
+    font-size: 1.1em;
+    width: 100%;
+}
+
+/* Карточки форм — больше отступов на телефоне */
+@media (max-width: 768px) {
+    .form-card, .card {
+        padding: 25px 20px;
+    }
+    
+    .form-group label {
+        font-size: 1em;
+        margin-bottom: 8px;
+    }
+    
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+        padding: 14px 16px;
+    }
+}
