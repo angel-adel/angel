@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Гостевая книга | Ádel</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="icon" type="image/png" href="favicon.png">
+</head>
+<body>
+
+<header id="mainHeader"></header>
+
+<div class="container">
+    <h1 class="page-title">📚 Гостевая книга</h1>
+    
+    <div class="form-card">
+        <h2>✍️ Оставить отзыв</h2>
+        <form id="guestbookForm">
+            <div class="form-group">
+                <label>Ваше имя *</label>
+                <input type="text" id="name" required>
+            </div>
+            
+            <div class="form-group">
+                <label>Тип обращения *</label>
+                <select id="type" required>
+                    <option value="">-- Выберите --</option>
+                    <option value="отзыв">⭐ Отзыв</option>
+                    <option value="пожелание">💡 Пожелание (заказать)</option>
+                </select>
+            </div>
+            
+            <div class="form-group" id="themeGroup" style="display:none;">
+                <label>Тематика</label>
+                <select id="theme">
+                    <option>Любовная лирика</option>
+                    <option>Философия</option>
+                    <option>Природа</option>
+                    <option>Юмор</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label>Сообщение *</label>
+                <textarea id="message" rows="5" required></textarea>
+            </div>
+            
+            <button type="submit" class="btn">📤 Отправить</button>
+            <div id="formStatus" style="margin-top:15px;"></div>
+        </form>
+    </div>
+    
+    <div class="card">
+        <h2>💬 Отзывы читателей</h2>
+        <div id="reviewsList">
+            <div style="text-align:center; padding:30px;">✨ Загрузка...</div>
+        </div>
+    </div>
+</div>
+
+<footer>
+    <p>© 2025 Ádel — Ангел Поэзии</p>
+</footer>
+
+<script src="menu.js"></script>
+<script>
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxhmH7vrTSs_GxhRwmTa6ppjiBicKmFSA978EGcTlj7A-3KBJh1aFgy1gtALQWDAe5i/exec';
+    
+    document.getElementById('type').addEventListener('change', function() {
+        document.getElementById('themeGroup').style.display = this.value === 'пожелание' ? 'block' : 'none';
+    });
+    
+    document.getElementById('guestbookForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const btn = document.querySelector('#guestbookForm .btn');
+        btn.disabled = true;
+        btn.textContent = 'Отправка...';
+        
+        const data = {
+            name: document.getElementById('name').value,
+            type: document.getElementById('type').value,
+            theme: document.getElementById('theme').value,
+            message: document.getElementById('message').value
+        };
+        
+        try {
+            await fetch(SCRIPT_URL, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(data)
+            });
+            document.getElementById('formStatus').innerHTML = '✅ Спасибо! Отзыв появится после проверки.';
+            document.getElementById('guestbookForm').reset();
+            document.getElementById('themeGroup').style.display = 'none';
+            setTimeout(() => loadReviews(), 1000);
+        } catch(err) {
+            document.getElementById('formStatus').innerHTML = '❌ Ошибка. Попробуйте позже.';
+        }
+        btn.disabled = false;
+        btn.textContent = '📤 Отправить';
+    });
+    
+    async function loadReviews() {
+        try {
+            const res = await fetch(SCRIPT_URL);
+            const data = await res.json();
+            const container = document.getElementById('reviewsList');
+            if (!data.length) {
+                container.innerHTML = '<div style="text-align:center; padding:30px;">✨ Пока нет отзывов. Будьте первым!</div>';
+                return;
+            }
+            container.innerHTML = data.slice(0, 20).map(r => `
+                <div class="review-card" style="margin-bottom:20px;">
+                    <div style="display:flex; justify-content:space-between;">
+                        <strong>${escapeHtml(r.name)}</strong>
+                        <small>${new Date(r.date).toLocaleDateString('ru-RU')}</small>
+                    </div>
+                    <div style="margin:10px 0;"><strong>${r.type === 'пожелание' ? '💡' : '⭐'} ${r.type}</strong></div>
+                    ${r.theme ? `<div>🏷️ ${escapeHtml(r.theme)}</div>` : ''}
+                    <div style="margin-top:10px;">${escapeHtml(r.message)}</div>
+                </div>
+            `).join('');
+        } catch(e) {
+            document.getElementById('reviewsList').innerHTML = '<div style="text-align:center; padding:30px;">⚠️ Не удалось загрузить отзывы</div>';
+        }
+    }
+    
+    function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+    
+    loadReviews();
+</script>
+</body>
+</html>
