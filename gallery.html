@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Галерея | Ádel</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="icon" type="image/png" href="favicon.png">
+    <style>
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 25px;
+            margin: 40px 0;
+        }
+        .gallery-item {
+            background: rgba(255,255,255,0.85);
+            border-radius: 28px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .gallery-item:hover {
+            transform: translateY(-5px);
+            background: rgba(255,255,255,0.95);
+        }
+        .gallery-item img {
+            width: 100%;
+            height: 220px;
+            object-fit: cover;
+        }
+        .gallery-caption {
+            padding: 15px;
+            text-align: center;
+            color: #6b5a7e;
+        }
+        .modal-img {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.9);
+            cursor: pointer;
+        }
+        .modal-img img {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            max-width: 90%;
+            max-height: 90%;
+            border-radius: 20px;
+        }
+        .close-modal {
+            position: absolute;
+            top: 20px;
+            right: 35px;
+            color: white;
+            font-size: 40px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+<header id="mainHeader"></header>
+
+<div class="container">
+    <h1 class="page-title">📸 Галерея</h1>
+    <div class="gallery-grid" id="galleryGrid">
+        <div style="text-align:center; padding:40px;">Загрузка...</div>
+    </div>
+</div>
+
+<div id="modalImg" class="modal-img" onclick="closeModal()">
+    <span class="close-modal">&times;</span>
+    <img id="modalImage" src="">
+</div>
+
+<footer>
+    <p>© 2025 Ádel — Ангел Поэзии</p>
+</footer>
+
+<script src="menu.js"></script>
+<script>
+    const images = [
+        { src: "IMG_20260320_010101_069.jpg", caption: "Ádel — Ангел Поэзии" }
+    ];
+    
+    function openModal(src) {
+        document.getElementById('modalImg').style.display = 'block';
+        document.getElementById('modalImage').src = src;
+        document.body.style.overflow = 'hidden';
+    }
+    
+    function closeModal() {
+        document.getElementById('modalImg').style.display = 'none';
+        document.body.style.overflow = 'auto';
+    }
+    
+    function displayGallery() {
+        const grid = document.getElementById('galleryGrid');
+        if (!images.length) {
+            grid.innerHTML = '<div style="text-align:center; padding:40px;">📷 Пока нет фото</div>';
+            return;
+        }
+        grid.innerHTML = images.map(img => `
+            <div class="gallery-item" onclick="openModal('${img.src}')">
+                <img src="${img.src}" alt="${img.caption}" loading="lazy">
+                <div class="gallery-caption">${img.caption}</div>
+            </div>
+        `).join('');
+    }
+    
+    displayGallery();
+    document.addEventListener('keydown', e => { if(e.key === 'Escape') closeModal(); });
+</script>
+</body>
+</html>
