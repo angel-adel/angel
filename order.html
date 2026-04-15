@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Заказать произведение | Ádel</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="icon" type="image/png" href="favicon.png">
+</head>
+<body>
+
+<header id="mainHeader"></header>
+
+<div class="container">
+    <h1 class="page-title">✨ Заказать произведение</h1>
+    
+    <div class="form-card" id="formCard">
+        <h2 style="color:#9b7bb5;">📝 Опишите ваше желание</h2>
+        <form id="orderForm">
+            <div class="form-group">
+                <label>Ваше имя *</label>
+                <input type="text" id="name" required placeholder="Как к вам обращаться?">
+            </div>
+            
+            <div class="form-group">
+                <label>Телефон *</label>
+                <input type="tel" id="phone" required placeholder="Для связи">
+            </div>
+            
+            <div class="form-group">
+                <label>Тип произведения *</label>
+                <select id="type" required>
+                    <option value="">Выберите...</option>
+                    <option>Стихотворение</option>
+                    <option>Поэма</option>
+                    <option>Экспромт</option>
+                    <option>Любовная лирика</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label>Тема *</label>
+                <input type="text" id="theme" required placeholder="О чём будет произведение?">
+            </div>
+            
+            <div class="form-group">
+                <label>Пожелания *</label>
+                <textarea id="content" required placeholder="Чем подробнее опишете, тем точнее получится..." rows="5"></textarea>
+            </div>
+            
+            <button type="submit" class="btn" style="width:100%;">🎭 Отправить заказ</button>
+        </form>
+    </div>
+    
+    <div id="thankYouBlock" style="display:none; text-align:center; padding:40px; background:rgba(255,255,255,0.85); border-radius:28px;">
+        <h2>🙏 Спасибо за заказ!</h2>
+        <p>Я свяжусь с вами в ближайшее время.</p>
+        <a href="index.html" class="btn" style="margin-top:20px;">🏠 На главную</a>
+    </div>
+</div>
+
+<footer>
+    <p>© 2025 Ádel — Ангел Поэзии</p>
+</footer>
+
+<script src="menu.js"></script>
+<script>
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyAsyymeDQ15zAsqQ_NDevXh4g-tGdsJ4AOr0mywFQn77LTvDArMVHOYXqg4jP7uBbPFA/exec';
+    
+    document.getElementById('orderForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const data = {
+            name: document.getElementById('name').value,
+            phone: document.getElementById('phone').value,
+            type: document.getElementById('type').value,
+            theme: document.getElementById('theme').value,
+            content: document.getElementById('content').value
+        };
+        
+        try {
+            await fetch(SCRIPT_URL, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(data)
+            });
+            document.getElementById('formCard').style.display = 'none';
+            document.getElementById('thankYouBlock').style.display = 'block';
+        } catch(err) {
+            alert('❌ Ошибка. Попробуйте позже или напишите на почту: adel2026@f5.si');
+        }
+    });
+</script>
+</body>
+</html>
