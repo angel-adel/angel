@@ -1,6 +1,5 @@
-// bug_widget.js — полный код виджета
+// bug_widget.js — автономная версия (скачивает отчёт на компьютер)
 (function() {
-  // Добавляем стили
   const styles = `
     #bug-report-btn {
       position: fixed;
@@ -117,12 +116,10 @@
     }
   `;
 
-  // Добавляем стили на страницу
   const styleSheet = document.createElement('style');
   styleSheet.textContent = styles;
   document.head.appendChild(styleSheet);
 
-  // Создаём HTML-элементы
   const btn = document.createElement('div');
   btn.id = 'bug-report-btn';
   btn.title = 'Сообщить о проблеме на сайте';
@@ -133,7 +130,7 @@
   formContainer.id = 'bug-form-container';
   formContainer.innerHTML = `
     <strong>Сообщить о проблеме</strong>
-    <textarea id="bug-description" placeholder="Опишите, что пошло не так... Например: 'Не загружается стихотворение' или 'Сломался переход по категориям'"></textarea>
+    <textarea id="bug-description" placeholder="Опишите, что пошло не так..."></textarea>
     <div class="bug-form-buttons">
       <button id="bug-cancel">Отмена</button>
       <button id="bug-send">Отправить</button>
@@ -142,11 +139,9 @@
   `;
   document.body.appendChild(formContainer);
 
-  // Добавляем скрипт html2canvas
   const script = document.createElement('script');
   script.src = 'https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js';
   script.onload = () => {
-    // Инициализация после загрузки библиотеки
     const cancelBtn = document.getElementById('bug-cancel');
     const sendBtn = document.getElementById('bug-send');
     const descriptionField = document.getElementById('bug-description');
@@ -176,40 +171,35 @@
 
       try {
         const canvas = await html2canvas(document.body, {
-          scale: 1,
+          scale: 1.5,
           logging: false,
-          useCORS: true,
-          windowWidth: document.documentElement.scrollWidth,
-          windowHeight: document.documentElement.scrollHeight
+          useCORS: true
         });
-        const screenshotData = canvas.toDataURL('image/png');
-
-        statusDiv.innerHTML = '<span class="bug-loading"></span> Отправляю...';
-
-        const formData = new FormData();
-        formData.append('description', description);
-        formData.append('screenshot', screenshotData);
-        formData.append('user_agent', navigator.userAgent);
-        formData.append('resolution', `${window.screen.width}x${window.screen.height}`);
-        formData.append('url', window.location.href);
-
-        // Укажите ваш URL на Byet.Host
-        const response = await fetch('https://angel-adel.byethost12.com/bug_report.php', {
-          method: 'POST',
-          body: formData
-        });
-
-        const result = await response.text();
-        if (result === 'OK') {
-          statusDiv.innerHTML = '✅ Спасибо! Отправлено.';
-          statusDiv.style.background = '#e0ffe0';
-          setTimeout(() => formContainer.style.display = 'none', 2000);
-        } else {
-          throw new Error(result || 'Server error');
-        }
+        
+        const reportText = `Описание проблемы: ${description}\n\nURL: ${window.location.href}\nБраузер: ${navigator.userAgent}\nРазрешение экрана: ${window.screen.width}x${window.screen.height}\nВремя: ${new Date().toLocaleString()}`;
+        
+        const screenshotLink = document.createElement('a');
+        screenshotLink.download = `screenshot_${Date.now()}.png`;
+        screenshotLink.href = canvas.toDataURL('image/png');
+        screenshotLink.click();
+        
+        const textBlob = new Blob([reportText], {type: 'text/plain'});
+        const textLink = document.createElement('a');
+        textLink.download = `report_${Date.now()}.txt`;
+        textLink.href = URL.createObjectURL(textBlob);
+        textLink.click();
+        
+        statusDiv.innerHTML = '✅ Отчёт готов! Файлы скачаны. Отправьте их на почту: adel.angel2026@gmail.com';
+        statusDiv.style.background = '#e0ffe0';
+        
+        setTimeout(() => {
+          formContainer.style.display = 'none';
+          statusDiv.innerHTML = '';
+        }, 8000);
+        
       } catch (error) {
         console.error(error);
-        statusDiv.innerHTML = '❌ Ошибка отправки. Попробуйте позже.';
+        statusDiv.innerHTML = '❌ Ошибка при создании отчёта. Попробуйте позже.';
         statusDiv.style.background = '#ffe0e0';
       } finally {
         sendBtn.disabled = false;
