@@ -1,5 +1,6 @@
-// bug_widget.js — версия с одним HTML-файлом (работает на телефонах)
+// bug_widget.js — оптимизированная версия для больших страниц и мобильных устройств
 (function() {
+  // ========== СТИЛИ (без изменений) ==========
   const styles = `
     #bug-report-btn {
       position: fixed;
@@ -120,6 +121,7 @@
   styleSheet.textContent = styles;
   document.head.appendChild(styleSheet);
 
+  // ========== СОЗДАНИЕ КНОПКИ И ФОРМЫ ==========
   const btn = document.createElement('div');
   btn.id = 'bug-report-btn';
   btn.title = 'Сообщить о проблеме на сайте';
@@ -139,6 +141,7 @@
   `;
   document.body.appendChild(formContainer);
 
+  // ========== ОСНОВНАЯ ЛОГИКА ==========
   const script = document.createElement('script');
   script.src = 'https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js';
   script.onload = () => {
@@ -165,20 +168,64 @@
         return;
       }
 
-      statusDiv.innerHTML = '<span class="bug-loading"></span> Делаю скриншот...';
+      statusDiv.innerHTML = '<span class="bug-loading"></span> Подготовка к созданию скриншота...';
       statusDiv.style.background = '#e8f0fe';
       sendBtn.disabled = true;
 
       try {
-        // Делаем скриншот
+        // ========== ОПТИМИЗАЦИЯ ==========
+        // Определяем тип устройства
+        const isMobile = /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+        const isBigPage = document.body.scrollHeight > 5000; // очень длинная страница
+        
+        // Динамическое качество
+        let scale = 1.2;
+        if (isMobile) scale = 0.6;
+        if (isBigPage) scale = 0.5;
+        
+        statusDiv.innerHTML = '<span class="bug-loading"></span> Создание скриншота... (это может занять до 15 секунд на больших страницах)';
+        
+        // Скриншот всей страницы (но с оптимизациями)
         const canvas = await html2canvas(document.body, {
-          scale: 1.5,
+          scale: scale,
           logging: false,
-          useCORS: true
+          useCORS: true,
+          allowTaint: false,
+          backgroundColor: '#ffffff',
+          windowWidth: document.documentElement.scrollWidth,
+          windowHeight: document.documentElement.scrollHeight
         });
         
         const screenshotDataURL = canvas.toDataURL('image/png');
         
+        statusDiv.innerHTML = '<span class="bug-loading"></span> Формирую отчёт...';
+        
+        // Формируем текстовый отчёт
+        const reportText = `=== ОТЧЁТ О ПРОБЛЕМЕ ===
+
+ОПИСАНИЕ:
+${description}
+
+--- ТЕХНИЧЕСКИЕ ДАННЫЕ ---
+URL: ${window.location.href}
+Заголовок страницы: ${document.title}
+Браузер: ${navigator.userAgent}
+Разрешение экрана: ${window.screen.width}x${window.screen.height}
+Размер окна браузера: ${window.innerWidth}x${window.innerHeight}
+Язык браузера: ${navigator.language}
+Операционная система: ${navigator.platform}
+Устройство: ${isMobile ? 'Мобильное' : 'Компьютер'}
+Длинная страница: ${isBigPage ? 'Да (>5000px)' : 'Нет'}
+Куки включены: ${navigator.cookieEnabled ? 'Да' : 'Нет'}
+Текущее время: ${new Date().toLocaleString()}
+Часовой пояс: ${Intl.DateTimeFormat().resolvedOptions().timeZone}
+
+--- ИНФОРМАЦИЯ О САЙТЕ ---
+Протокол: ${window.location.protocol}
+Хост: ${window.location.host}
+Путь: ${window.location.pathname}
+`;
+
         // Создаём HTML-страницу с отчётом
         const reportHTML = `<!DOCTYPE html>
 <html>
@@ -201,10 +248,11 @@
         }
         h1 { color: #c0392b; margin-top: 0; }
         h2 { color: #333; font-size: 18px; margin: 20px 0 10px; }
-        .info { background: #f0f0f0; padding: 15px; border-radius: 8px; margin: 15px 0; }
+        .info { background: #f0f0f0; padding: 15px; border-radius: 8px; margin: 15px 0; word-break: break-word; }
         .screenshot { margin: 20px 0; text-align: center; }
         .screenshot img { max-width: 100%; border: 1px solid #ddd; border-radius: 8px; }
         hr { margin: 20px 0; border: none; border-top: 1px solid #eee; }
+        .warning { background: #fff3cd; border-left: 4px solid #ffc107; padding: 10px; margin: 15px 0; }
     </style>
 </head>
 <body>
@@ -223,7 +271,7 @@
             <strong>Размер окна:</strong> ${window.innerWidth}x${window.innerHeight}<br>
             <strong>Язык:</strong> ${navigator.language}<br>
             <strong>ОС:</strong> ${navigator.platform}<br>
-            <strong>Устройство:</strong> ${/Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent) ? 'Мобильное' : 'Компьютер'}<br>
+            <strong>Устройство:</strong> ${isMobile ? 'Мобильное' : 'Компьютер'}<br>
             <strong>Время:</strong> ${new Date().toLocaleString()}<br>
             <strong>Часовой пояс:</strong> ${Intl.DateTimeFormat().resolvedOptions().timeZone}
         </div>
@@ -259,7 +307,7 @@
         
       } catch (error) {
         console.error(error);
-        statusDiv.innerHTML = '❌ Ошибка при создании отчёта. Попробуйте позже.';
+        statusDiv.innerHTML = '❌ Ошибка при создании отчёта. Попробуйте позже или отправьте скриншот вручную.';
         statusDiv.style.background = '#ffe0e0';
       } finally {
         sendBtn.disabled = false;
