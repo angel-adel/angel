@@ -1,4 +1,4 @@
-// bug_widget.js — оптимизированная версия для больших страниц и мобильных устройств
+// bug_widget.js — скриншот только видимой области (оптимизировано для больших страниц)
 (function() {
   // ========== СТИЛИ (без изменений) ==========
   const styles = `
@@ -168,39 +168,34 @@
         return;
       }
 
-      statusDiv.innerHTML = '<span class="bug-loading"></span> Подготовка к созданию скриншота...';
+      statusDiv.innerHTML = '<span class="bug-loading"></span> Подготовка...';
       statusDiv.style.background = '#e8f0fe';
       sendBtn.disabled = true;
 
       try {
-        // ========== ОПТИМИЗАЦИЯ ==========
-        // Определяем тип устройства
+        // Определяем устройство
         const isMobile = /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-        const isBigPage = document.body.scrollHeight > 5000; // очень длинная страница
+        const scale = isMobile ? 0.8 : 1.0;
         
-        // Динамическое качество
-        let scale = 1.2;
-        if (isMobile) scale = 0.6;
-        if (isBigPage) scale = 0.5;
+        statusDiv.innerHTML = '<span class="bug-loading"></span> Делаю скриншот видимой области...';
         
-        statusDiv.innerHTML = '<span class="bug-loading"></span> Создание скриншота... (это может занять до 15 секунд на больших страницах)';
-        
-        // Скриншот всей страницы (но с оптимизациями)
+        // СКРИНШОТ ТОЛЬКО ВИДИМОЙ ОБЛАСТИ (быстро и точно)
         const canvas = await html2canvas(document.body, {
           scale: scale,
           logging: false,
           useCORS: true,
-          allowTaint: false,
-          backgroundColor: '#ffffff',
-          windowWidth: document.documentElement.scrollWidth,
-          windowHeight: document.documentElement.scrollHeight
+          height: window.innerHeight,      // только высота экрана
+          width: window.innerWidth,        // только ширина экрана
+          y: window.scrollY,               // текущая позиция прокрутки
+          x: window.scrollX,
+          backgroundColor: '#ffffff'
         });
         
         const screenshotDataURL = canvas.toDataURL('image/png');
         
         statusDiv.innerHTML = '<span class="bug-loading"></span> Формирую отчёт...';
         
-        // Формируем текстовый отчёт
+        // Текстовый отчёт
         const reportText = `=== ОТЧЁТ О ПРОБЛЕМЕ ===
 
 ОПИСАНИЕ:
@@ -211,22 +206,18 @@ URL: ${window.location.href}
 Заголовок страницы: ${document.title}
 Браузер: ${navigator.userAgent}
 Разрешение экрана: ${window.screen.width}x${window.screen.height}
-Размер окна браузера: ${window.innerWidth}x${window.innerHeight}
+Видимая область: ${window.innerWidth}x${window.innerHeight}
+Позиция прокрутки: ${window.scrollY}px
 Язык браузера: ${navigator.language}
-Операционная система: ${navigator.platform}
 Устройство: ${isMobile ? 'Мобильное' : 'Компьютер'}
-Длинная страница: ${isBigPage ? 'Да (>5000px)' : 'Нет'}
-Куки включены: ${navigator.cookieEnabled ? 'Да' : 'Нет'}
-Текущее время: ${new Date().toLocaleString()}
-Часовой пояс: ${Intl.DateTimeFormat().resolvedOptions().timeZone}
+Время: ${new Date().toLocaleString()}
 
 --- ИНФОРМАЦИЯ О САЙТЕ ---
-Протокол: ${window.location.protocol}
 Хост: ${window.location.host}
 Путь: ${window.location.pathname}
 `;
 
-        // Создаём HTML-страницу с отчётом
+        // HTML-отчёт
         const reportHTML = `<!DOCTYPE html>
 <html>
 <head>
@@ -252,44 +243,43 @@ URL: ${window.location.href}
         .screenshot { margin: 20px 0; text-align: center; }
         .screenshot img { max-width: 100%; border: 1px solid #ddd; border-radius: 8px; }
         hr { margin: 20px 0; border: none; border-top: 1px solid #eee; }
-        .warning { background: #fff3cd; border-left: 4px solid #ffc107; padding: 10px; margin: 15px 0; }
+        .note { background: #e8f0fe; padding: 10px; border-radius: 8px; margin: 15px 0; font-size: 13px; }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>🐞 Отчёт о проблеме</h1>
         
-        <h2>📝 Описание проблемы</h2>
+        <h2>📝 Описание</h2>
         <div class="info">${description.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</div>
         
-        <h2>💻 Техническая информация</h2>
+        <h2>💻 Технические данные</h2>
         <div class="info">
             <strong>URL:</strong> ${window.location.href}<br>
-            <strong>Заголовок страницы:</strong> ${document.title}<br>
+            <strong>Страница:</strong> ${document.title}<br>
             <strong>Браузер:</strong> ${navigator.userAgent}<br>
             <strong>Разрешение экрана:</strong> ${window.screen.width}x${window.screen.height}<br>
-            <strong>Размер окна:</strong> ${window.innerWidth}x${window.innerHeight}<br>
-            <strong>Язык:</strong> ${navigator.language}<br>
-            <strong>ОС:</strong> ${navigator.platform}<br>
+            <strong>Видимая область:</strong> ${window.innerWidth}x${window.innerHeight}<br>
+            <strong>Позиция прокрутки:</strong> ${window.scrollY}px<br>
             <strong>Устройство:</strong> ${isMobile ? 'Мобильное' : 'Компьютер'}<br>
-            <strong>Время:</strong> ${new Date().toLocaleString()}<br>
-            <strong>Часовой пояс:</strong> ${Intl.DateTimeFormat().resolvedOptions().timeZone}
+            <strong>Время:</strong> ${new Date().toLocaleString()}
         </div>
         
-        <h2>📸 Скриншот страницы</h2>
+        <h2>📸 Скриншот (видимая область)</h2>
+        <div class="note">ℹ️ На скриншоте только то, что было видно на экране в момент отправки. Если проблема не попала в кадр — прокрутите страницу к ошибке и отправьте отчёт заново.</div>
         <div class="screenshot">
-            <img src="${screenshotDataURL}" alt="Скриншот страницы">
+            <img src="${screenshotDataURL}" alt="Скриншот видимой области">
         </div>
         
         <hr>
         <p style="color: #666; font-size: 12px; text-align: center;">
-            Отправьте этот файл на почту: <strong>adel.angel2026@gmail.com</strong>
+            📧 Отправьте этот файл на почту: <strong>adel.angel2026@gmail.com</strong>
         </p>
     </div>
 </body>
 </html>`;
         
-        // Скачиваем HTML-файл
+        // Скачиваем
         const blob = new Blob([reportHTML], {type: 'text/html'});
         const link = document.createElement('a');
         link.download = `bug_report_${Date.now()}.html`;
@@ -307,7 +297,7 @@ URL: ${window.location.href}
         
       } catch (error) {
         console.error(error);
-        statusDiv.innerHTML = '❌ Ошибка при создании отчёта. Попробуйте позже или отправьте скриншот вручную.';
+        statusDiv.innerHTML = '❌ Ошибка. Попробуйте позже или отправьте скриншот вручную.';
         statusDiv.style.background = '#ffe0e0';
       } finally {
         sendBtn.disabled = false;
