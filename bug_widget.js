@@ -1,4 +1,4 @@
-// bug_widget.js — версия с ZIP-архивом (работает на телефонах)
+// bug_widget.js — версия с одним HTML-файлом (работает на телефонах)
 (function() {
   const styles = `
     #bug-report-btn {
@@ -139,107 +139,132 @@
   `;
   document.body.appendChild(formContainer);
 
-  // Подключаем JSZip для создания архива
-  const jszipScript = document.createElement('script');
-  jszipScript.src = 'https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js';
-  jszipScript.onload = () => {
-    const html2canvasScript = document.createElement('script');
-    html2canvasScript.src = 'https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js';
-    html2canvasScript.onload = () => {
-      const cancelBtn = document.getElementById('bug-cancel');
-      const sendBtn = document.getElementById('bug-send');
-      const descriptionField = document.getElementById('bug-description');
-      const statusDiv = document.getElementById('bug-status');
+  const script = document.createElement('script');
+  script.src = 'https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js';
+  script.onload = () => {
+    const cancelBtn = document.getElementById('bug-cancel');
+    const sendBtn = document.getElementById('bug-send');
+    const descriptionField = document.getElementById('bug-description');
+    const statusDiv = document.getElementById('bug-status');
 
-      btn.addEventListener('click', () => {
-        formContainer.style.display = 'flex';
-        descriptionField.value = '';
-        statusDiv.innerHTML = '';
-      });
+    btn.addEventListener('click', () => {
+      formContainer.style.display = 'flex';
+      descriptionField.value = '';
+      statusDiv.innerHTML = '';
+    });
 
-      cancelBtn.addEventListener('click', () => {
-        formContainer.style.display = 'none';
-      });
+    cancelBtn.addEventListener('click', () => {
+      formContainer.style.display = 'none';
+    });
 
-      sendBtn.addEventListener('click', async () => {
-        const description = descriptionField.value.trim();
-        if (!description) {
-          statusDiv.innerHTML = '❌ Пожалуйста, опишите проблему.';
-          statusDiv.style.background = '#ffe0e0';
-          return;
+    sendBtn.addEventListener('click', async () => {
+      const description = descriptionField.value.trim();
+      if (!description) {
+        statusDiv.innerHTML = '❌ Пожалуйста, опишите проблему.';
+        statusDiv.style.background = '#ffe0e0';
+        return;
+      }
+
+      statusDiv.innerHTML = '<span class="bug-loading"></span> Делаю скриншот...';
+      statusDiv.style.background = '#e8f0fe';
+      sendBtn.disabled = true;
+
+      try {
+        // Делаем скриншот
+        const canvas = await html2canvas(document.body, {
+          scale: 1.5,
+          logging: false,
+          useCORS: true
+        });
+        
+        const screenshotDataURL = canvas.toDataURL('image/png');
+        
+        // Создаём HTML-страницу с отчётом
+        const reportHTML = `<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Bug Report</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 20px;
+            background: #f5f5f5;
         }
-
-        statusDiv.innerHTML = '<span class="bug-loading"></span> Делаю скриншот...';
-        statusDiv.style.background = '#e8f0fe';
-        sendBtn.disabled = true;
-
-        try {
-          // Делаем скриншот
-          const canvas = await html2canvas(document.body, {
-            scale: 1.5,
-            logging: false,
-            useCORS: true
-          });
-          
-          // Формируем текстовый отчёт
-          const reportText = `=== ОТЧЁТ О ПРОБЛЕМЕ ===
-
-ОПИСАНИЕ:
-${description}
-
---- ТЕХНИЧЕСКИЕ ДАННЫЕ ---
-URL: ${window.location.href}
-Заголовок страницы: ${document.title}
-Браузер: ${navigator.userAgent}
-Разрешение экрана: ${window.screen.width}x${window.screen.height}
-Размер окна браузера: ${window.innerWidth}x${window.innerHeight}
-Язык браузера: ${navigator.language}
-Операционная система: ${navigator.platform}
-Устройство: ${/Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent) ? 'Мобильное' : 'Компьютер'}
-Куки включены: ${navigator.cookieEnabled ? 'Да' : 'Нет'}
-Текущее время: ${new Date().toLocaleString()}
-Часовой пояс: ${Intl.DateTimeFormat().resolvedOptions().timeZone}
-
---- ИНФОРМАЦИЯ О САЙТЕ ---
-Протокол: ${window.location.protocol}
-Хост: ${window.location.host}
-Путь: ${window.location.pathname}
-`;
-
-          // Создаём ZIP-архив
-          const zip = new JSZip();
-          zip.file("report.txt", reportText);
-          
-          // Конвертируем скриншот в Blob и добавляем в ZIP
-          const screenshotBlob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
-          zip.file("screenshot.png", screenshotBlob);
-          
-          // Генерируем ZIP и скачиваем
-          const zipBlob = await zip.generateAsync({ type: "blob" });
-          const zipLink = document.createElement('a');
-          zipLink.download = `bug_report_${Date.now()}.zip`;
-          zipLink.href = URL.createObjectURL(zipBlob);
-          zipLink.click();
-          URL.revokeObjectURL(zipLink.href);
-          
-          statusDiv.innerHTML = '✅ Отчёт готов! Файл .zip скачан. Отправьте его на почту: adel.angel2026@gmail.com';
-          statusDiv.style.background = '#e0ffe0';
-          
-          setTimeout(() => {
-            formContainer.style.display = 'none';
-            statusDiv.innerHTML = '';
-          }, 8000);
-          
-        } catch (error) {
-          console.error(error);
-          statusDiv.innerHTML = '❌ Ошибка при создании отчёта. Попробуйте позже.';
-          statusDiv.style.background = '#ffe0e0';
-        } finally {
-          sendBtn.disabled = false;
+        .container {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
-      });
-    };
-    document.head.appendChild(html2canvasScript);
+        h1 { color: #c0392b; margin-top: 0; }
+        h2 { color: #333; font-size: 18px; margin: 20px 0 10px; }
+        .info { background: #f0f0f0; padding: 15px; border-radius: 8px; margin: 15px 0; }
+        .screenshot { margin: 20px 0; text-align: center; }
+        .screenshot img { max-width: 100%; border: 1px solid #ddd; border-radius: 8px; }
+        hr { margin: 20px 0; border: none; border-top: 1px solid #eee; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🐞 Отчёт о проблеме</h1>
+        
+        <h2>📝 Описание проблемы</h2>
+        <div class="info">${description.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</div>
+        
+        <h2>💻 Техническая информация</h2>
+        <div class="info">
+            <strong>URL:</strong> ${window.location.href}<br>
+            <strong>Заголовок страницы:</strong> ${document.title}<br>
+            <strong>Браузер:</strong> ${navigator.userAgent}<br>
+            <strong>Разрешение экрана:</strong> ${window.screen.width}x${window.screen.height}<br>
+            <strong>Размер окна:</strong> ${window.innerWidth}x${window.innerHeight}<br>
+            <strong>Язык:</strong> ${navigator.language}<br>
+            <strong>ОС:</strong> ${navigator.platform}<br>
+            <strong>Устройство:</strong> ${/Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent) ? 'Мобильное' : 'Компьютер'}<br>
+            <strong>Время:</strong> ${new Date().toLocaleString()}<br>
+            <strong>Часовой пояс:</strong> ${Intl.DateTimeFormat().resolvedOptions().timeZone}
+        </div>
+        
+        <h2>📸 Скриншот страницы</h2>
+        <div class="screenshot">
+            <img src="${screenshotDataURL}" alt="Скриншот страницы">
+        </div>
+        
+        <hr>
+        <p style="color: #666; font-size: 12px; text-align: center;">
+            Отправьте этот файл на почту: <strong>adel.angel2026@gmail.com</strong>
+        </p>
+    </div>
+</body>
+</html>`;
+        
+        // Скачиваем HTML-файл
+        const blob = new Blob([reportHTML], {type: 'text/html'});
+        const link = document.createElement('a');
+        link.download = `bug_report_${Date.now()}.html`;
+        link.href = URL.createObjectURL(blob);
+        link.click();
+        URL.revokeObjectURL(link.href);
+        
+        statusDiv.innerHTML = '✅ Отчёт готов! Файл .html скачан. Отправьте его на почту: adel.angel2026@gmail.com';
+        statusDiv.style.background = '#e0ffe0';
+        
+        setTimeout(() => {
+          formContainer.style.display = 'none';
+          statusDiv.innerHTML = '';
+        }, 8000);
+        
+      } catch (error) {
+        console.error(error);
+        statusDiv.innerHTML = '❌ Ошибка при создании отчёта. Попробуйте позже.';
+        statusDiv.style.background = '#ffe0e0';
+      } finally {
+        sendBtn.disabled = false;
+      }
+    });
   };
-  document.head.appendChild(jszipScript);
+  document.head.appendChild(script);
 })();
