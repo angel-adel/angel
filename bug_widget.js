@@ -194,7 +194,7 @@
         formData.append('url', window.location.href);
 
         // Укажите ваш URL на Byet.Host
-        const response = await fetch('http://angel-adel.byethost12.com/bug_report.php', {
+        const response = await fetch('https://angel-adel.byethost12.com/bug_report.php', {
           method: 'POST',
           body: formData
         });
