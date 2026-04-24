@@ -1,1 +1,250 @@
+/* ========================================
+   ЕДИНЫЙ СТИЛЬ ДЛЯ САЙТА Ádel / Крылатая
+   ======================================== */
 
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+    line-height: 1.6;
+    padding: 2rem 1rem;
+    transition: all 0.2s;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* ===== РАЗДЕЛ: ÁDEL (главная страница) ===== */
+body.page-adel {
+    background-color: #0a0a0a;
+    color: rgba(255, 255, 255, 0.85);
+}
+
+body.page-adel header {
+    border-bottom-color: rgba(255, 255, 255, 0.1);
+}
+
+body.page-adel h1 {
+    color: white;
+}
+
+body.page-adel .subhead {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+body.page-adel .feature {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+body.page-adel .feature:hover {
+    background: rgba(255, 255, 255, 0.06);
+}
+
+body.page-adel .feature h3 {
+    color: white;
+}
+
+body.page-adel .review-card {
+    background: rgba(255, 255, 255, 0.03);
+    border-left-color: rgba(255, 255, 255, 0.5);
+}
+
+body.page-adel footer {
+    border-top-color: rgba(255, 255, 255, 0.1);
+    color: rgba(255, 255, 255, 0.6);
+}
+
+/* ===== РАЗДЕЛ: БЛОГ КРЫЛАТОЙ (дневник) ===== */
+body.page-blog {
+    background-color: #e8e2f5;   /* светло-фиолетовый */
+    color: #1a1a1a;               /* чёрный текст по умолчанию */
+}
+
+body.page-blog header {
+    border-bottom: 2px solid #b59eff;
+}
+
+body.page-blog h1 {
+    color: #6a4e9b;
+}
+
+body.page-blog .subhead {
+    color: #8b6fc6;
+}
+
+body.page-blog .diary-entry {
+    background: white;
+    border: 2px solid #b59eff;
+    border-radius: 1.5rem;
+    padding: 1.8rem;
+    margin-bottom: 2rem;
+}
+
+body.page-blog .entry-date {
+    color: #8b6fc6;
+    font-size: 0.85rem;
+    margin-bottom: 0.5rem;
+}
+
+body.page-blog .diary-entry h2 {
+    color: #6a4e9b;
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+}
+
+body.page-blog .diary-entry p {
+    color: #1a1a1a;
+    margin-bottom: 1rem;
+}
+
+body.page-blog .entry-footer {
+    color: #8b6fc6;
+    border-top: 1px dashed #d9cfff;
+    text-align: right;
+    padding-top: 0.75rem;
+    margin-top: 1rem;
+}
+
+body.page-blog .author-photo img {
+    border: 3px solid #b59eff;
+    border-radius: 50%;
+    max-width: 200px;
+}
+
+body.page-blog footer {
+    border-top: 2px solid #b59eff;
+    color: #8b6fc6;
+}
+
+/* ===== ОБЩИЕ СТИЛИ (работают везде) ===== */
+header {
+    text-align: center;
+    margin-bottom: 2rem;
+    padding-bottom: 1.5rem;
+}
+
+h1 {
+    font-size: 2.5rem;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+}
+
+.subhead {
+    font-size: 1.1rem;
+    margin-top: 0.3rem;
+}
+
+/* Навигация (меню) */
+.nav {
+    margin-top: 1rem;
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    flex-wrap: wrap;
+}
+
+.nav a {
+    text-decoration: none;
+    font-weight: 500;
+    transition: 0.2s;
+    padding: 0.3rem 0.6rem;
+    border-radius: 2rem;
+}
+
+body.page-adel .nav a {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+body.page-adel .nav a:hover {
+    color: white;
+    background: rgba(255, 255, 255, 0.1);
+}
+
+body.page-blog .nav a {
+    color: #6a4e9b;
+}
+
+body.page-blog .nav a:hover {
+    color: #b59eff;
+    background: rgba(106, 78, 155, 0.1);
+}
+
+/* Сетка фичей (для Ádel) */
+.features {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1.5rem;
+    margin: 3rem 0;
+}
+
+.feature {
+    border-radius: 1rem;
+    padding: 1.5rem;
+    transition: 0.2s;
+}
+
+.feature h3 {
+    font-size: 1.3rem;
+    margin-bottom: 0.75rem;
+}
+
+.feature p {
+    font-size: 0.95rem;
+    opacity: 0.85;
+}
+
+/* Отзывы (для Ádel) */
+.reviews h2 {
+    text-align: center;
+    font-size: 1.8rem;
+    margin-bottom: 1.5rem;
+}
+
+.review-card {
+    border-radius: 1rem;
+    padding: 1.8rem;
+    border-left: 4px solid;
+}
+
+.review-author {
+    margin-top: 0.8rem;
+    font-size: 0.9rem;
+    opacity: 0.7;
+}
+
+/* Фото автора (для блога) */
+.author-photo {
+    text-align: center;
+    margin: 2rem 0;
+}
+
+/* Футер */
+footer {
+    text-align: center;
+    padding-top: 2rem;
+    margin-top: 3rem;
+    font-size: 0.85rem;
+}
+
+/* Адаптивность */
+@media (max-width: 700px) {
+    body {
+        padding: 1rem;
+    }
+    h1 {
+        font-size: 1.8rem;
+    }
+    .features {
+        grid-template-columns: 1fr;
+    }
+    .nav {
+        gap: 1rem;
+    }
+}
