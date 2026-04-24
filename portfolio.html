@@ -232,6 +232,12 @@
 
     loadPoems();
 </script>
-    <script src="bug_widget.js"></script>
+    <script>
+    setTimeout(function() {
+        var script = document.createElement('script');
+        script.src = 'bug_widget.js';
+        document.body.appendChild(script);
+    }, 500);
+    </script>
 </body>
 </html>
