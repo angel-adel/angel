@@ -12,7 +12,46 @@ body {
     line-height: 1.7;
     min-height: 100vh;
 }
+.diary-entry {
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 1.5rem;
+    padding: 1.8rem;
+    margin-bottom: 2rem;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    transition: 0.2s;
+}
 
+.diary-entry:hover {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.12);
+}
+
+.entry-date {
+    font-size: 0.8rem;
+    opacity: 0.6;
+    margin-bottom: 0.8rem;
+    letter-spacing: 0.5px;
+}
+
+.diary-entry h2 {
+    color: white;
+    font-size: 1.5rem;
+    font-weight: 500;
+    margin-bottom: 1rem;
+}
+
+.diary-entry p {
+    margin-bottom: 1rem;
+    line-height: 1.65;
+    color: rgba(255, 255, 255, 0.85);
+}
+
+.entry-footer {
+    margin-top: 1rem;
+    font-size: 0.85rem;
+    opacity: 0.5;
+    text-align: right;
+}
 .container {
     max-width: 1200px;
     margin: 0 auto;
