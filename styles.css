@@ -1,300 +1,194 @@
-/* ===== МЯГКИЙ СТИЛЬ ДЛЯ ÁDEL ===== */
+/* ========================================
+   БЛОГ КРЫЛАТОЙ — ПОЛНАЯ ПАЛИТРА
+   Светло-фиолетовый фон, чёрный текст в карточках
+   ======================================== */
+
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
 
+/* 1. ФОН САЙТА — светло-фиолетовый */
 body {
-    font-family: 'Georgia', 'Times New Roman', 'Segoe UI', serif;
-    background: linear-gradient(135deg, #e6f0fa 0%, #f0e6f5 100%);
-    color: #2d3748;
-    line-height: 1.7;
-    min-height: 100vh;
+    background-color: #e8e2f5;  /* нежный светло-фиолетовый */
+    font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+    line-height: 1.6;
+    padding: 2rem 1rem;
+    color: #1a1a1a;
 }
+
+.container {
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+/* ===== ШАПКА ===== */
+header {
+    text-align: center;
+    margin-bottom: 2.5rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 2px solid #b59eff;
+}
+
+h1 {
+    font-size: 2.5rem;
+    color: #6a4e9b;  /* фиолетовый для заголовка */
+    font-weight: 600;
+    letter-spacing: -0.5px;
+}
+
+.subhead {
+    font-size: 1.1rem;
+    color: #8b6fc6;  /* светлый фиолет */
+    margin-top: 0.5rem;
+}
+
+/* ===== БЛОК АВТОРА (ФИОЛЕТОВАЯ РАМКА) ===== */
+.author-photo {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.author-photo img {
+    border-radius: 50%;
+    border: 4px solid #b59eff;
+    box-shadow: 0 8px 20px rgba(106, 78, 155, 0.2);
+}
+
+/* ===== КАРТОЧКИ ЗАПИСЕЙ (белый фон, фиолетовая рамка) ===== */
 .diary-entry {
-    background: rgba(255, 255, 255, 0.03);
+    background: #ffffff;           /* белый фон внутри */
     border-radius: 1.5rem;
     padding: 1.8rem;
     margin-bottom: 2rem;
-    border: 1px solid rgba(255, 255, 255, 0.06);
-    transition: 0.2s;
+    border: 2px solid #b59eff;     /* фиолетовая рамка */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    transition: transform 0.2s, box-shadow 0.2s;
 }
 
 .diary-entry:hover {
-    background: rgba(255, 255, 255, 0.05);
-    border-color: rgba(255, 255, 255, 0.12);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(106, 78, 155, 0.15);
 }
 
+/* Дата записи — фиолетовая */
 .entry-date {
-    font-size: 0.8rem;
-    opacity: 0.6;
-    margin-bottom: 0.8rem;
-    letter-spacing: 0.5px;
+    font-size: 0.85rem;
+    color: #8b6fc6;               /* фиолетовая */
+    margin-bottom: 0.75rem;
+    font-weight: 500;
+    letter-spacing: 0.3px;
 }
 
+/* Заголовки внутри карточек — фиолетовые */
 .diary-entry h2 {
-    color: white;
+    color: #6a4e9b;               /* фиолетовый для заголовков */
     font-size: 1.5rem;
-    font-weight: 500;
+    font-weight: 600;
     margin-bottom: 1rem;
 }
 
+/* Текст записей — ЧЁРНЫЙ */
 .diary-entry p {
+    color: #1a1a1a;               /* чёрный */
     margin-bottom: 1rem;
     line-height: 1.65;
-    color: rgba(255, 255, 255, 0.85);
+    font-size: 1rem;
 }
 
+/* Подпись Крылатая — фиолетовая, курсив */
 .entry-footer {
-    margin-top: 1rem;
-    font-size: 0.85rem;
-    opacity: 0.5;
+    margin-top: 1.2rem;
+    padding-top: 0.75rem;
     text-align: right;
-}
-.container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 40px 20px;
-}
-
-/* ШАПКА */
-header {
-    background: rgba(255, 255, 255, 0.92);
-    backdrop-filter: blur(8px);
-    box-shadow: 0 2px 15px rgba(0, 0, 0, 0.05);
-    position: sticky;
-    top: 0;
-    z-index: 1000;
+    font-size: 0.9rem;
+    color: #8b6fc6;               /* фиолетовая */
+    border-top: 1px dashed #d9cfff;
+    font-style: italic;
 }
 
-.header-content {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 12px 20px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap;
-}
-
-.logo {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    text-decoration: none;
-    font-size: 1.6em;
-    font-weight: bold;
-    color: #8b6b9d;
-}
-
-.logo-icon {
-    height: 42px;
-    width: auto;
-}
-
-nav ul {
-    list-style: none;
-    display: flex;
-    gap: 12px;
-    flex-wrap: wrap;
-}
-
-nav a {
-    text-decoration: none;
-    color: #4a5568;
-    font-weight: 500;
-    padding: 8px 18px;
-    border-radius: 30px;
-    transition: all 0.3s ease;
-    font-size: 0.95em;
-}
-
-nav a:hover {
-    background: #d9c7e8;
-    color: #5a4a6e;
-}
-
-.mobile-menu-toggle {
-    display: none;
-    background: none;
-    border: none;
-    font-size: 28px;
-    cursor: pointer;
-    color: #8b6b9d;
-}
-
-@media (max-width: 768px) {
-    .mobile-menu-toggle {
-        display: block;
-    }
-    nav {
-        display: none;
-        width: 100%;
-    }
-    nav.open {
-        display: block;
-    }
-    nav ul {
-        flex-direction: column;
-        align-items: center;
-        padding: 20px 0;
-    }
-}
-
-/* ГЛАВНЫЙ ЭКРАН */
-.hero {
-    text-align: center;
-    padding: 70px 20px;
-    background: rgba(255, 255, 255, 0.5);
-    margin: 30px 20px;
-    border-radius: 40px;
-}
-
-.hero h1 {
-    font-size: 2.8em;
-    color: #7a6b8a;
-    margin-bottom: 15px;
-}
-
-.hero p {
-    font-size: 1.3em;
-    color: #6b7b8f;
-}
-
-/* КАРТОЧКИ */
-.features {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 25px;
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 20px;
-}
-
-.feature-card, .poem-card, .review-card, .about-card, .form-card, .contact-card {
-    background: rgba(255, 255, 255, 0.85);
-    backdrop-filter: blur(2px);
-    border-radius: 28px;
-    padding: 28px;
-    transition: all 0.3s ease;
-    border: 1px solid rgba(255, 255, 255, 0.6);
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
-}
-
-.feature-card:hover, .poem-card:hover, .contact-card:hover {
-    transform: translateY(-5px);
-    background: rgba(255, 255, 255, 0.95);
-}
-
-.feature-card h3, .poem-card h3, .about-card h2 {
-    color: #9b7bb5;
-    margin-bottom: 18px;
-}
-
-/* КНОПКИ */
-.btn, .cta-buttons .btn, .action-btn, .filter-btn {
+/* ===== КНОПКИ И ССЫЛКИ (ФИОЛЕТОВЫЕ) ===== */
+.read-more, 
+.button,
+a.read-more {
     display: inline-block;
-    padding: 10px 24px;
-    background: #e2d4ed;
-    color: #6b5a7e;
+    margin-top: 0.5rem;
+    color: #6a4e9b;               /* фиолетовая */
     text-decoration: none;
-    border-radius: 40px;
-    font-weight: 500;
-    transition: all 0.3s ease;
-    border: none;
-    cursor: pointer;
+    font-weight: 600;
+    transition: 0.2s;
 }
 
-.btn:hover, .cta-buttons .btn:hover, .action-btn:hover {
-    background: #d1bfe2;
-    transform: translateY(-2px);
+.read-more:hover,
+.button:hover {
+    color: #b59eff;
+    transform: translateX(4px);
 }
 
-.cta-buttons {
+/* Навигационные ссылки */
+.nav-links {
     text-align: center;
-    padding: 30px 20px;
-    display: flex;
-    gap: 15px;
-    justify-content: center;
-    flex-wrap: wrap;
+    margin: 2rem 0;
 }
 
-/* ПОДВАЛ */
+.nav-links a {
+    color: #6a4e9b;
+    text-decoration: none;
+    margin: 0 1rem;
+    font-weight: 500;
+    border-bottom: 1px dotted #b59eff;
+}
+
+.nav-links a:hover {
+    color: #b59eff;
+    border-bottom-color: #6a4e9b;
+}
+
+/* ===== БЛОК "ОБО МНЕ" / ABOUT CARD ===== */
+.about-card {
+    background: #ffffff;
+    border-radius: 1.5rem;
+    padding: 1.8rem;
+    margin: 2rem 0;
+    border: 2px solid #b59eff;
+}
+
+.about-card p {
+    color: #1a1a1a;
+    margin-bottom: 1rem;
+}
+
+/* ===== ФУТЕР ===== */
 footer {
     text-align: center;
-    padding: 30px;
-    background: rgba(255, 255, 255, 0.7);
-    color: #8b6b9d;
-    margin-top: 50px;
+    padding-top: 2rem;
+    margin-top: 2rem;
+    border-top: 2px solid #b59eff;
+    font-size: 0.85rem;
+    color: #8b6fc6;
 }
 
-/* АДАПТАЦИЯ */
-@media (max-width: 768px) {
-    .hero h1 { font-size: 2em; }
-    .features { grid-template-columns: 1fr; }
+footer a {
+    color: #6a4e9b;
+    text-decoration: none;
 }
 
-/* Увеличенные поля для форм на телефонах */
-.form-group input,
-.form-group select,
-.form-group textarea {
-    font-size: 16px;  /* Чтобы на телефоне не срабатывало автоматическое масштабирование */
-    padding: 14px 18px;
-    border-radius: 16px;
-}
-
-/* Кнопки в формах — покрупнее */
-.form-card .btn,
-#guestbookForm .btn,
-#orderForm .btn {
-    padding: 14px 28px;
-    font-size: 1.1em;
-    width: 100%;
-}
-
-/* Карточки форм — больше отступов на телефоне */
-@media (max-width: 768px) {
-    .form-card, .card {
-        padding: 25px 20px;
+/* ===== АДАПТАЦИЯ ПОД ТЕЛЕФОНЫ ===== */
+@media (max-width: 700px) {
+    body {
+        padding: 1rem;
     }
     
-    .form-group label {
-        font-size: 1em;
-        margin-bottom: 8px;
+    h1 {
+        font-size: 1.8rem;
     }
     
-    .form-group input,
-    .form-group select,
-    .form-group textarea {
-        padding: 14px 16px;
-    }
-}
-
-/* ===== УЛУЧШЕНИЯ ДЛЯ ФОРМ ===== */
-.form-group input,
-.form-group select,
-.form-group textarea {
-    font-size: 16px !important;
-    padding: 14px 18px !important;
-    border-radius: 16px !important;
-}
-
-.form-card .btn,
-#guestbookForm .btn,
-#orderForm .btn {
-    padding: 14px 28px !important;
-    font-size: 1.1em !important;
-    width: 100% !important;
-}
-
-@media (max-width: 768px) {
-    .form-card, .card {
-        padding: 25px 20px !important;
+    .diary-entry {
+        padding: 1.2rem;
     }
     
-    .form-group label {
-        font-size: 1em !important;
-        margin-bottom: 8px !important;
+    .diary-entry h2 {
+        font-size: 1.3rem;
     }
 }
