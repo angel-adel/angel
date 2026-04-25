@@ -1,7 +1,4 @@
-/* ========================================
-   ЕДИНЫЙ СТИЛЬ ДЛЯ САЙТА Ádel / Крылатая
-   ======================================== */
-
+/* ========== ОБЩИЕ НАСТРОЙКИ ========== */
 * {
     margin: 0;
     padding: 0;
@@ -9,242 +6,250 @@
 }
 
 body {
-    font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
-    line-height: 1.6;
-    padding: 2rem 1rem;
-    transition: all 0.2s;
+    background: linear-gradient(135deg, #e8e0f5 0%, #d4c5f0 100%);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    min-height: 100vh;
+    padding: 20px;
 }
 
+/* Контейнер для основного контента */
 .container {
     max-width: 1200px;
     margin: 0 auto;
+    padding: 20px;
 }
 
-/* ===== РАЗДЕЛ: ÁDEL (главная страница) ===== */
-body.page-adel {
-    background-color: #0a0a0a;
-    color: rgba(255, 255, 255, 0.85);
-}
-
-body.page-adel header {
-    border-bottom-color: rgba(255, 255, 255, 0.1);
-}
-
-body.page-adel h1 {
-    color: white;
-}
-
-body.page-adel .subhead {
-    color: rgba(255, 255, 255, 0.7);
-}
-
-body.page-adel .feature {
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(255, 255, 255, 0.05);
-}
-
-body.page-adel .feature:hover {
-    background: rgba(255, 255, 255, 0.06);
-}
-
-body.page-adel .feature h3 {
-    color: white;
-}
-
-body.page-adel .review-card {
-    background: rgba(255, 255, 255, 0.03);
-    border-left-color: rgba(255, 255, 255, 0.5);
-}
-
-body.page-adel footer {
-    border-top-color: rgba(255, 255, 255, 0.1);
-    color: rgba(255, 255, 255, 0.6);
-}
-
-/* ===== РАЗДЕЛ: БЛОГ КРЫЛАТОЙ (дневник) ===== */
-body.page-blog {
-    background-color: #e8e2f5;   /* светло-фиолетовый */
-    color: #1a1a1a;               /* чёрный текст по умолчанию */
-}
-
-body.page-blog header {
-    border-bottom: 2px solid #b59eff;
-}
-
-body.page-blog h1 {
-    color: #6a4e9b;
-}
-
-body.page-blog .subhead {
-    color: #8b6fc6;
-}
-
-body.page-blog .diary-entry {
-    background: white;
-    border: 2px solid #b59eff;
-    border-radius: 1.5rem;
-    padding: 1.8rem;
-    margin-bottom: 2rem;
-}
-
-body.page-blog .entry-date {
-    color: #8b6fc6;
-    font-size: 0.85rem;
-    margin-bottom: 0.5rem;
-}
-
-body.page-blog .diary-entry h2 {
-    color: #6a4e9b;
-    font-size: 1.5rem;
-    margin-bottom: 1rem;
-}
-
-body.page-blog .diary-entry p {
-    color: #1a1a1a;
-    margin-bottom: 1rem;
-}
-
-body.page-blog .entry-footer {
-    color: #8b6fc6;
-    border-top: 1px dashed #d9cfff;
-    text-align: right;
-    padding-top: 0.75rem;
-    margin-top: 1rem;
-}
-
-body.page-blog .author-photo img {
-    border: 3px solid #b59eff;
-    border-radius: 50%;
-    max-width: 200px;
-}
-
-body.page-blog footer {
-    border-top: 2px solid #b59eff;
-    color: #8b6fc6;
-}
-
-/* ===== ОБЩИЕ СТИЛИ (работают везде) ===== */
+/* ========== ШАПКА И НАВИГАЦИЯ ========== */
 header {
+    background: linear-gradient(135deg, #7c3aed 0%, #a855f7 100%);
+    border-radius: 20px;
+    padding: 20px;
+    margin-bottom: 30px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+}
+
+header h1 {
+    color: white;
     text-align: center;
-    margin-bottom: 2rem;
-    padding-bottom: 1.5rem;
-}
-
-h1 {
     font-size: 2.5rem;
-    font-weight: 600;
-    letter-spacing: -0.02em;
+    margin-bottom: 20px;
 }
 
-.subhead {
-    font-size: 1.1rem;
-    margin-top: 0.3rem;
-}
-
-/* Навигация (меню) */
-.nav {
-    margin-top: 1rem;
+/* Десктопное меню */
+.nav-menu {
     display: flex;
     justify-content: center;
-    gap: 2rem;
     flex-wrap: wrap;
+    gap: 15px;
+    list-style: none;
 }
 
-.nav a {
-    text-decoration: none;
-    font-weight: 500;
-    transition: 0.2s;
-    padding: 0.3rem 0.6rem;
-    border-radius: 2rem;
+.nav-menu li {
+    display: inline-block;
 }
 
-body.page-adel .nav a {
-    color: rgba(255, 255, 255, 0.7);
-}
-
-body.page-adel .nav a:hover {
+.nav-menu a {
     color: white;
-    background: rgba(255, 255, 255, 0.1);
+    text-decoration: none;
+    padding: 10px 20px;
+    background: rgba(255,255,255,0.2);
+    border-radius: 30px;
+    transition: all 0.3s ease;
+    font-weight: 500;
 }
 
-body.page-blog .nav a {
-    color: #6a4e9b;
+.nav-menu a:hover {
+    background: rgba(255,255,255,0.4);
+    transform: translateY(-2px);
 }
 
-body.page-blog .nav a:hover {
-    color: #b59eff;
-    background: rgba(106, 78, 155, 0.1);
-}
-
-/* Сетка фичей (для Ádel) */
-.features {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-    gap: 1.5rem;
-    margin: 3rem 0;
-}
-
-.feature {
-    border-radius: 1rem;
-    padding: 1.5rem;
-    transition: 0.2s;
-}
-
-.feature h3 {
-    font-size: 1.3rem;
-    margin-bottom: 0.75rem;
-}
-
-.feature p {
-    font-size: 0.95rem;
-    opacity: 0.85;
-}
-
-/* Отзывы (для Ádel) */
-.reviews h2 {
+/* Бургер-кнопка (скрыта на десктопе) */
+.burger {
+    display: none;
+    background: rgba(255,255,255,0.2);
+    color: white;
+    padding: 12px;
     text-align: center;
-    font-size: 1.8rem;
-    margin-bottom: 1.5rem;
+    border-radius: 30px;
+    cursor: pointer;
+    font-size: 1.2rem;
+    margin-bottom: 15px;
 }
 
-.review-card {
-    border-radius: 1rem;
-    padding: 1.8rem;
-    border-left: 4px solid;
+/* ========== КАРТОЧКИ (БЛОКИ С ТЕКСТОМ) ========== */
+.card, .post, .work-item, .blog-post, .review-item {
+    background: white;
+    border: 2px solid #a855f7;
+    border-radius: 20px;
+    padding: 25px;
+    margin-bottom: 25px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+    transition: transform 0.2s ease;
 }
 
-.review-author {
-    margin-top: 0.8rem;
-    font-size: 0.9rem;
-    opacity: 0.7;
+.card:hover, .post:hover {
+    transform: translateY(-3px);
 }
 
-/* Фото автора (для блога) */
-.author-photo {
-    text-align: center;
-    margin: 2rem 0;
+/* ========== ЗАГОЛОВКИ ========== */
+h1, h2, h3, .title {
+    color: #7c3aed;
+    font-weight: bold;
+    margin-bottom: 15px;
 }
 
-/* Футер */
-footer {
-    text-align: center;
-    padding-top: 2rem;
-    margin-top: 3rem;
+/* Заголовки произведений и статей — фиолетовый курсив */
+.work-title, .post-title, .blog-title, .poem-title {
+    color: #7c3aed;
+    font-style: italic;
+    font-weight: bold;
+    font-size: 1.6rem;
+    margin-bottom: 10px;
+}
+
+/* ========== ТЕКСТЫ ========== */
+p, .text, .content, .description {
+    color: #1a1a1a;
+    line-height: 1.6;
+    margin-bottom: 15px;
+}
+
+/* Подпись автора — фиолетовый курсив */
+.author, .reviewer, .signature, .byline {
+    color: #a855f7;
+    font-style: italic;
+    font-weight: 500;
+    margin-top: 10px;
+    text-align: right;
+}
+
+/* ========== ФОРМЫ (ЗАКАЗЫ, ГОСТЕВАЯ КНИГА) ========== */
+.form-group {
+    margin-bottom: 20px;
+}
+
+label {
+    display: block;
+    color: #7c3aed;
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+
+input, textarea, select {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid #d4c5f0;
+    border-radius: 12px;
+    font-size: 1rem;
+    transition: border 0.3s ease;
+}
+
+input:focus, textarea:focus, select:focus {
+    outline: none;
+    border-color: #a855f7;
+}
+
+button, .button, input[type="submit"] {
+    background: linear-gradient(135deg, #7c3aed 0%, #a855f7 100%);
+    color: white;
+    border: none;
+    padding: 12px 25px;
+    border-radius: 30px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: opacity 0.3s ease;
+}
+
+button:hover, .button:hover {
+    opacity: 0.9;
+}
+
+/* ========== ГОСТЕВАЯ КНИГА (СПЕЦИАЛЬНО) ========== */
+.guestbook-entry {
+    background: white;
+    border: 2px solid #a855f7;
+    border-radius: 15px;
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.guestbook-entry .name {
+    color: #7c3aed;
+    font-weight: bold;
+    font-size: 1.2rem;
+    margin-bottom: 8px;
+}
+
+.guestbook-entry .date {
+    color: #a855f7;
+    font-style: italic;
     font-size: 0.85rem;
+    margin-bottom: 12px;
 }
 
-/* Адаптивность */
-@media (max-width: 700px) {
+.guestbook-entry .message {
+    color: #1a1a1a;
+    line-height: 1.5;
+}
+
+/* ========== КОНТАКТЫ ========== */
+.contact-info {
+    background: white;
+    border: 2px solid #a855f7;
+    border-radius: 20px;
+    padding: 25px;
+}
+
+.contact-info p {
+    margin-bottom: 12px;
+}
+
+/* ========== АДАПТАЦИЯ (МОБИЛЬНЫЕ УСТРОЙСТВА) ========== */
+@media (max-width: 768px) {
     body {
-        padding: 1rem;
+        padding: 10px;
     }
-    h1 {
+    
+    .container {
+        padding: 10px;
+    }
+    
+    /* Показываем бургер, скрываем меню */
+    .burger {
+        display: block;
+    }
+    
+    .nav-menu {
+        display: none;
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .nav-menu.show {
+        display: flex;
+    }
+    
+    .nav-menu a {
+        text-align: center;
+    }
+    
+    /* Уменьшаем отступы в карточках */
+    .card, .post {
+        padding: 15px;
+    }
+    
+    /* Заголовки поменьше */
+    .work-title {
+        font-size: 1.3rem;
+    }
+    
+    header h1 {
         font-size: 1.8rem;
     }
-    .features {
-        grid-template-columns: 1fr;
-    }
-    .nav {
-        gap: 1rem;
-    }
+}
+
+/* ========== КНОПКА АКТИВНОГО МЕНЮ ========== */
+.active {
+    background: rgba(255,255,255,0.4);
+    font-weight: bold;
 }
