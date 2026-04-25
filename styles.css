@@ -253,3 +253,124 @@ button:hover, .button:hover {
     background: rgba(255,255,255,0.4);
     font-weight: bold;
 }
+/* ========== 1. ПРЕВРАЩАЕМ БЛОКИ В КАРТОЧКИ ========== */
+/* Каждый смысловой блок на главной — в белую карточку с рамкой */
+body main section,
+body main div:not(.menu):not(.burger-menu):not(.no-card),
+.page-content section,
+.page-content div:not(.menu) {
+    background: white;
+    border: 2px solid #a855f7;
+    border-radius: 20px;
+    padding: 25px;
+    margin-bottom: 30px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+}
+
+/* ========== 2. ЦВЕТА ЗАГОЛОВКОВ И ТЕКСТА ========== */
+/* Заголовки — фиолетовый жирный */
+body main h2,
+body main h3,
+.page-content h2,
+.page-content h3 {
+    color: #7c3aed;
+    font-weight: bold;
+    margin-top: 0;
+}
+
+/* Обычный текст — чёрный */
+body main p,
+.page-content p {
+    color: #1a1a1a;
+    line-height: 1.6;
+}
+
+/* Подписи/авторы — фиолетовый курсив */
+body main small,
+.page-content small,
+.quote-author {
+    color: #a855f7;
+    font-style: italic;
+    display: block;
+    margin-top: 10px;
+}
+
+/* ========== 3. ИСПРАВЛЯЕМ БУРГЕР-МЕНЮ ========== */
+/* Ваш HTML использует id="menuToggle" и тег <nav> */
+
+#menuToggle {
+    display: none;  /* Скрыт на десктопе */
+    font-size: 30px;
+    cursor: pointer;
+    background: #7c3aed;
+    color: white;
+    width: 50px;
+    height: 50px;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
+}
+
+nav {
+    display: flex;
+    gap: 15px;
+    background: #7c3aed;
+    padding: 15px 25px;
+    border-radius: 50px;
+    margin-bottom: 30px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+nav a {
+    color: white;
+    text-decoration: none;
+    padding: 8px 16px;
+    border-radius: 30px;
+    transition: background 0.3s;
+}
+
+nav a:hover {
+    background: rgba(255,255,255,0.2);
+}
+
+/* Мобильная версия */
+@media (max-width: 768px) {
+    #menuToggle {
+        display: flex;  /* Показываем бургер */
+    }
+    
+    nav {
+        display: none;  /* Скрываем меню */
+        flex-direction: column;
+        position: fixed;
+        top: 80px;
+        right: 20px;
+        background: #7c3aed;
+        border-radius: 15px;
+        padding: 15px;
+        width: 200px;
+        z-index: 999;
+    }
+    
+    nav.open {
+        display: flex;  /* Показываем при клике */
+    }
+    
+    /* Уменьшаем отступы на мобилках */
+    body main section {
+        padding: 15px;
+    }
+}
+
+/* ========== 4. БАЗОВЫЙ ГРАДИЕНТ ДЛЯ ФОНА ========== */
+body {
+    background: linear-gradient(135deg, #e8e0f5 0%, #d4c5f0 100%);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    padding: 20px;
+    min-height: 100vh;
+}
