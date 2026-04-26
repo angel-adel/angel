@@ -252,7 +252,7 @@ h2 {
 button, .button {
     background: var(--accent);
     color: white;
-    border: none;
+    border: yes;
     padding: 10px 20px;
     border-radius: 30px;
     cursor: pointer;
