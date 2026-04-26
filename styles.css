@@ -1,1 +1,331 @@
+/* ===== ОСНОВНЫЕ ПЕРЕМЕННЫЕ (фиолетовая гамма) ===== */
+:root {
+    --bg-main: #1a1a2e;        /* тёмный фон страницы */
+    --bg-block: #16213e;       /* фон блоков */
+    --accent: #9b59b6;         /* основной фиолетовый */
+    --accent-light: #af7ac5;   /* светлый фиолетовый для градиентов/эффектов */
+    --accent-dark: #8e44ad;    /* тёмный фиолетовый для наведения */
+    --text-light: #f0f0f0;     /* светлый текст */
+    --text-muted: #d0d0d0;     /* приглушённый текст */
+    --border: rgba(155, 89, 182, 0.3);
+    --shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
 
+/* ===== ГЛОБАЛЬНЫЕ СТИЛИ ===== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: var(--bg-main);
+    background-image: radial-gradient(circle at 10% 20%, rgba(155, 89, 182, 0.05) 0%, transparent 50%);
+    color: var(--text-light);
+    line-height: 1.6;
+    min-height: 100vh;
+}
+
+/* ===== КОНТЕЙНЕР ===== */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+/* ===== КАЖДЫЙ ТЕКСТОВЫЙ БЛОК (требование 1) ===== */
+.block {
+    background: var(--bg-block);
+    border-radius: 20px;
+    padding: 25px;
+    margin-bottom: 30px;
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.block:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+}
+
+/* Специфичные блоки (если есть разные классы, можно объединить) */
+.about, .stats, .reviews, .contact, .hero, .poetry-block {
+    composes: block; /* если используете CSS модули, иначе продублируйте */
+}
+
+/* Универсально для всех секций, обёрнутых в div с текстом */
+section, .section, .card, .review-card, .stat-item {
+    background: var(--bg-block);
+    border-radius: 20px;
+    padding: 25px;
+    margin-bottom: 30px;
+    border: 1px solid var(--border);
+}
+
+/* ===== ЗАГОЛОВКИ И ПОДПИСИ (требование 2) ===== */
+h1, h2, h3, h4, .subtitle, .poem-title, .stat-label, 
+legend, label, .nav-links a, .burger div {
+    color: var(--accent);
+    font-weight: bold;
+    font-style: italic;
+    letter-spacing: 0.5px;
+}
+
+h1 {
+    font-size: 2.5rem;
+    text-align: center;
+    margin: 20px 0 10px;
+    text-shadow: 0 2px 5px rgba(155, 89, 182, 0.3);
+}
+
+h2 {
+    font-size: 1.8rem;
+    margin-bottom: 20px;
+    border-left: 5px solid var(--accent);
+    padding-left: 15px;
+}
+
+h3 {
+    font-size: 1.4rem;
+    margin: 15px 0 10px;
+}
+
+/* ===== ТЕКСТ В БЛОКАХ ===== */
+p, li, .review-text, .poem-line {
+    color: var(--text-light);
+    margin-bottom: 12px;
+}
+
+/* ===== ССЫЛКИ И КНОПКИ ===== */
+a {
+    color: var(--accent-light);
+    text-decoration: none;
+    transition: color 0.3s;
+}
+
+a:hover {
+    color: var(--accent);
+    text-decoration: underline;
+}
+
+/* ===== НАВИГАЦИЯ И БУРГЕР (требование 4) ===== */
+.navbar {
+    background: rgba(22, 33, 62, 0.95);
+    backdrop-filter: blur(10px);
+    padding: 15px 30px;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.logo a {
+    font-size: 1.8rem;
+    font-weight: bold;
+    font-style: italic;
+    color: var(--accent);
+}
+
+.nav-links {
+    display: flex;
+    list-style: none;
+    gap: 30px;
+}
+
+.nav-links a {
+    font-size: 1.1rem;
+    padding: 8px 12px;
+    border-radius: 30px;
+    transition: background 0.3s;
+}
+
+.nav-links a:hover {
+    background: rgba(155, 89, 182, 0.2);
+    text-decoration: none;
+}
+
+/* Бургер-иконка (скрыта на ПК) */
+.burger {
+    display: none;
+    cursor: pointer;
+}
+
+.burger div {
+    width: 25px;
+    height: 3px;
+    background-color: var(--accent);
+    margin: 5px;
+    transition: all 0.3s ease;
+    border-radius: 3px;
+}
+
+/* Адаптив для планшетов и телефонов */
+@media screen and (max-width: 768px) {
+    body {
+        overflow-x: hidden;
+    }
+    
+    .nav-links {
+        position: fixed;
+        right: -100%;
+        top: 70px;
+        height: calc(100vh - 70px);
+        background: var(--bg-block);
+        backdrop-filter: blur(15px);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-start;
+        width: 70%;
+        gap: 30px;
+        padding-top: 50px;
+        transition: right 0.5s ease-in-out;
+        box-shadow: -5px 0 15px rgba(0,0,0,0.3);
+        z-index: 999;
+        border-left: 1px solid var(--border);
+    }
+    
+    .nav-links li {
+        margin: 10px 0;
+    }
+    
+    .nav-links a {
+        font-size: 1.3rem;
+    }
+    
+    .burger {
+        display: block;
+    }
+    
+    /* Анимация открытия */
+    .nav-active {
+        right: 0;
+    }
+    
+    /* Анимация крестика */
+    .toggle .line1 {
+        transform: rotate(-45deg) translate(-5px, 6px);
+    }
+    
+    .toggle .line2 {
+        opacity: 0;
+    }
+    
+    .toggle .line3 {
+        transform: rotate(45deg) translate(-5px, -6px);
+    }
+    
+    /* Отступы для контента */
+    .container {
+        padding: 15px;
+    }
+    
+    h1 {
+        font-size: 1.8rem;
+    }
+    
+    h2 {
+        font-size: 1.5rem;
+    }
+    
+    .block, section, .card, .review-card {
+        padding: 18px;
+    }
+}
+
+/* ===== БАГ-ВИДЖЕТ (требование 3 — без конфликтов) ===== */
+.bug-widget {
+    position: fixed;
+    bottom: 25px;
+    right: 25px;
+    z-index: 1001; /* выше бургера, но не перекрывает критически важные элементы */
+    background: var(--accent);
+    color: white;
+    width: 55px;
+    height: 55px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 28px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+    transition: transform 0.3s, background 0.3s;
+    font-family: monospace;
+}
+
+.bug-widget:hover {
+    transform: scale(1.05);
+    background: var(--accent-dark);
+}
+
+/* Контент виджета (если всплывает) */
+.bug-widget-content {
+    position: fixed;
+    bottom: 90px;
+    right: 25px;
+    background: var(--bg-block);
+    border-radius: 16px;
+    padding: 20px;
+    width: 280px;
+    z-index: 1000;
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow);
+    display: none;
+}
+
+.bug-widget-content.active {
+    display: block;
+}
+
+.bug-widget-content textarea,
+.bug-widget-content input,
+.bug-widget-content button {
+    width: 100%;
+    margin-top: 10px;
+    padding: 8px;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    background: var(--bg-main);
+    color: var(--text-light);
+}
+
+/* ===== ДОПОЛНИТЕЛЬНЫЕ СТИЛИ ДЛЯ АДАПТАЦИИ ===== */
+img {
+    max-width: 100%;
+    border-radius: 12px;
+}
+
+button, .button {
+    background: var(--accent);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 30px;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+button:hover, .button:hover {
+    background: var(--accent-dark);
+}
+
+/* Стили для полосы прокрутки */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--bg-main);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--accent);
+    border-radius: 10px;
+}
