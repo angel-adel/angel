@@ -30,23 +30,14 @@
                 </div>
                 <button type="submit">Отправить</button>
             </form>
+            <div id="formStatus"></div>
         </section>
 
         <!-- Список записей -->
         <section>
             <h2>Записи гостей</h2>
-            <div id="guestbookEntries">
-                <!-- Сюда будут загружаться записи из Google Таблиц -->
-                <!-- 
-                <article>
-                    <p><strong>Имя</strong> — <time>дата</time></p>
-                    <p>Текст сообщения...</p>
-                </article>
-                -->
-            </div>
-
-            <!-- Заглушка -->
-          <p id="guestbookPlaceholder">Пока ни одной записи. Будь первым.</p>
+            <div id="guestbookEntries"></div>
+            <div id="loadingStatus">Загрузка записей...</div>
         </section>
     </main>
 
@@ -63,6 +54,81 @@
         <p>Адель. Angel de la poesía. Гостевая книга — место встречи.</p>
     </footer>
 
-    <!-- TODO: потом подключим Google Таблицы и скрипт -->
+    <script src="menu.js"></script>
+
+    <script>
+        // ========================
+        // ВАШ URL ВЕБ-ПРИЛОЖЕНИЯ (ЗАМЕНИ НА СВОЙ)
+        // ========================
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxwqrM4yR3KlS7WNkQGxfGwh13gvRM9un1b12xm2V-MyvbaSyZCd-7jHo11AzDf4Xwt-A/exec';
+
+        // Загрузка и отображение записей
+        async function loadEntries() {
+            try {
+                const response = await fetch(SCRIPT_URL);
+                const data = await response.json();
+                const container = document.getElementById('guestbookEntries');
+                const loadingDiv = document.getElementById('loadingStatus');
+                
+                if (data.status === 'success' && data.entries && data.entries.length > 0) {
+                    container.innerHTML = data.entries.map(entry => `
+                        <article>
+                            <p><strong>${escapeHtml(entry.name)}</strong> — <time>${escapeHtml(entry.date)}</time></p>
+                            <p>${escapeHtml(entry.message)}</p>
+                            ${entry.email ? `<p><small>Email: ${escapeHtml(entry.email)}</small></p>` : ''}
+                        </article>
+                        <hr>
+                    `).join('');
+                    loadingDiv.style.display = 'none';
+                } else {
+                    loadingDiv.innerHTML = 'Пока ни одной записи. Будь первым.';
+                }
+            } catch (error) {
+                console.error('Ошибка загрузки:', error);
+                document.getElementById('loadingStatus').innerHTML = 'Не удалось загрузить записи. Попробуйте позже.';
+            }
+        }
+
+        // Отправка новой записи
+        document.getElementById('guestbookForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formStatus = document.getElementById('formStatus');
+            const name = document.getElementById('guestName').value.trim();
+            const email = document.getElementById('guestEmail').value.trim();
+            const message = document.getElementById('guestMessage').value.trim();
+
+            formStatus.innerHTML = 'Отправка...';
+
+            try {
+                const response = await fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: new URLSearchParams({ name, email, message })
+                });
+                
+                formStatus.innerHTML = '✅ Спасибо! Ваша запись добавлена.';
+                document.getElementById('guestbookForm').reset();
+                setTimeout(() => loadEntries(), 2000);
+            } catch (error) {
+                console.error('Ошибка отправки:', error);
+                formStatus.innerHTML = '❌ Ошибка. Попробуйте позже.';
+            }
+        });
+
+        // Защита от XSS
+        function escapeHtml(str) {
+            if (!str) return '';
+            return str.replace(/[&<>]/g, function(m) {
+                if (m === '&') return '&amp;';
+                if (m === '<') return '&lt;';
+                if (m === '>') return '&gt;';
+                return m;
+            });
+        }
+
+        // Загружаем записи при открытии страницы
+        loadEntries();
+    </script>
 </body>
 </html>
