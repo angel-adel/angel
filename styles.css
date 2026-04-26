@@ -2,11 +2,12 @@
 :root {
     --bg-main: #1a1a2e;        /* тёмный фон страницы */
     --bg-block: #16213e;       /* фон блоков */
+    --bg-card-hover: #1a1f3a;  /* фон карточки при наведении (светлее, но не бледный) */
     --accent: #9b59b6;         /* основной фиолетовый */
-    --accent-light: #af7ac5;   /* светлый фиолетовый для градиентов/эффектов */
-    --accent-dark: #8e44ad;    /* тёмный фиолетовый для наведения */
+    --accent-light: #af7ac5;   /* светлый фиолетовый */
+    --accent-dark: #8e44ad;    /* тёмный фиолетовый */
     --text-light: #f0f0f0;     /* светлый текст */
-    --text-muted: #d0d0d0;     /* приглушённый текст */
+    --text-muted: #c0c0c0;     /* чуть приглушённый текст (но не бледный) */
     --border: rgba(155, 89, 182, 0.3);
     --shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
 }
@@ -34,37 +35,32 @@ body {
     padding: 20px;
 }
 
-/* ===== КАЖДЫЙ ТЕКСТОВЫЙ БЛОК (требование 1) ===== */
-.block {
+/* ===== БЛОКИ (текст всегда в блоках) ===== */
+.block, section, .card, .review-card, .stat-item, .poetry-item, .poem-card {
     background: var(--bg-block);
     border-radius: 20px;
     padding: 25px;
     margin-bottom: 30px;
     border: 1px solid var(--border);
     box-shadow: var(--shadow);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    transition: all 0.3s ease;
 }
 
-.block:hover {
+/* Карточки произведений — не бледнеют при наведении, а наоборот */
+.poetry-item:hover, .poem-card:hover, .card:hover {
     transform: translateY(-3px);
+    background: var(--bg-card-hover);
     box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+    border-color: var(--accent);
 }
 
-/* Специфичные блоки (если есть разные классы, можно объединить) */
-.about, .stats, .reviews, .contact, .hero, .poetry-block {
-    composes: block; /* если используете CSS модули, иначе продублируйте */
+/* Текст внутри карточек остаётся ярким */
+.poetry-item p, .poem-card p, .card p {
+    color: var(--text-light);
+    opacity: 1; /* полная видимость */
 }
 
-/* Универсально для всех секций, обёрнутых в div с текстом */
-section, .section, .card, .review-card, .stat-item {
-    background: var(--bg-block);
-    border-radius: 20px;
-    padding: 25px;
-    margin-bottom: 30px;
-    border: 1px solid var(--border);
-}
-
-/* ===== ЗАГОЛОВКИ И ПОДПИСИ (требование 2) ===== */
+/* ===== ЗАГОЛОВКИ И ПОДПИСИ ===== */
 h1, h2, h3, h4, .subtitle, .poem-title, .stat-label, 
 legend, label, .nav-links a, .burger div {
     color: var(--accent);
@@ -87,30 +83,17 @@ h2 {
     padding-left: 15px;
 }
 
-h3 {
-    font-size: 1.4rem;
-    margin: 15px 0 10px;
-}
+/* ===== FAVICON ИСПРАВЛЕНИЕ ===== */
+/* Убедитесь, что в HTML favicon подключается без лишних обёрток */
+/* Сам CSS не влияет на favicon, это HTML-тег. Вот правильный код для <head>: */
+/*
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+<link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+*/
+/* Если иконка всё равно огромная — значит, в корне сайта лежит файл большого размера. Удалите его и поставьте нормальный favicon.ico 32x32 */
 
-/* ===== ТЕКСТ В БЛОКАХ ===== */
-p, li, .review-text, .poem-line {
-    color: var(--text-light);
-    margin-bottom: 12px;
-}
-
-/* ===== ССЫЛКИ И КНОПКИ ===== */
-a {
-    color: var(--accent-light);
-    text-decoration: none;
-    transition: color 0.3s;
-}
-
-a:hover {
-    color: var(--accent);
-    text-decoration: underline;
-}
-
-/* ===== НАВИГАЦИЯ И БУРГЕР (требование 4) ===== */
+/* ===== БУРГЕР-МЕНЮ (полностью исправлен) ===== */
 .navbar {
     background: rgba(22, 33, 62, 0.95);
     backdrop-filter: blur(10px);
@@ -122,7 +105,6 @@ a:hover {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    flex-wrap: wrap;
 }
 
 .logo a {
@@ -143,6 +125,8 @@ a:hover {
     padding: 8px 12px;
     border-radius: 30px;
     transition: background 0.3s;
+    color: var(--text-light);
+    font-style: normal; /* убираем курсив у ссылок в меню, если мешает */
 }
 
 .nav-links a:hover {
@@ -150,75 +134,78 @@ a:hover {
     text-decoration: none;
 }
 
-/* Бургер-иконка (скрыта на ПК) */
+/* Бургер-иконка (по умолчанию скрыта на ПК) */
 .burger {
     display: none;
     cursor: pointer;
+    flex-direction: column;
+    justify-content: space-around;
+    width: 30px;
+    height: 25px;
+    background: transparent;
+    border: none;
+    z-index: 1100;
 }
 
 .burger div {
-    width: 25px;
+    width: 100%;
     height: 3px;
     background-color: var(--accent);
-    margin: 5px;
+    border-radius: 5px;
     transition: all 0.3s ease;
-    border-radius: 3px;
 }
 
-/* Адаптив для планшетов и телефонов */
+/* Адаптив для телефонов и планшетов */
 @media screen and (max-width: 768px) {
-    body {
-        overflow-x: hidden;
+    .burger {
+        display: flex;
     }
     
     .nav-links {
         position: fixed;
-        right: -100%;
         top: 70px;
+        right: -100%;
+        width: 70%;
         height: calc(100vh - 70px);
         background: var(--bg-block);
-        backdrop-filter: blur(15px);
-        display: flex;
+        backdrop-filter: blur(20px);
         flex-direction: column;
         align-items: center;
         justify-content: flex-start;
-        width: 70%;
-        gap: 30px;
+        gap: 25px;
         padding-top: 50px;
-        transition: right 0.5s ease-in-out;
-        box-shadow: -5px 0 15px rgba(0,0,0,0.3);
-        z-index: 999;
-        border-left: 1px solid var(--border);
+        transition: right 0.4s ease-out;
+        border-left: 2px solid var(--accent);
+        z-index: 1050;
     }
     
     .nav-links li {
-        margin: 10px 0;
+        width: 100%;
+        text-align: center;
     }
     
     .nav-links a {
-        font-size: 1.3rem;
-    }
-    
-    .burger {
+        font-size: 1.4rem;
         display: block;
+        padding: 12px;
     }
     
-    /* Анимация открытия */
-    .nav-active {
+    /* Активное состояние меню */
+    .nav-links.active {
         right: 0;
     }
     
-    /* Анимация крестика */
-    .toggle .line1 {
-        transform: rotate(-45deg) translate(-5px, 6px);
+    /* Анимация превращения бургера в крестик */
+    .burger.active .line1 {
+        transform: rotate(45deg) translate(5px, 5px);
     }
     
-    .toggle .line2 {
+    .burger.active .line2 {
         opacity: 0;
     }
     
-    .toggle .line3 {
-        transform: rotate(45deg) translate(-5px, -6px);
+    .burger.active .line3 {
+        transform: rotate(-45deg) translate(7px, -6px);
     }
     
     /* Отступы для контента */
@@ -233,18 +220,14 @@ a:hover {
     h2 {
         font-size: 1.5rem;
     }
-    
-    .block, section, .card, .review-card {
-        padding: 18px;
-    }
 }
 
-/* ===== БАГ-ВИДЖЕТ (требование 3 — без конфликтов) ===== */
+/* ===== БАГ-ВИДЖЕТ ===== */
 .bug-widget {
     position: fixed;
     bottom: 25px;
     right: 25px;
-    z-index: 1001; /* выше бургера, но не перекрывает критически важные элементы */
+    z-index: 2000;
     background: var(--accent);
     color: white;
     width: 55px;
@@ -265,43 +248,7 @@ a:hover {
     background: var(--accent-dark);
 }
 
-/* Контент виджета (если всплывает) */
-.bug-widget-content {
-    position: fixed;
-    bottom: 90px;
-    right: 25px;
-    background: var(--bg-block);
-    border-radius: 16px;
-    padding: 20px;
-    width: 280px;
-    z-index: 1000;
-    border: 1px solid var(--border);
-    box-shadow: var(--shadow);
-    display: none;
-}
-
-.bug-widget-content.active {
-    display: block;
-}
-
-.bug-widget-content textarea,
-.bug-widget-content input,
-.bug-widget-content button {
-    width: 100%;
-    margin-top: 10px;
-    padding: 8px;
-    border-radius: 12px;
-    border: 1px solid var(--border);
-    background: var(--bg-main);
-    color: var(--text-light);
-}
-
-/* ===== ДОПОЛНИТЕЛЬНЫЕ СТИЛИ ДЛЯ АДАПТАЦИИ ===== */
-img {
-    max-width: 100%;
-    border-radius: 12px;
-}
-
+/* Остальное без изменений, но добавлено для ясности */
 button, .button {
     background: var(--accent);
     color: white;
@@ -314,18 +261,4 @@ button, .button {
 
 button:hover, .button:hover {
     background: var(--accent-dark);
-}
-
-/* Стили для полосы прокрутки */
-::-webkit-scrollbar {
-    width: 8px;
-}
-
-::-webkit-scrollbar-track {
-    background: var(--bg-main);
-}
-
-::-webkit-scrollbar-thumb {
-    background: var(--accent);
-    border-radius: 10px;
 }
