@@ -2,20 +2,29 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>Гостевая книга — Адель</title>
-
     <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <header>
-        <h1>Гостевая книга</h1>
-        <p>Оставь след. Тепло. Слово. Тишину.</p>
+        <nav class="navbar">
+            <div class="logo"><a href="index.html">Ádel</a></div>
+            <ul class="nav-links" id="navLinks"></ul>
+            <div class="burger">
+                <div class="line1"></div>
+                <div class="line2"></div>
+                <div class="line3"></div>
+            </div>
+        </nav>
     </header>
 
     <main>
+        <h1>Гостевая книга</h1>
+        <p>Оставь след. Тепло. Слово. Тишину.</p>
+
         <!-- Форма добавления записи -->
         <section>
             <h2>Написать в гостевую</h2>
@@ -54,15 +63,14 @@
 
     <footer>
         <p>2026. Адель. Angel de la poesía.</p>
-        <a href="index.html">Вернуться на главную страницу</a>
-        <p>Адель. Angel de la poesía. Гостевая книга — место встречи.</p>
+        <a href="about.html">Об авторе</a>
     </footer>
 
     <script src="menu.js"></script>
 
     <script>
         // ========================
-        // ВАШ URL ВЕБ-ПРИЛОЖЕНИЯ (ЗАМЕНИ НА СВОЙ)
+        // ВАШ URL ВЕБ-ПРИЛОЖЕНИЯ (ПРОВЕРЬ, ЧТО ВЕРНЫЙ)
         // ========================
         const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxwqrM4yR3KlS7WNkQGxfGwh13gvRM9un1b12xm2V-MyvbaSyZCd-7jHo11AzDf4Xwt-A/exec';
 
@@ -94,31 +102,34 @@
         }
 
         // Отправка новой записи
-        document.getElementById('guestbookForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const formStatus = document.getElementById('formStatus');
-            const name = document.getElementById('guestName').value.trim();
-            const email = document.getElementById('guestEmail').value.trim();
-            const message = document.getElementById('guestMessage').value.trim();
+        const form = document.getElementById('guestbookForm');
+        if (form) {
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const formStatus = document.getElementById('formStatus');
+                const name = document.getElementById('guestName').value.trim();
+                const email = document.getElementById('guestEmail').value.trim();
+                const message = document.getElementById('guestMessage').value.trim();
 
-            formStatus.innerHTML = 'Отправка...';
+                formStatus.innerHTML = 'Отправка...';
 
-            try {
-                const response = await fetch(SCRIPT_URL, {
-                    method: 'POST',
-                    mode: 'no-cors',
-                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                    body: new URLSearchParams({ name, email, message })
-                });
-                
-                formStatus.innerHTML = '✅ Спасибо! Ваша запись добавлена.';
-                document.getElementById('guestbookForm').reset();
-                setTimeout(() => loadEntries(), 2000);
-            } catch (error) {
-                console.error('Ошибка отправки:', error);
-                formStatus.innerHTML = '❌ Ошибка. Попробуйте позже.';
-            }
-        });
+                try {
+                    await fetch(SCRIPT_URL, {
+                        method: 'POST',
+                        mode: 'no-cors',
+                        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                        body: new URLSearchParams({ name, email, message })
+                    });
+                    
+                    formStatus.innerHTML = '✅ Спасибо! Ваша запись добавлена.';
+                    document.getElementById('guestbookForm').reset();
+                    setTimeout(() => loadEntries(), 2000);
+                } catch (error) {
+                    console.error('Ошибка отправки:', error);
+                    formStatus.innerHTML = '❌ Ошибка. Попробуйте позже.';
+                }
+            });
+        }
 
         // Защита от XSS
         function escapeHtml(str) {
