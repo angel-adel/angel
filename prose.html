@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Проза — Ádel</title>
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+    <style>
+        /* Дополнительные стили для прозы */
+        .prose-card {
+            background: white;
+            border-radius: var(--radius-sm);
+            padding: 1.2rem;
+            margin-bottom: 1.2rem;
+            border: var(--border);
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+        .prose-card:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-hover);
+        }
+        .prose-title {
+            font-size: 1.3rem;
+            color: var(--accent);
+            margin-bottom: 0.3rem;
+        }
+        .prose-date {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-bottom: 0.6rem;
+        }
+        .prose-description {
+            color: var(--text-dark);
+            margin-bottom: 0.8rem;
+            line-height: 1.4;
+        }
+        .read-more {
+            color: var(--accent);
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+        /* Модальное окно */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            z-index: 20000;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(4px);
+        }
+        .modal.active {
+            display: flex;
+        }
+        .modal-content {
+            background: white;
+            border-radius: var(--radius);
+            max-width: 800px;
+            width: 90%;
+            max-height: 85vh;
+            overflow-y: auto;
+            padding: 2rem;
+            position: relative;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+        }
+        .modal-close {
+            position: absolute;
+            top: 1rem;
+            right: 1.5rem;
+            font-size: 2rem;
+            cursor: pointer;
+            color: var(--text-muted);
+            transition: 0.2s;
+        }
+        .modal-close:hover {
+            color: var(--accent);
+        }
+        .modal-title {
+            color: var(--accent);
+            margin-bottom: 0.5rem;
+            padding-right: 2rem;
+        }
+        .modal-text {
+            line-height: 1.7;
+            white-space: pre-wrap;
+            font-family: 'Georgia', serif;
+        }
+        .loading {
+            text-align: center;
+            padding: 2rem;
+            color: var(--text-muted);
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav class="navbar">
+            <div class="logo"><a href="index.html">Ádel</a></div>
+            <ul class="nav-links" id="navLinks"></ul>
+            <div class="burger">
+                <div class="line1"></div>
+                <div class="line2"></div>
+                <div class="line3"></div>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <h1>📖 Проза Адель</h1>
+        <p>Рассказы, зарисовки, тихие истории от крылатой поэтессы.</p>
+        
+        <div id="proseContainer">
+            <div class="loading">Загрузка рассказов...</div>
+        </div>
+    </main>
+
+    <!-- Модальное окно для чтения -->
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <span class="modal-close" id="modalClose">&times;</span>
+            <h2 class="modal-title" id="modalTitle"></h2>
+            <div class="modal-text" id="modalText"></div>
+        </div>
+    </div>
+
+    <!-- Баг-виджет -->
+    <div class="bug-widget" id="bugWidget">🐞</div>
+    <div class="bug-widget-content" id="bugWidgetContent">
+        <h3>🐞 Сообщить о проблеме</h3>
+        <textarea placeholder="Опишите, что пошло не так..." rows="3"></textarea>
+        <button>📸 Сделать скриншот и скачать отчёт</button>
+        <small>Файл отправьте на adel.angel2026@gmail.com</small>
+    </div>
+
+    <footer>
+        <p>2026. Адель. Angel de la poesía. ✨</p>
+        <a href="index.html">Главная</a> |
+        <a href="about.html">Об авторе</a> |
+        <a href="contacts.html">Контакты</a>
+    </footer>
+
+    <script src="menu.js"></script>
+    <script src="bug-report.js"></script>
+    <script>
+        // Загрузка и отображение прозы
+        async function loadProse() {
+            const container = document.getElementById('proseContainer');
+            
+            try {
+                const response = await fetch('prose.json?_=' + Date.now()); // anti-cache
+                if (!response.ok) throw new Error('Файл prose.json не найден');
+                
+                const proseList = await response.json();
+                
+                if (!proseList || proseList.length === 0) {
+                    container.innerHTML = '<p>Пока нет рассказов. Адель пишет тихо, но скоро появятся.</p>';
+                    return;
+                }
+                
+                // Сортируем по дате (новые сверху)
+                proseList.sort((a, b) => new Date(b.date) - new Date(a.date));
+                
+                container.innerHTML = proseList.map(prose => `
+                    <div class="prose-card" data-id="${prose.id}">
+                        <div class="prose-title">${escapeHtml(prose.title)}</div>
+                        <div class="prose-date">${formatDate(prose.date)}</div>
+                        <div class="prose-description">${escapeHtml(prose.description)}</div>
+                        <div class="read-more">📖 Читать →</div>
+                    </div>
+                `).join('');
+                
+                // Добавляем обработчики кликов
+                document.querySelectorAll('.prose-card').forEach(card => {
+                    card.addEventListener('click', () => {
+                        const id = parseInt(card.dataset.id);
+                        const prose = proseList.find(p => p.id === id);
+                        if (prose) openModal(prose);
+                    });
+                });
+                
+            } catch (error) {
+                console.error('Ошибка загрузки прозы:', error);
+                container.innerHTML = '<p>❌ Не удалось загрузить рассказы. Попробуйте позже.</p>';
+            }
+        }
+        
+        function openModal(prose) {
+            const modal = document.getElementById('modal');
+            const title = document.getElementById('modalTitle');
+            const text = document.getElementById('modalText');
+            
+            title.textContent = prose.title;
+            text.innerHTML = escapeHtml(prose.fullText).replace(/\n/g, '<br>');
+            
+            modal.classList.add('active');
+        }
+        
+        function formatDate(dateString) {
+            if (!dateString) return '';
+            const date = new Date(dateString);
+            return date.toLocaleDateString('ru-RU', {
+                day: 'numeric',
+                month: 'long',
+                year: 'numeric'
+            });
+        }
+        
+        function escapeHtml(str) {
+            if (!str) return '';
+            return str.replace(/[&<>]/g, function(m) {
+                if (m === '&') return '&amp;';
+                if (m === '<') return '&lt;';
+                if (m === '>') return '&gt;';
+                return m;
+            });
+        }
+        
+        // Модальное окно: закрытие
+        document.getElementById('modalClose').addEventListener('click', () => {
+            document.getElementById('modal').classList.remove('active');
+        });
+        document.getElementById('modal').addEventListener('click', (e) => {
+            if (e.target === document.getElementById('modal')) {
+                document.getElementById('modal').classList.remove('active');
+            }
+        });
+        
+        // Загружаем прозу при открытии страницы
+        loadProse();
+    </script>
+</body>
+</html>
