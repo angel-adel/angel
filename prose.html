@@ -13,14 +13,29 @@
             background: white;
             border-radius: var(--radius-sm);
             padding: 1.2rem;
-            margin-bottom: 1.2rem;
+            margin-bottom: 1.5rem;
             border: var(--border);
             transition: all 0.2s;
             cursor: pointer;
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
         }
         .prose-card:hover {
             transform: translateY(-3px);
             box-shadow: var(--shadow-hover);
+        }
+        .prose-image {
+            flex-shrink: 0;
+            width: 120px;
+            height: 120px;
+            border-radius: var(--radius-sm);
+            object-fit: cover;
+            border: 1px solid var(--accent-light);
+        }
+        .prose-content {
+            flex: 1;
+            min-width: 180px;
         }
         .prose-title {
             font-size: 1.3rem;
@@ -50,7 +65,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0,0,0,0.7);
+            background: rgba(0,0,0,0.8);
             z-index: 20000;
             justify-content: center;
             align-items: center;
@@ -84,8 +99,16 @@
         }
         .modal-title {
             color: var(--accent);
-            margin-bottom: 0.5rem;
+            margin-bottom: 1rem;
             padding-right: 2rem;
+        }
+        .modal-image {
+            width: 100%;
+            max-height: 300px;
+            object-fit: cover;
+            border-radius: var(--radius-sm);
+            margin-bottom: 1rem;
+            border: 1px solid var(--accent-light);
         }
         .modal-text {
             line-height: 1.7;
@@ -96,6 +119,15 @@
             text-align: center;
             padding: 2rem;
             color: var(--text-muted);
+        }
+        @media (max-width: 600px) {
+            .prose-card {
+                flex-direction: column;
+            }
+            .prose-image {
+                width: 100%;
+                height: 160px;
+            }
         }
     </style>
 </head>
@@ -126,6 +158,7 @@
         <div class="modal-content">
             <span class="modal-close" id="modalClose">&times;</span>
             <h2 class="modal-title" id="modalTitle"></h2>
+            <img class="modal-image" id="modalImage" style="display: none;" alt="Иллюстрация">
             <div class="modal-text" id="modalText"></div>
         </div>
     </div>
@@ -154,7 +187,7 @@
             const container = document.getElementById('proseContainer');
             
             try {
-                const response = await fetch('prose.json?_=' + Date.now()); // anti-cache
+                const response = await fetch('prose.json?_=' + Date.now());
                 if (!response.ok) throw new Error('Файл prose.json не найден');
                 
                 const proseList = await response.json();
@@ -164,19 +197,20 @@
                     return;
                 }
                 
-                // Сортируем по дате (новые сверху)
                 proseList.sort((a, b) => new Date(b.date) - new Date(a.date));
                 
                 container.innerHTML = proseList.map(prose => `
                     <div class="prose-card" data-id="${prose.id}">
-                        <div class="prose-title">${escapeHtml(prose.title)}</div>
-                        <div class="prose-date">${formatDate(prose.date)}</div>
-                        <div class="prose-description">${escapeHtml(prose.description)}</div>
-                        <div class="read-more">📖 Читать →</div>
+                        ${prose.image ? `<img class="prose-image" src="${prose.image}" alt="Иллюстрация" loading="lazy" onerror="this.style.display='none'">` : ''}
+                        <div class="prose-content">
+                            <div class="prose-title">${escapeHtml(prose.title)}</div>
+                            <div class="prose-date">${formatDate(prose.date)}</div>
+                            <div class="prose-description">${escapeHtml(prose.description)}</div>
+                            <div class="read-more">📖 Читать →</div>
+                        </div>
                     </div>
                 `).join('');
                 
-                // Добавляем обработчики кликов
                 document.querySelectorAll('.prose-card').forEach(card => {
                     card.addEventListener('click', () => {
                         const id = parseInt(card.dataset.id);
@@ -195,9 +229,17 @@
             const modal = document.getElementById('modal');
             const title = document.getElementById('modalTitle');
             const text = document.getElementById('modalText');
+            const modalImage = document.getElementById('modalImage');
             
             title.textContent = prose.title;
             text.innerHTML = escapeHtml(prose.fullText).replace(/\n/g, '<br>');
+            
+            if (prose.image) {
+                modalImage.src = prose.image;
+                modalImage.style.display = 'block';
+            } else {
+                modalImage.style.display = 'none';
+            }
             
             modal.classList.add('active');
         }
@@ -222,7 +264,6 @@
             });
         }
         
-        // Модальное окно: закрытие
         document.getElementById('modalClose').addEventListener('click', () => {
             document.getElementById('modal').classList.remove('active');
         });
@@ -232,7 +273,6 @@
             }
         });
         
-        // Загружаем прозу при открытии страницы
         loadProse();
     </script>
 </body>
