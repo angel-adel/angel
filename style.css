@@ -132,11 +132,12 @@ p, li {
     margin-bottom: 0.6rem;
 }
 
+/* Баг-виджет — всегда поверх и непрозрачный */
 .bug-widget {
     position: fixed;
     bottom: 28px;
     right: 28px;
-    background: var(--accent);
+    background: #9b59b6;
     color: white;
     width: 56px;
     height: 56px;
@@ -146,8 +147,8 @@ p, li {
     justify-content: center;
     font-size: 28px;
     cursor: pointer;
-    box-shadow: 0 6px 16px rgba(155, 89, 182, 0.3);
-    z-index: 1100;
+    box-shadow: 0 6px 16px rgba(0,0,0,0.2);
+    z-index: 9999;
     transition: 0.2s;
 }
 
@@ -158,22 +159,31 @@ p, li {
 
 .bug-widget-content {
     position: fixed;
-    bottom: 100px;
+    bottom: 96px;
     right: 28px;
-    background: var(--bg-white);
+    background: white;
     padding: 1.2rem;
-    border-radius: var(--radius);
+    border-radius: 20px;
     width: 300px;
-    box-shadow: var(--shadow);
-    border: var(--border);
+    max-width: calc(100vw - 56px);
+    box-shadow: 0 12px 28px rgba(0,0,0,0.15);
+    border: 1px solid #e9e0f5;
     display: none;
     flex-direction: column;
     gap: 0.8rem;
-    z-index: 1100;
+    z-index: 9998;
+    backdrop-filter: none;
+    opacity: 1;
 }
 
 .bug-widget-content.active {
     display: flex;
+}
+
+.bug-widget-content h3 {
+    margin: 0 0 0.2rem;
+    font-size: 1.1rem;
+    color: #9b59b6;
 }
 
 .bug-widget-content textarea {
@@ -182,20 +192,29 @@ p, li {
     border: 1px solid #ddd;
     font-family: inherit;
     resize: vertical;
+    font-size: 0.9rem;
+    background: white;
 }
 
 .bug-widget-content button {
-    background: var(--accent);
+    background: #9b59b6;
     color: white;
     border: none;
     padding: 0.7rem;
     border-radius: 40px;
     cursor: pointer;
     font-weight: 600;
+    transition: background 0.2s;
 }
 
 .bug-widget-content button:hover {
     background: #7c3a8f;
+}
+
+.bug-widget-content small {
+    font-size: 0.7rem;
+    color: #6b5b7e;
+    text-align: center;
 }
 
 footer {
