@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Произведения — Ádel</title>
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+    <style>
+        /* Дополнительные стили для фильтров и карточек стихов */
+        .filters {
+            background: #f9f5ff;
+            padding: 1rem;
+            border-radius: var(--radius-sm);
+            margin-bottom: 1.5rem;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            align-items: flex-end;
+        }
+        .filter-group {
+            flex: 1;
+            min-width: 150px;
+        }
+        .filter-group label {
+            font-size: 0.8rem;
+            margin-bottom: 0.2rem;
+            color: var(--text-muted);
+        }
+        .filter-group select, .filter-group input {
+            width: 100%;
+            padding: 0.5rem;
+            border-radius: var(--radius-sm);
+            border: 1px solid #ddd;
+            font-size: 0.9rem;
+        }
+        .poem-card {
+            background: white;
+            border-radius: var(--radius-sm);
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border: var(--border);
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+        .poem-card:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-hover);
+        }
+        .poem-title {
+            font-size: 1.2rem;
+            color: var(--accent);
+            margin-bottom: 0.3rem;
+            font-weight: 600;
+        }
+        .poem-meta {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+        .poem-preview {
+            font-size: 0.9rem;
+            color: var(--text-dark);
+            line-height: 1.4;
+            margin-bottom: 0.5rem;
+            font-style: italic;
+        }
+        .read-more {
+            color: var(--accent);
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+        .count-info {
+            text-align: right;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 1rem;
+        }
+        /* Модальное окно для стихов */
+        .modal-poem {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            z-index: 20000;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(4px);
+        }
+        .modal-poem.active {
+            display: flex;
+        }
+        .modal-poem-content {
+            background: white;
+            border-radius: var(--radius);
+            max-width: 700px;
+            width: 90%;
+            max-height: 85vh;
+            overflow-y: auto;
+            padding: 2rem;
+            position: relative;
+        }
+        .modal-poem-close {
+            position: absolute;
+            top: 1rem;
+            right: 1.5rem;
+            font-size: 2rem;
+            cursor: pointer;
+            color: var(--text-muted);
+        }
+        .modal-poem-title {
+            color: var(--accent);
+            margin-bottom: 0.5rem;
+            padding-right: 2rem;
+        }
+        .modal-poem-text {
+            line-height: 1.7;
+            white-space: pre-wrap;
+            font-family: 'Georgia', serif;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav class="navbar">
+            <div class="logo"><a href="index.html">Ádel</a></div>
+            <ul class="nav-links" id="navLinks"></ul>
+            <div class="burger">
+                <div class="line1"></div>
+                <div class="line2"></div>
+                <div class="line3"></div>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <h1>📖 Произведения</h1>
+        <p>Поэзия, переводы, философские строки — от крылатой поэтессы.</p>
+        
+        <!-- Фильтры -->
+        <div class="filters">
+            <div class="filter-group">
+                <label>🔍 Поиск</label>
+                <input type="text" id="searchInput" placeholder="Название или строка...">
+            </div>
+            <div class="filter-group">
+                <label>🌐 Язык</label>
+                <select id="langFilter">
+                    <option value="all">Все языки</option>
+                    <option value="ru">Русский</option>
+                    <option value="en">English</option>
+                    <option value="es">Español</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label>📚 Жанр</label>
+                <select id="genreFilter">
+                    <option value="all">Все жанры</option>
+                    <option value="lyrics">Лирика</option>
+                    <option value="philosophy">Философская</option>
+                    <option value="children">Детская</option>
+                    <option value="trilogy">Трилогия</option>
+                    <option value="social">Социальная</option>
+                </select>
+            </div>
+        </div>
+        
+        <div class="count-info">
+            Найдено: <span id="poemCount">0</span> произведений
+        </div>
+        
+        <div id="poemsContainer">
+            <div class="loading">Загрузка стихов...</div>
+        </div>
+    </main>
+
+    <!-- Модальное окно для чтения стиха -->
+    <div id="modalPoem" class="modal-poem">
+        <div class="modal-poem-content">
+            <span class="modal-poem-close" id="modalPoemClose">&times;</span>
+            <h2 class="modal-poem-title" id="modalPoemTitle"></h2>
+            <div class="modal-poem-text" id="modalPoemText"></div>
+        </div>
+    </div>
+
+    <!-- Баг-виджет -->
+    <div class="bug-widget" id="bugWidget">🐞</div>
+    <div class="bug-widget-content" id="bugWidgetContent">
+        <h3>🐞 Сообщить о проблеме</h3>
+        <textarea placeholder="Опишите, что пошло не так..." rows="3"></textarea>
+        <button>📸 Сделать скриншот и скачать отчёт</button>
+        <small>Файл отправьте на adel.angel2026@gmail.com</small>
+    </div>
+
+    <footer>
+        <p>2026. Адель. Angel de la poesía. ✨</p>
+        <a href="index.html">Главная</a> |
+        <a href="about.html">Об авторе</a> |
+        <a href="contacts.html">Контакты</a>
+    </footer>
+
+    <script src="menu.js"></script>
+    <script src="bug-report.js"></script>
+    <script>
+        let allPoems = [];
+        
+        // Загрузка стихов из JSON
+        async function loadPoems() {
+            const container = document.getElementById('poemsContainer');
+            
+            try {
+                // Пытаемся загрузить основной JSON со стихами
+                const response = await fetch('poems-all-fixed.json?_=' + Date.now());
+                if (!response.ok) throw new Error('Файл poems-all-fixed.json не найден');
+                
+                allPoems = await response.json();
+                
+                if (!allPoems || allPoems.length === 0) {
+                    container.innerHTML = '<p>Пока нет стихов. Адель пишет...</p>';
+                    document.getElementById('poemCount').textContent = '0';
+                    return;
+                }
+                
+                // Применяем фильтры и отображаем
+                applyFilters();
+                
+            } catch (error) {
+                console.error('Ошибка загрузки стихов:', error);
+                container.innerHTML = '<p>❌ Не удалось загрузить стихи. Убедитесь, что файл poems-all-fixed.json находится в корне сайта.</p>';
+            }
+        }
+        
+        // Применение фильтров
+        function applyFilters() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const lang = document.getElementById('langFilter').value;
+            const genre = document.getElementById('genreFilter').value;
+            
+            const filtered = allPoems.filter(poem => {
+                // Поиск по названию и тексту
+                let matchesSearch = true;
+                if (searchTerm) {
+                    matchesSearch = (poem.title && poem.title.toLowerCase().includes(searchTerm)) ||
+                                   (poem.text && poem.text.toLowerCase().includes(searchTerm));
+                }
+                
+                // Фильтр по языку
+                let matchesLang = true;
+                if (lang !== 'all') {
+                    matchesLang = poem.lang === lang;
+                }
+                
+                // Фильтр по жанру
+                let matchesGenre = true;
+                if (genre !== 'all') {
+                    matchesGenre = poem.genre === genre;
+                }
+                
+                return matchesSearch && matchesLang && matchesGenre;
+            });
+            
+            displayPoems(filtered);
+            document.getElementById('poemCount').textContent = filtered.length;
+        }
+        
+        // Отображение стихов
+        function displayPoems(poems) {
+            const container = document.getElementById('poemsContainer');
+            
+            if (poems.length === 0) {
+                container.innerHTML = '<p>😔 Ничего не найдено. Попробуйте другие фильтры.</p>';
+                return;
+            }
+            
+            container.innerHTML = poems.map((poem, index) => `
+                <div class="poem-card" data-id="${index}">
+                    <div class="poem-title">${escapeHtml(poem.title || 'Без названия')}</div>
+                    <div class="poem-meta">
+                        ${poem.lang ? `<span>🌐 ${getLangName(poem.lang)}</span>` : ''}
+                        ${poem.genre ? `<span>📖 ${getGenreName(poem.genre)}</span>` : ''}
+                        ${poem.year ? `<span>📅 ${poem.year}</span>` : ''}
+                    </div>
+                    <div class="poem-preview">${escapeHtml(poem.text ? poem.text.slice(0, 200) : '...')}${poem.text && poem.text.length > 200 ? '…' : ''}</div>
+                    <div class="read-more">📖 Читать полностью →</div>
+                </div>
+            `).join('');
+            
+            // Добавляем обработчики кликов
+            document.querySelectorAll('.poem-card').forEach(card => {
+                card.addEventListener('click', () => {
+                    const id = parseInt(card.dataset.id);
+                    const poem = poems[id];
+                    if (poem) openPoemModal(poem);
+                });
+            });
+        }
+        
+        function openPoemModal(poem) {
+            const modal = document.getElementById('modalPoem');
+            const title = document.getElementById('modalPoemTitle');
+            const text = document.getElementById('modalPoemText');
+            
+            title.textContent = poem.title || 'Без названия';
+            text.innerHTML = escapeHtml(poem.text || '').replace(/\n/g, '<br>');
+            
+            modal.classList.add('active');
+        }
+        
+        function getLangName(lang) {
+            const langs = { ru: 'Русский', en: 'English', es: 'Español' };
+            return langs[lang] || lang;
+        }
+        
+        function getGenreName(genre) {
+            const genres = {
+                lyrics: 'Лирика',
+                philosophy: 'Философская',
+                children: 'Детская',
+                trilogy: 'Трилогия',
+                social: 'Социальная'
+            };
+            return genres[genre] || genre;
+        }
+        
+        function escapeHtml(str) {
+            if (!str) return '';
+            return str.replace(/[&<>]/g, function(m) {
+                if (m === '&') return '&amp;';
+                if (m === '<') return '&lt;';
+                if (m === '>') return '&gt;';
+                return m;
+            });
+        }
+        
+        // Закрытие модального окна
+        document.getElementById('modalPoemClose').addEventListener('click', () => {
+            document.getElementById('modalPoem').classList.remove('active');
+        });
+        document.getElementById('modalPoem').addEventListener('click', (e) => {
+            if (e.target === document.getElementById('modalPoem')) {
+                document.getElementById('modalPoem').classList.remove('active');
+            }
+        });
+        
+        // События фильтров
+        document.getElementById('searchInput').addEventListener('input', applyFilters);
+        document.getElementById('langFilter').addEventListener('change', applyFilters);
+        document.getElementById('genreFilter').addEventListener('change', applyFilters);
+        
+        // Загрузка при открытии страницы
+        loadPoems();
+    </script>
+</body>
+</html>
