@@ -7,51 +7,6 @@
     <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
     <link rel="stylesheet" href="style.css">
-    <style>
-        /* Дополнительные стили для модального окна и карточек */
-        .active-filter {
-            background: var(--accent);
-            color: white;
-            border: none;
-            padding: 0.3rem 0.8rem;
-            border-radius: 20px;
-        }
-        button {
-            background: #eee;
-            border: none;
-            padding: 0.3rem 0.8rem;
-            border-radius: 20px;
-            cursor: pointer;
-            margin: 0.2rem;
-            transition: 0.2s;
-        }
-        button:hover {
-            background: #ddd;
-        }
-        .work-actions button {
-            margin: 0.2rem 0.4rem;
-            padding: 0.4rem 0.9rem;
-        }
-        hr {
-            margin: 1rem 0;
-        }
-        .work-card {
-            background: #fef9f4;
-            padding: 1rem;
-            border-radius: 16px;
-            margin-bottom: 1rem;
-        }
-        #searchInput {
-            padding: 0.4rem;
-            border-radius: 20px;
-            border: 1px solid #ccc;
-            width: 200px;
-            margin-left: 0.5rem;
-        }
-        .filter-group {
-            margin: 0.5rem 0;
-        }
-    </style>
 </head>
 <body>
     <header>
@@ -66,36 +21,11 @@
         <p>Поэзия, проза, переводы — от крылатой поэтессы</p>
 
         <section>
-            <h2>Фильтры и поиск</h2>
-            <div class="filter-group">
-                <label for="searchInput">🔍 Поиск:</label>
-                <input type="text" id="searchInput" placeholder="Название, строка...">
-            </div>
-            
-            <div class="filter-group">
-                <span>🌐 Язык:</span>
-                <button data-lang="all" class="active-filter">Все</button>
-                <button data-lang="ru">Русский</button>
-                <button data-lang="en">English</button>
-                <button data-lang="es">Español</button>
-            </div>
-            
-            <div class="filter-group">
-                <span>📖 Жанр:</span>
-                <button data-genre="all" class="active-filter">Все</button>
-                <button data-genre="lyrics">Лирика</button>
-                <button data-genre="philosophy">Философия</button>
-                <button data-genre="humor">Юмор</button>
-                <button data-genre="prose">Проза</button>
-            </div>
-            
-            <p>📚 Найдено произведений: <strong id="countDisplay">0</strong></p>
-        </section>
-
-        <section>
-            <h2>Список произведений</h2>
-            <div id="worksList">
-                <p>Загрузка стихов...</p>
+            <h2>📚 Список произведений</h2>
+            <div style="background: #fdf4e6; padding: 2rem; border-radius: 20px; text-align: center; margin: 2rem 0;">
+                <p style="font-size: 1.2rem;">🛠️ Страница временно на реконструкции.</p>
+                <p>Полный сборник стихов будет доступен после обновления.</p>
+                <p style="margin-top: 1rem; color: #7c3a8c;">Следите за новостями на главной странице.</p>
             </div>
         </section>
     </main>
@@ -113,148 +43,8 @@
     </footer>
 
     <script src="menu.js"></script>
-    <script>
-        let allWorks = [];
-        let filteredWorks = [];
-
-        // Загрузка JSON
-        async function loadWorks() {
-            try {
-                const response = await fetch('russian_poems_only.json');
-                const data = await response.json();
-                allWorks = data.map((poem, index) => ({
-                    id: index,
-                    title: poem.title || 'Без названия',
-                    text: poem.content || poem.text || '',
-                    genre: poem.genre || 'lyrics',
-                    lang: poem.lang || 'ru',
-                    year: poem.year || '—',
-                    firstLine: (poem.content || poem.text || '').split('\n')[0] || '...'
-                }));
-                filteredWorks = [...allWorks];
-                renderWorks();
-            } catch (error) {
-                console.error('Ошибка загрузки JSON:', error);
-                document.getElementById('worksList').innerHTML = '<p>❌ Не удалось загрузить произведения. Проверьте файл russian_poems_only.json</p>';
-            }
-        }
-
-        // Модальное окно для полного текста
-        function showFullText(title, text) {
-            const modal = document.createElement('div');
-            modal.style.cssText = `
-                position: fixed;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100%;
-                background: rgba(0,0,0,0.85);
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                z-index: 10000;
-                backdrop-filter: blur(4px);
-            `;
-            
-            const content = document.createElement('div');
-            content.style.cssText = `
-                background: #fef9f4;
-                max-width: 700px;
-                width: 90%;
-                max-height: 85%;
-                padding: 1.5rem;
-                border-radius: 24px;
-                overflow-y: auto;
-                font-family: 'Georgia', serif;
-                white-space: pre-wrap;
-                line-height: 1.6;
-                box-shadow: 0 20px 40px rgba(0,0,0,0.3);
-                border: 1px solid #e8b4b8;
-            `;
-            
-            content.innerHTML = `
-                <h3 style="margin-top:0; color:#7c3a8c; border-left: 4px solid #c084d1; padding-left: 1rem;">${escapeHtml(title)}</h3>
-                <hr style="margin: 0.8rem 0;">
-                <div style="font-size: 1rem;">${escapeHtml(text).replace(/\n/g, '<br>')}</div>
-                <button id="closeModalBtn" style="margin-top:1.5rem; padding:0.6rem 1.2rem; background:#7c3a8c; color:white; border:none; border-radius:40px; cursor:pointer; font-size:1rem;">✖ Закрыть</button>
-            `;
-            
-            modal.appendChild(content);
-            document.body.appendChild(modal);
-            
-            document.getElementById('closeModalBtn').addEventListener('click', () => modal.remove());
-            modal.addEventListener('click', (e) => {
-                if (e.target === modal) modal.remove();
-            });
-        }
-
-        // Отображение списка
-        function renderWorks() {
-            const container = document.getElementById('worksList');
-            const countSpan = document.getElementById('countDisplay');
-            
-            if (filteredWorks.length === 0) {
-                container.innerHTML = '<p>😔 Ничего не найдено. Попробуйте изменить фильтры.</p>';
-                countSpan.innerText = '0';
-                return;
-            }
-
-            countSpan.innerText = filteredWorks.length;
-            
-            container.innerHTML = filteredWorks.map(work => `
-                <article class="work-card">
-                    <h3>📖 ${escapeHtml(work.title)}</h3>
-                    <p><strong>Жанр:</strong> ${getGenreName(work.genre)}</p>
-                    <p><strong>Язык:</strong> ${getLangName(work.lang)}</p>
-                    <p><strong>Год:</strong> ${work.year}</p>
-                    <p><strong>Первая строка:</strong> <em>${escapeHtml(work.firstLine)}</em></p>
-                    <div class="work-actions">
-                        <button class="copy-btn" data-text="${escapeHtml(work.text)}">📋 Скопировать</button>
-                        <button class="read-btn" data-title="${escapeHtml(work.title)}" data-text="${escapeHtml(work.text)}">📖 Читать полностью</button>
-                        <button class="share-btn" data-title="${escapeHtml(work.title)}" data-text="${escapeHtml(work.firstLine)}">📤 Поделиться</button>
-                    </div>
-                </article>
-            `).join('');
-
-            // Копирование
-            document.querySelectorAll('.copy-btn').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    navigator.clipboard.writeText(btn.dataset.text);
-                    alert('📋 Текст скопирован в буфер обмена');
-                });
-            });
-
-            // Чтение — полный текст в модальном окне
-            document.querySelectorAll('.read-btn').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    showFullText(btn.dataset.title, btn.dataset.text);
-                });
-            });
-
-            // Поделиться
-            document.querySelectorAll('.share-btn').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    if (navigator.share) {
-                        navigator.share({
-                            title: btn.dataset.title,
-                            text: btn.dataset.text
-                        });
-                    } else {
-                        alert(`📤 Поделиться: "${btn.dataset.title}"\n\n${btn.dataset.text.substring(0, 150)}...`);
-                    }
-                });
-            });
-        }
-
-        // Фильтрация
-        function filterWorks() {
-            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-            const activeLang = document.querySelector('[data-lang].active-filter')?.dataset.lang || 'all';
-            const activeGenre = document.querySelector('[data-genre].active-filter')?.dataset.genre || 'all';
-
-            filteredWorks = allWorks.filter(work => {
-                const matchesSearch = work.title.toLowerCase().includes(searchTerm) || 
-                                      work.text.toLowerCase().includes(searchTerm) ||
+</body>
+</html>               work.text.toLowerCase().includes(searchTerm) ||
                                       work.firstLine.toLowerCase().includes(searchTerm);
                 const matchesLang = activeLang === 'all' || work.lang === activeLang;
                 const matchesGenre = activeGenre === 'all' || work.genre === activeGenre;
