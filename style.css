@@ -1,11 +1,10 @@
-/* ===== Базовые переменные ===== */
+/* ===== Базовые переменные (фиолетовая гамма) ===== */
 :root {
-    --bg: #fef9f4;
-    --text: #2c2b28;
-    --accent: #b56576;
-    --accent-light: #e8b4b8;
+    --bg: #f9f5ff;        /* очень светлый фиолетовый фон */
+    --text: #2a1e3c;      /* тёмно-фиолетовый для текста */
+    --accent: #7c3a8c;    /* основной фиолетовый */
+    --accent-light: #c084d1;
     --header-bg: #ffffffcc;
-    --footer-bg: #f0e6e0;
     --shadow: 0 8px 30px rgba(0,0,0,0.08);
     --radius: 20px;
 }
@@ -24,13 +23,12 @@ body {
     padding: 0 20px;
 }
 
-/* ===== Контейнер ===== */
 main, footer, .navbar {
     max-width: 1200px;
     margin: 0 auto;
 }
 
-/* ===== Шапка ===== */
+/* ===== Шапка и навигация ===== */
 header {
     background: var(--header-bg);
     backdrop-filter: blur(12px);
@@ -45,6 +43,7 @@ header {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    flex-wrap: wrap;
     padding: 0.8rem 1rem;
 }
 
@@ -56,11 +55,12 @@ header {
     letter-spacing: -0.5px;
 }
 
-/* Меню для ПК */
+/* Меню по умолчанию (горизонтальное для ПК) */
 .nav-links {
     display: flex;
     gap: 1.8rem;
     list-style: none;
+    flex-wrap: wrap;
 }
 
 .nav-links li a {
@@ -74,21 +74,9 @@ header {
     color: var(--accent);
 }
 
-/* ===== Бургер (скрыт на ПК) ===== */
+/* ===== Бургер полностью удалён ===== */
 .burger {
-    display: none;
-    flex-direction: column;
-    cursor: pointer;
-    z-index: 1002;
-}
-
-.burger div {
-    width: 28px;
-    height: 3px;
-    background: var(--text);
-    margin: 3px 0;
-    transition: 0.2s;
-    border-radius: 4px;
+    display: none !important;
 }
 
 /* ===== Основной контент ===== */
@@ -122,9 +110,9 @@ p {
     margin-bottom: 0.75rem;
 }
 
-/* Отзыв */
+/* Блок отзыва */
 section:last-of-type div {
-    background: #fdf4e6;
+    background: #f3eefc;
     padding: 1.2rem 1.5rem;
     border-radius: var(--radius);
     margin-top: 1rem;
@@ -148,13 +136,12 @@ section:last-of-type div {
     font-size: 28px;
     cursor: pointer;
     box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-    transition: 0.2s;
     z-index: 1100;
 }
 
 .bug-widget:hover {
     transform: scale(1.05);
-    background: #9f4d63;
+    background: #9b5bb0;
 }
 
 .bug-widget-content {
@@ -212,62 +199,35 @@ footer a:hover {
     text-decoration: underline;
 }
 
-/* ===== АДАПТИВ (телефоны) ===== */
+/* ===== АДАПТИВ ДЛЯ ТЕЛЕФОНОВ ===== */
 @media (max-width: 768px) {
     body {
         padding: 0 12px;
     }
 
-    /* Показываем бургер */
-    .burger {
-        display: flex;
-    }
-
-    /* Меню скрыто справа */
-    .nav-links {
-        position: fixed;
-        top: 0;
-        right: -100%;
-        width: 260px;
-        height: 100vh;
-        background: white;
+    /* Меню становится вертикальным */
+    .navbar {
         flex-direction: column;
-        justify-content: center;
+        gap: 1rem;
+    }
+
+    .nav-links {
+        flex-direction: column;
         align-items: center;
-        gap: 2rem;
-        transition: right 0.3s ease;
-        z-index: 1001;
-        box-shadow: -5px 0 25px rgba(0,0,0,0.1);
-        margin: 0;
-        padding: 2rem;
-    }
-
-    /* Меню открыто */
-    .nav-links.active {
-        right: 0;
-    }
-
-    /* Затемнение фона */
-    .nav-links.active::before {
-        content: '';
-        position: fixed;
-        top: 0;
-        left: 0;
+        gap: 0.8rem;
         width: 100%;
-        height: 100%;
-        background: rgba(0,0,0,0.3);
-        z-index: -1;
+        padding: 0.5rem 0;
     }
 
-    /* Анимация бургера */
-    .burger.active .line1 {
-        transform: rotate(45deg) translate(6px, 6px);
+    .nav-links li {
+        width: 100%;
+        text-align: center;
+        border-bottom: 1px solid rgba(0,0,0,0.05);
+        padding: 0.3rem 0;
     }
-    .burger.active .line2 {
-        opacity: 0;
-    }
-    .burger.active .line3 {
-        transform: rotate(-45deg) translate(6px, -6px);
+
+    .nav-links li:last-child {
+        border-bottom: none;
     }
 
     h1 {
@@ -283,31 +243,14 @@ footer a:hover {
     }
 }
 
-/* ===== Дополнительная страховка для ПК ===== */
+/* ===== ПК: горизонтальное меню ===== */
 @media (min-width: 769px) {
-    .burger {
-        display: none !important;
+    .navbar {
+        flex-direction: row;
     }
     
     .nav-links {
-        display: flex !important;
-        position: static;
-        width: auto;
-        height: auto;
-        background: transparent;
-        box-shadow: none;
         flex-direction: row;
         gap: 1.8rem;
-        padding: 0;
     }
     }
-/* ===== Жёсткое скрытие бургера на ПК ===== */
-.burger {
-    display: none !important;
-}
-
-@media (max-width: 768px) {
-    .burger {
-        display: flex !important;
-    }
-}
