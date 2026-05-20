@@ -301,3 +301,13 @@ footer a:hover {
         padding: 0;
     }
     }
+/* ===== Жёсткое скрытие бургера на ПК ===== */
+.burger {
+    display: none !important;
+}
+
+@media (max-width: 768px) {
+    .burger {
+        display: flex !important;
+    }
+}
