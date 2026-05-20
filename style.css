@@ -1,1 +1,176 @@
+/* ===== Фиолетовая гамма, без бургера ===== */
+:root {
+    --bg: #f9f5ff;
+    --text: #2a1e3c;
+    --accent: #7c3a8c;
+    --accent-light: #c084d1;
+    --header-bg: #ffffffcc;
+    --radius: 20px;
+}
 
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+    line-height: 1.6;
+    padding: 0 20px;
+}
+
+.navbar {
+    max-width: 1200px;
+    margin: 0 auto;
+    background: var(--header-bg);
+    backdrop-filter: blur(12px);
+    padding: 0.8rem 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+}
+
+.logo a {
+    font-size: 1.8rem;
+    font-weight: 600;
+    text-decoration: none;
+    color: var(--accent);
+}
+
+.nav-links {
+    display: flex;
+    gap: 1.5rem;
+    list-style: none;
+    flex-wrap: wrap;
+}
+
+.nav-links a {
+    text-decoration: none;
+    color: var(--text);
+    font-weight: 500;
+    transition: color 0.2s;
+}
+
+.nav-links a:hover {
+    color: var(--accent);
+}
+
+/* Бургер скрыт навсегда */
+.burger {
+    display: none !important;
+}
+
+main {
+    max-width: 1200px;
+    margin: 2rem auto;
+    background: white;
+    padding: 2rem;
+    border-radius: var(--radius);
+    box-shadow: 0 8px 30px rgba(0,0,0,0.08);
+}
+
+h1 {
+    color: var(--accent);
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+}
+
+h2 {
+    border-left: 5px solid var(--accent-light);
+    padding-left: 1rem;
+    margin: 1.5rem 0 0.75rem;
+    font-size: 1.6rem;
+}
+
+.bug-widget {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: var(--accent);
+    color: white;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 26px;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    z-index: 1100;
+}
+
+.bug-widget-content {
+    position: fixed;
+    bottom: 80px;
+    right: 20px;
+    background: white;
+    padding: 1rem;
+    border-radius: var(--radius);
+    width: 250px;
+    display: none;
+    flex-direction: column;
+    gap: 0.5rem;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    border: 1px solid #e2d9d2;
+    z-index: 1100;
+}
+
+.bug-widget-content.active {
+    display: flex;
+}
+
+footer {
+    text-align: center;
+    padding: 1.5rem 0;
+    border-top: 1px solid rgba(0,0,0,0.05);
+    margin-top: 2rem;
+    color: #6c5e53;
+}
+
+footer a {
+    color: var(--accent);
+    text-decoration: none;
+}
+
+/* ===== Телефоны: меню вертикально ===== */
+@media (max-width: 768px) {
+    .navbar {
+        flex-direction: column;
+        gap: 0.8rem;
+        text-align: center;
+    }
+
+    .nav-links {
+        flex-direction: column;
+        align-items: center;
+        gap: 0.6rem;
+        width: 100%;
+    }
+
+    .nav-links li {
+        width: 100%;
+        border-bottom: 1px solid #eee;
+        padding: 0.3rem 0;
+    }
+
+    .nav-links li:last-child {
+        border-bottom: none;
+    }
+
+    h1 {
+        font-size: 2rem;
+    }
+
+    main {
+        padding: 1.2rem;
+    }
+}
