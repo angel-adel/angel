@@ -8,7 +8,6 @@
     <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
     <link rel="stylesheet" href="style.css">
     <style>
-        /* Стили для страницы произведений */
         .filters-bar {
             display: flex;
             flex-wrap: wrap;
@@ -75,6 +74,7 @@
             margin-bottom: 0.6rem;
             display: flex;
             gap: 1rem;
+            flex-wrap: wrap;
         }
         .work-excerpt {
             color: var(--text-dark);
@@ -91,6 +91,55 @@
             text-align: center;
             padding: 2rem;
             color: var(--text-muted);
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            z-index: 20000;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(4px);
+        }
+        .modal.active {
+            display: flex;
+        }
+        .modal-content {
+            background: white;
+            border-radius: var(--radius);
+            max-width: 700px;
+            width: 90%;
+            max-height: 85vh;
+            overflow-y: auto;
+            padding: 2rem;
+            position: relative;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+        }
+        .modal-close {
+            position: absolute;
+            top: 1rem;
+            right: 1.5rem;
+            font-size: 2rem;
+            cursor: pointer;
+            color: var(--text-muted);
+            transition: 0.2s;
+        }
+        .modal-close:hover {
+            color: var(--accent);
+        }
+        .modal-title {
+            color: var(--accent);
+            margin-bottom: 1rem;
+            padding-right: 2rem;
+        }
+        .modal-text {
+            line-height: 1.7;
+            white-space: pre-wrap;
+            font-family: 'Georgia', serif;
         }
     </style>
 </head>
@@ -113,22 +162,23 @@
             <button class="filter-btn" data-lang="es">🇪🇸 Español</button>
         </div>
 
-        <div class="filters-bar">
-            <button class="filter-btn active-filter" data-genre="all">📚 Все жанры</button>
-            <button class="filter-btn" data-genre="lyrics">💕 Лирика</button>
-            <button class="filter-btn" data-genre="philosophy">🤔 Философия</button>
-            <button class="filter-btn" data-genre="humor">😊 Юмор</button>
-            <button class="filter-btn" data-genre="prose">📖 Проза</button>
-        </div>
-
         <div class="search-box">
-            <input type="text" id="searchInput" placeholder="🔍 Поиск по названию или первой строке...">
+            <input type="text" id="searchInput" placeholder="🔍 Поиск по названию...">
         </div>
 
         <div id="worksContainer">
             <div class="loading">Загрузка произведений...</div>
         </div>
     </main>
+
+    <!-- Модальное окно -->
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <span class="modal-close" id="modalClose">&times;</span>
+            <h2 class="modal-title" id="modalTitle"></h2>
+            <div class="modal-text" id="modalText"></div>
+        </div>
+    </div>
 
     <footer>
         <p>2026. Адель. Angel de la poesía. ✨</p>
@@ -141,20 +191,46 @@
     <script>
         let allWorks = [];
         let activeLang = 'all';
-        let activeGenre = 'all';
         let searchTerm = '';
 
         async function loadWorks() {
             const container = document.getElementById('worksContainer');
             
             try {
-                const response = await fetch('works.json?_=' + Date.now());
-                if (!response.ok) throw new Error('Файл works.json не найден');
+                // Загружаем оба файла
+                const [ruRes, biRes] = await Promise.all([
+                    fetch('russian_poems_only.json?_=' + Date.now()),
+                    fetch('poems-bilingual.json?_=' + Date.now())
+                ]);
                 
-                allWorks = await response.json();
+                if (!ruRes.ok) console.warn('russian_poems_only.json не загружен');
+                if (!biRes.ok) console.warn('poems-bilingual.json не загружен');
                 
-                if (!allWorks || allWorks.length === 0) {
-                    container.innerHTML = '<p>📭 Произведения пока не добавлены. Загляните позже ✨</p>';
+                const ruPoems = ruRes.ok ? await ruRes.json() : [];
+                const biPoems = biRes.ok ? await biRes.json() : [];
+                
+                // Преобразуем русские стихи
+                const ruWorks = ruPoems.map(poem => ({
+                    title: poem.title,
+                    content: poem.content,
+                    lang: 'ru',
+                    genre: 'lyrics',
+                    firstLine: poem.content ? poem.content.split('\n')[0] : ''
+                }));
+                
+                // Преобразуем двуязычные стихи
+                const biWorks = biPoems.map(poem => ({
+                    title: poem.title,
+                    content: poem.content,
+                    lang: poem.language || 'es',
+                    genre: 'lyrics',
+                    firstLine: poem.content ? poem.content.split('\n')[0] : ''
+                }));
+                
+                allWorks = [...ruWorks, ...biWorks];
+                
+                if (allWorks.length === 0) {
+                    container.innerHTML = '<p>📭 Произведения пока не добавлены.</p>';
                     return;
                 }
                 
@@ -169,11 +245,9 @@
         function filterWorks() {
             const filtered = allWorks.filter(work => {
                 const matchesSearch = !searchTerm || 
-                    work.title.toLowerCase().includes(searchTerm) ||
-                    (work.firstLine && work.firstLine.toLowerCase().includes(searchTerm));
+                    work.title.toLowerCase().includes(searchTerm);
                 const matchesLang = activeLang === 'all' || work.lang === activeLang;
-                const matchesGenre = activeGenre === 'all' || work.genre === activeGenre;
-                return matchesSearch && matchesLang && matchesGenre;
+                return matchesSearch && matchesLang;
             });
             renderWorks(filtered);
         }
@@ -186,19 +260,44 @@
                 return;
             }
             
-            container.innerHTML = works.map(work => `
-                <div class="work-card">
+            container.innerHTML = works.map((work, idx) => `
+                <div class="work-card" data-idx="${idx}">
                     <div class="work-title">${escapeHtml(work.title)}</div>
                     <div class="work-meta">
                         <span>${getLangName(work.lang)}</span>
                         <span class="badge">${getGenreName(work.genre)}</span>
-                        ${work.date ? `<span>📅 ${work.date}</span>` : ''}
                     </div>
                     <div class="work-excerpt">
                         ${escapeHtml(work.firstLine || work.content?.substring(0, 120) || '')}...
                     </div>
                 </div>
             `).join('');
+            
+            // Навешиваем обработчики на карточки
+            document.querySelectorAll('.work-card').forEach(card => {
+                card.addEventListener('click', () => {
+                    const idx = parseInt(card.dataset.idx);
+                    const work = works[idx];
+                    if (work) openModal(work);
+                });
+            });
+        }
+
+        function openModal(work) {
+            const modal = document.getElementById('modal');
+            const title = document.getElementById('modalTitle');
+            const text = document.getElementById('modalText');
+            
+            title.textContent = work.title;
+            text.innerHTML = escapeHtml(work.content || work.fullText || '').replace(/\n/g, '<br>');
+            
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal() {
+            document.getElementById('modal').classList.remove('active');
+            document.body.style.overflow = '';
         }
 
         function getGenreName(genre) {
@@ -208,14 +307,14 @@
                 humor: 'Юмор',
                 prose: 'Проза'
             };
-            return genres[genre] || genre;
+            return genres[genre] || 'Поэзия';
         }
 
         function getLangName(lang) {
             const langs = {
-                ru: 'Русский',
-                en: 'English',
-                es: 'Español'
+                ru: '🇷🇺 Русский',
+                en: '🇬🇧 English',
+                es: '🇪🇸 Español'
             };
             return langs[lang] || lang;
         }
@@ -240,20 +339,19 @@
                 });
             });
 
-            document.querySelectorAll('[data-genre]').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    document.querySelectorAll('[data-genre]').forEach(b => b.classList.remove('active-filter'));
-                    btn.classList.add('active-filter');
-                    activeGenre = btn.getAttribute('data-genre');
-                    filterWorks();
-                });
-            });
-
             document.getElementById('searchInput').addEventListener('input', (e) => {
                 searchTerm = e.target.value.toLowerCase();
                 filterWorks();
             });
         }
+
+        document.getElementById('modalClose')?.addEventListener('click', closeModal);
+        document.getElementById('modal')?.addEventListener('click', (e) => {
+            if (e.target === document.getElementById('modal')) closeModal();
+        });
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closeModal();
+        });
 
         loadWorks().then(() => bindFilters());
     </script>
