@@ -2,241 +2,240 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Галерея | Ádel</title>
-    
-    <link rel="icon" type="image/x-icon" href="favicon.ico">
-    <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Галерея — Ádel</title>
     <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
-    <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
-    
-    <!-- Подключаем основной стиль сайта -->
     <link rel="stylesheet" href="style.css">
-    
     <style>
-        /* Дополнительные стили только для галереи */
-        .gallery-page {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 40px 20px;
-        }
-        
-        .gallery-title {
-            text-align: center;
-            font-size: 2.2em;
-            color: #8b6b9d;
-            margin-bottom: 40px;
-        }
-        
-        .gallery-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 25px;
-        }
-        
+        /* Дополнительные стили для галереи */
         .gallery-card {
-            background: rgba(255, 255, 255, 0.9);
-            border-radius: 20px;
-            overflow: hidden;
-            transition: all 0.3s ease;
+            background: white;
+            border-radius: var(--radius-sm);
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+            border: var(--border);
+            transition: all 0.2s;
             cursor: pointer;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
         }
-        
         .gallery-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-hover);
         }
-        
-        .gallery-card img {
-            width: 100%;
-            height: 220px;
+        .gallery-image {
+            flex-shrink: 0;
+            width: 120px;
+            height: 120px;
+            border-radius: var(--radius-sm);
             object-fit: cover;
-            display: block;
+            border: 1px solid var(--accent-light);
+        }
+        .gallery-content {
+            flex: 1;
+            min-width: 180px;
+        }
+        .gallery-title {
+            font-size: 1.1rem;
+            color: var(--accent);
+            margin-bottom: 0.3rem;
+        }
+        .gallery-date {
+            font-size: 0.8rem;
+            color: var(--text-muted);
         }
         
-        .gallery-caption {
-            padding: 15px;
-            text-align: center;
-            color: #5a4a6e;
-            font-size: 0.95em;
-        }
-        
-        /* Модальное окно */
+        /* Модальное окно для просмотра фото */
         .modal {
             display: none;
             position: fixed;
-            z-index: 2000;
-            left: 0;
             top: 0;
+            left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.85);
-            cursor: pointer;
+            background: rgba(0,0,0,0.8);
+            z-index: 20000;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(4px);
         }
-        
+        .modal.active {
+            display: flex;
+        }
         .modal-content {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
+            background: transparent;
             max-width: 90%;
             max-height: 90%;
-            border-radius: 12px;
+            position: relative;
         }
-        
+        .modal-image {
+            width: 100%;
+            max-height: 85vh;
+            object-fit: contain;
+            border-radius: var(--radius);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
         .modal-close {
             position: absolute;
-            top: 20px;
-            right: 40px;
-            font-size: 40px;
-            color: white;
+            top: -40px;
+            right: 0;
+            font-size: 2rem;
             cursor: pointer;
-            transition: 0.3s;
+            color: white;
+            transition: 0.2s;
+            background: rgba(0,0,0,0.5);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
-        
         .modal-close:hover {
-            color: #cbb5df;
+            color: var(--accent-light);
+            background: rgba(0,0,0,0.8);
         }
-        
-        @media (max-width: 768px) {
-            .gallery-grid {
-                grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-                gap: 15px;
+        .modal-caption {
+            text-align: center;
+            color: white;
+            margin-top: 0.8rem;
+            font-size: 0.9rem;
+            text-shadow: 0 1px 2px black;
+        }
+        .loading {
+            text-align: center;
+            padding: 2rem;
+            color: var(--text-muted);
+        }
+        @media (max-width: 600px) {
+            .gallery-card {
+                flex-direction: column;
             }
-            .gallery-card img {
+            .gallery-image {
+                width: 100%;
                 height: 160px;
-            }
-            .modal-close {
-                top: 10px;
-                right: 20px;
-                font-size: 32px;
             }
         }
     </style>
 </head>
 <body>
+    <header>
+        <nav class="navbar">
+            <div class="logo"><a href="index.html">Ádel</a></div>
+            <ul class="nav-links" id="navLinks"></ul>
+            <div class="burger">
+                <div class="line1"></div>
+                <div class="line2"></div>
+                <div class="line3"></div>
+            </div>
+        </nav>
+    </header>
 
-<header>
-    <div class="header-content">
-        <a href="index.html" class="logo">
-            <img src="favicon.png" alt="Ádel" class="logo-icon">
-            <span>Ádel</span>
-    </div>
-</header>
-
-<main>
-    <div class="gallery-page">
-        <h1 class="gallery-title">📸 Галерея</h1>
+    <main>
+        <h1>📸 Галерея</h1>
+        <p>Мои фото, моменты и настроения.</p>
         
-        <div class="gallery-grid" id="galleryGrid">
-            <div style="text-align:center; padding:40px;">Загрузка изображений...</div>
+        <div id="galleryContainer">
+            <div class="loading">Загрузка фотографий...</div>
+        </div>
+    </main>
+
+    <!-- Модальное окно для просмотра фото -->
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <span class="modal-close" id="modalClose">&times;</span>
+            <img class="modal-image" id="modalImage" alt="Фото">
+            <div class="modal-caption" id="modalCaption"></div>
         </div>
     </div>
-</main>
 
-<footer>
-    <p>© 2025 Ádel — Ангел Поэзии</p>
-</footer>
+    <footer>
+        <p>2026. Адель. Angel de la poesía. ✨</p>
+        <a href="index.html">Главная</a> |
+        <a href="about.html">Об авторе</a> |
+        <a href="contacts.html">Контакты</a>
+    </footer>
 
-<!-- Модальное окно -->
-<div id="modal" class="modal" onclick="closeModal()">
-    <span class="modal-close">&times;</span>
-    <img class="modal-content" id="modalImage">
-</div>
-
-<!-- Баг-виджет -->
-<script src="bug-report.js"></script>
-
-<script>
-    // Массив с человеческими подписями
-   const galleryImages = [
-    { src: "Gallery/2025-01-22%2015-10-46.JPG", caption: "22 января 2025" },
-    { src: "Gallery/2025-03-31%2011-57-36.JPG", caption: "31 марта 2025" },
-    { src: "Gallery/2025-06-13%2000-30-17.JPG", caption: "13 июня 2025" },
-    { src: "Gallery/2025-07-17%2009-40-21.JPEG", caption: "17 июля 2025" },
-    { src: "Gallery/2025-07-29%2013-08-25.JPEG", caption: "29 июля 2025" },
-    { src: "Gallery/2025-08-03%2013-58-24.JPG", caption: "3 августа 2025" },
-    { src: "Gallery/2025-08-10%2008-39-38.JPG", caption: "10 августа 2025" },
-    { src: "Gallery/2025-08-24%2000-16-29.JPG", caption: "24 августа 2025" },
-    { src: "Gallery/2025-09-01%2012-19-17.JPG", caption: "1 сентября 2025" },
-    { src: "Gallery/2025-09-01%2012-19-17_1758061804.JPG", caption: "1 сентября 2025" },
-    { src: "Gallery/2025-09-01%2012-19-17_1758061806.JPG", caption: "1 сентября 2025" },
-    { src: "Gallery/2025-09-01%2012-19-18.JPG", caption: "1 сентября 2025" },
-    { src: "Gallery/2025-09-01%2012-19-18_1758061424.JPG", caption: "1 сентября 2025" },
-    { src: "Gallery/2025-09-01%2012-19-18_1758061427.JPG", caption: "1 сентября 2025" },
-    { src: "Gallery/2025-09-01%2012-19-18_1758061432.JPG", caption: "1 сентября 2025" },
-    { src: "Gallery/2025-09-01%2012-19-18_1758061450.JPG", caption: "1 сентября 2025" },
-    { src: "Gallery/2025-09-01%2012-19-18_1758061735.JPG", caption: "1 сентября 2025" },
-    { src: "Gallery/2025-09-01%2012-19-18_1758061742.JPG", caption: "1 сентября 2025" },
-    { src: "Gallery/2025-09-01%2012-19-18_1758061752.JPG", caption: "1 сентября 2025" },
-    { src: "Gallery/2025-09-01%2012-19-18_1758061755.JPG", caption: "1 сентября 2025" },
-    { src: "Gallery/2025-09-01%2012-19-18_1758061758.JPG", caption: "1 сентября 2025" },
-    { src: "Gallery/2025-09-01%2012-19-18_1758061760.JPG", caption: "1 сентября 2025" },
-    { src: "Gallery/2025-09-01%2012-19-18_1758061779.JPG", caption: "1 сентября 2025" },
-    { src: "Gallery/2025-09-01%2012-19-18_1758061781.JPG", caption: "1 сентября 2025" },
-    { src: "Gallery/2025-09-01%2012-19-18_1758061784.JPG", caption: "1 сентября 2025" },
-    { src: "Gallery/2025-09-01%2012-19-18_1758061791.JPG", caption: "1 сентября 2025" },
-    { src: "Gallery/2025-09-01%2012-19-18_1758061794.JPG", caption: "1 сентября 2025" },
-    { src: "Gallery/2025-09-01%2012-19-18_1758061796.JPG", caption: "1 сентября 2025" },
-    { src: "Gallery/2025-09-01%2012-19-18_1758061798.JPG", caption: "1 сентября 2025" },
-    { src: "Gallery/2025-09-06%2009-28-53.JPG", caption: "6 сентября 2025" },
-    { src: "Gallery/2025-09-11%2010-04-50.JPG", caption: "11 сентября 2025" },
-    { src: "Gallery/2025-09-18%2021-15-17.JPG", caption: "18 сентября 2025" },
-    { src: "Gallery/2025-09-24%2009-13-11.JPEG", caption: "24 сентября 2025" },
-    { src: "Gallery/2025-10-01%2013-54-43.JPG", caption: "1 октября 2025" },
-    { src: "Gallery/IMG_20260405_211457.jpg", caption: "5 апреля 2026" },
-    { src: "Gallery/IMG_20260405_211518.jpg", caption: "5 апреля 2026" },
-    { src: "Gallery/IMG_20260405_211600.jpg", caption: "5 апреля 2026" },
-    { src: "Gallery/Picsart_26-03-30_10-04-30-926.png", caption: "30 марта 2026" },
-    { src: "Gallery/Picsart_26-04-04_07-48-46-984.jpg", caption: "4 апреля 2026" },
-    { src: "Gallery/Picsart_26-04-04_18-47-22-947.jpg", caption: "4 апреля 2026" },
-    { src: "Gallery/Picsart_26-04-06_12-03-52-393.jpg", caption: "6 апреля 2026" },
-    { src: "Gallery/Picsart_26-04-08_18-04-41-259.jpg", caption: "8 апреля 2026" },
-    { src: "Gallery/Picsart_26-04-22_21-10-57-701.jpg", caption: "22 апреля 2026" },
-    { src: "Gallery/f2.jpg", caption: "Без даты" },
-    { src: "Gallery/foto.jpg", caption: "Без даты" }
-];
-    
-    function openModal(imgSrc) {
-        const modal = document.getElementById('modal');
-        const modalImg = document.getElementById('modalImage');
-        modal.style.display = 'block';
-        modalImg.src = imgSrc;
-        document.body.style.overflow = 'hidden';
-    }
-    
-    function closeModal() {
-        document.getElementById('modal').style.display = 'none';
-        document.body.style.overflow = 'auto';
-    }
-    
-    function loadGallery() {
-        const grid = document.getElementById('galleryGrid');
+    <script src="menu.js"></script>
+    <script>
+        // Список фотографий — добавляй сюда свои
+        const galleryImages = [
+            { src: "Gallery/2025-01-22%2015-10-46.JPG", caption: "22 января 2025" },
+            { src: "Gallery/2025-03-31%2011-57-36.JPG", caption: "31 марта 2025" },
+            { src: "Gallery/2025-06-13%2000-30-17.JPG", caption: "13 июня 2025" },
+            { src: "Gallery/2025-07-17%2009-40-21.JPEG", caption: "17 июля 2025" },
+            { src: "Gallery/2025-07-29%2013-08-25.JPEG", caption: "29 июля 2025" },
+            { src: "Gallery/2025-08-03%2013-58-24.JPG", caption: "3 августа 2025" },
+            { src: "Gallery/2025-08-10%2008-39-38.JPG", caption: "10 августа 2025" },
+            { src: "Gallery/2025-08-24%2000-16-29.JPG", caption: "24 августа 2025" },
+            { src: "Gallery/2025-09-01%2012-19-17.JPG", caption: "1 сентября 2025" },
+            { src: "Gallery/2025-09-01%2012-19-17_1758061804.JPG", caption: "1 сентября 2025" },
+            { src: "Gallery/2025-09-01%2012-19-17_1758061806.JPG", caption: "1 сентября 2025" },
+            { src: "Gallery/2025-09-01%2012-19-18.JPG", caption: "1 сентября 2025" },
+            { src: "Gallery/2025-09-06%2009-28-53.JPG", caption: "6 сентября 2025" },
+            { src: "Gallery/2025-09-11%2010-04-50.JPG", caption: "11 сентября 2025" },
+            { src: "Gallery/2025-09-18%2021-15-17.JPG", caption: "18 сентября 2025" },
+            { src: "Gallery/2025-09-24%2009-13-11.JPEG", caption: "24 сентября 2025" },
+            { src: "Gallery/2025-10-01%2013-54-43.JPG", caption: "1 октября 2025" },
+            { src: "Gallery/IMG_20260405_211457.jpg", caption: "5 апреля 2026" },
+            { src: "Gallery/IMG_20260405_211518.jpg", caption: "5 апреля 2026" },
+            { src: "Gallery/IMG_20260405_211600.jpg", caption: "5 апреля 2026" },
+            { src: "Gallery/Picsart_26-03-30_10-04-30-926.png", caption: "30 марта 2026" },
+            { src: "Gallery/Picsart_26-04-04_07-48-46-984.jpg", caption: "4 апреля 2026" },
+            { src: "Gallery/Picsart_26-04-04_18-47-22-947.jpg", caption: "4 апреля 2026" },
+            { src: "Gallery/Picsart_26-04-06_12-03-52-393.jpg", caption: "6 апреля 2026" },
+            { src: "Gallery/Picsart_26-04-08_18-04-41-259.jpg", caption: "8 апреля 2026" },
+            { src: "Gallery/Picsart_26-04-22_21-10-57-701.jpg", caption: "22 апреля 2026" },
+            { src: "Gallery/f2.jpg", caption: "Без даты" },
+            { src: "Gallery/foto.jpg", caption: "Без даты" }
+        ];
         
-        if (!galleryImages.length) {
-            grid.innerHTML = '<div style="text-align:center; padding:40px;">📷 Пока нет фотографий. Скоро они появятся ✨</div>';
-            return;
+        function openModal(src, caption) {
+            const modal = document.getElementById('modal');
+            const modalImage = document.getElementById('modalImage');
+            const modalCaption = document.getElementById('modalCaption');
+            
+            modalImage.src = src;
+            modalCaption.textContent = caption;
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
         }
         
-        let html = '';
-        for (let i = 0; i < galleryImages.length; i++) {
-            const img = galleryImages[i];
-            html += `
-                <div class="gallery-card" onclick="openModal('${img.src}')">
-                    <img src="${img.src}" alt="${img.caption}" loading="lazy" onerror="this.src='data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20200%20150%22%3E%3Crect%20width%3D%22200%22%20height%3D%22150%22%20fill%3D%22%23ddd%22%2F%3E%3Ctext%20x%3D%22100%22%20y%3D%2275%22%20text-anchor%3D%22middle%22%20fill%3D%22%23999%22%3EФото%20не%20найдено%3C%2Ftext%3E%3C%2Fsvg%3E'">
-                    <div class="gallery-caption">${img.caption}</div>
+        function closeModal() {
+            document.getElementById('modal').classList.remove('active');
+            document.body.style.overflow = '';
+        }
+        
+        function loadGallery() {
+            const container = document.getElementById('galleryContainer');
+            
+            if (!galleryImages.length) {
+                container.innerHTML = '<p>📷 Пока нет фотографий. Скоро они появятся ✨</p>';
+                return;
+            }
+            
+            container.innerHTML = galleryImages.map(img => `
+                <div class="gallery-card" onclick="openModal('${img.src}', '${img.caption.replace(/'/g, "\\'")}')">
+                    <img class="gallery-image" src="${img.src}" alt="${img.caption}" loading="lazy" onerror="this.style.display='none'">
+                    <div class="gallery-content">
+                        <div class="gallery-title">📷 ${img.caption}</div>
+                        <div class="gallery-date">${img.caption}</div>
+                    </div>
                 </div>
-            `;
+            `).join('');
         }
-        grid.innerHTML = html;
-    }
-    
-    loadGallery();
-    
-    document.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape') closeModal();
-    });
-</script>
+        
+        document.getElementById('modalClose').addEventListener('click', closeModal);
+        document.getElementById('modal').addEventListener('click', (e) => {
+            if (e.target === document.getElementById('modal')) closeModal();
+        });
+        
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closeModal();
+        });
+        
+        loadGallery();
+    </script>
 </body>
 </html>
