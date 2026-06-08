@@ -3,10 +3,96 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>Произведения — Адель</title>
+    <title>Произведения — Ádel</title>
     <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
     <link rel="stylesheet" href="style.css">
+    <style>
+        /* Стили для страницы произведений */
+        .filters-bar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.8rem;
+            justify-content: center;
+            margin: 2rem 0;
+        }
+        .filter-btn {
+            background: var(--bg-light);
+            border: 1px solid var(--accent-light);
+            padding: 0.5rem 1.2rem;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: 0.2s;
+            font-size: 0.9rem;
+        }
+        .filter-btn:hover {
+            background: var(--accent-light);
+            color: white;
+        }
+        .filter-btn.active-filter {
+            background: var(--accent);
+            color: white;
+            border-color: var(--accent);
+        }
+        .search-box {
+            text-align: center;
+            margin: 1.5rem 0;
+        }
+        .search-box input {
+            padding: 0.7rem 1.5rem;
+            width: 100%;
+            max-width: 350px;
+            border-radius: 40px;
+            border: 1px solid var(--accent-light);
+            font-size: 0.95rem;
+        }
+        .works-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 1.2rem;
+            margin: 2rem 0;
+        }
+        .work-card {
+            background: white;
+            border-radius: var(--radius-sm);
+            padding: 1.2rem;
+            border: var(--border);
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+        .work-card:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-hover);
+        }
+        .work-title {
+            font-size: 1.2rem;
+            color: var(--accent);
+            margin-bottom: 0.3rem;
+        }
+        .work-meta {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-bottom: 0.6rem;
+            display: flex;
+            gap: 1rem;
+        }
+        .work-excerpt {
+            color: var(--text-dark);
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+        .badge {
+            background: var(--accent-light);
+            padding: 0.2rem 0.6rem;
+            border-radius: 20px;
+            font-size: 0.7rem;
+        }
+        .loading {
+            text-align: center;
+            padding: 2rem;
+            color: var(--text-muted);
+        }
+    </style>
 </head>
 <body>
     <header>
@@ -17,43 +103,104 @@
     </header>
 
     <main>
-        <h1>Произведения Адель</h1>
+        <h1>📖 Произведения</h1>
         <p>Поэзия, проза, переводы — от крылатой поэтессы</p>
 
-        <section>
-            <h2>📚 Список произведений</h2>
-            <div style="background: #fdf4e6; padding: 2rem; border-radius: 20px; text-align: center; margin: 2rem 0;">
-                <p style="font-size: 1.2rem;">🛠️ Страница временно на реконструкции.</p>
-                <p>Полный сборник стихов будет доступен после обновления.</p>
-                <p style="margin-top: 1rem; color: #7c3a8c;">Следите за новостями на главной странице.</p>
-            </div>
-        </section>
+        <div class="filters-bar">
+            <button class="filter-btn active-filter" data-lang="all">🌍 Все языки</button>
+            <button class="filter-btn" data-lang="ru">🇷🇺 Русский</button>
+            <button class="filter-btn" data-lang="en">🇬🇧 English</button>
+            <button class="filter-btn" data-lang="es">🇪🇸 Español</button>
+        </div>
+
+        <div class="filters-bar">
+            <button class="filter-btn active-filter" data-genre="all">📚 Все жанры</button>
+            <button class="filter-btn" data-genre="lyrics">💕 Лирика</button>
+            <button class="filter-btn" data-genre="philosophy">🤔 Философия</button>
+            <button class="filter-btn" data-genre="humor">😊 Юмор</button>
+            <button class="filter-btn" data-genre="prose">📖 Проза</button>
+        </div>
+
+        <div class="search-box">
+            <input type="text" id="searchInput" placeholder="🔍 Поиск по названию или первой строке...">
+        </div>
+
+        <div id="worksContainer">
+            <div class="loading">Загрузка произведений...</div>
+        </div>
     </main>
 
-    <div class="bug-widget" id="bugWidget">🐞</div>
-    <div class="bug-widget-content" id="bugWidgetContent">
-        <h3>Сообщить о проблеме</h3>
-        <textarea placeholder="Опишите..."></textarea>
-        <button>Отправить</button>
-    </div>
-
     <footer>
-        <p>2026. Адель. Angel de la poesía.</p>
-        <a href="about.html">Об авторе</a>
+        <p>2026. Адель. Angel de la poesía. ✨</p>
+        <a href="index.html">Главная</a> |
+        <a href="about.html">Об авторе</a> |
+        <a href="contacts.html">Контакты</a>
     </footer>
 
     <script src="menu.js"></script>
-</body>
-</html>               work.text.toLowerCase().includes(searchTerm) ||
-                                      work.firstLine.toLowerCase().includes(searchTerm);
+    <script>
+        let allWorks = [];
+        let activeLang = 'all';
+        let activeGenre = 'all';
+        let searchTerm = '';
+
+        async function loadWorks() {
+            const container = document.getElementById('worksContainer');
+            
+            try {
+                const response = await fetch('works.json?_=' + Date.now());
+                if (!response.ok) throw new Error('Файл works.json не найден');
+                
+                allWorks = await response.json();
+                
+                if (!allWorks || allWorks.length === 0) {
+                    container.innerHTML = '<p>📭 Произведения пока не добавлены. Загляните позже ✨</p>';
+                    return;
+                }
+                
+                filterWorks();
+                
+            } catch (error) {
+                console.error('Ошибка загрузки:', error);
+                container.innerHTML = '<p>❌ Не удалось загрузить произведения. Попробуйте позже.</p>';
+            }
+        }
+
+        function filterWorks() {
+            const filtered = allWorks.filter(work => {
+                const matchesSearch = !searchTerm || 
+                    work.title.toLowerCase().includes(searchTerm) ||
+                    (work.firstLine && work.firstLine.toLowerCase().includes(searchTerm));
                 const matchesLang = activeLang === 'all' || work.lang === activeLang;
                 const matchesGenre = activeGenre === 'all' || work.genre === activeGenre;
                 return matchesSearch && matchesLang && matchesGenre;
             });
-            renderWorks();
+            renderWorks(filtered);
         }
 
-        // Вспомогательные функции
+        function renderWorks(works) {
+            const container = document.getElementById('worksContainer');
+            
+            if (!works.length) {
+                container.innerHTML = '<p>😔 Ничего не найдено. Попробуйте другие фильтры.</p>';
+                return;
+            }
+            
+            container.innerHTML = works.map(work => `
+                <div class="work-card">
+                    <div class="work-title">${escapeHtml(work.title)}</div>
+                    <div class="work-meta">
+                        <span>${getLangName(work.lang)}</span>
+                        <span class="badge">${getGenreName(work.genre)}</span>
+                        ${work.date ? `<span>📅 ${work.date}</span>` : ''}
+                    </div>
+                    <div class="work-excerpt">
+                        ${escapeHtml(work.firstLine || work.content?.substring(0, 120) || '')}...
+                    </div>
+                </div>
+            `).join('');
+        }
+
         function getGenreName(genre) {
             const genres = {
                 lyrics: 'Лирика',
@@ -83,12 +230,12 @@
             });
         }
 
-        // Навешиваем фильтры
         function bindFilters() {
             document.querySelectorAll('[data-lang]').forEach(btn => {
                 btn.addEventListener('click', () => {
                     document.querySelectorAll('[data-lang]').forEach(b => b.classList.remove('active-filter'));
                     btn.classList.add('active-filter');
+                    activeLang = btn.getAttribute('data-lang');
                     filterWorks();
                 });
             });
@@ -97,17 +244,18 @@
                 btn.addEventListener('click', () => {
                     document.querySelectorAll('[data-genre]').forEach(b => b.classList.remove('active-filter'));
                     btn.classList.add('active-filter');
+                    activeGenre = btn.getAttribute('data-genre');
                     filterWorks();
                 });
             });
 
-            document.getElementById('searchInput').addEventListener('input', filterWorks);
+            document.getElementById('searchInput').addEventListener('input', (e) => {
+                searchTerm = e.target.value.toLowerCase();
+                filterWorks();
+            });
         }
 
-        // Запуск
-        loadWorks().then(() => {
-            bindFilters();
-        });
+        loadWorks().then(() => bindFilters());
     </script>
 </body>
-        </html>
+</html>
