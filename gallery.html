@@ -10,9 +10,11 @@
     <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
     <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
     
+    <!-- Подключаем основной стиль сайта -->
     <link rel="stylesheet" href="style.css">
+    
     <style>
-        /* Стили для галереи */
+        /* Дополнительные стили только для галереи */
         .gallery-page {
             max-width: 1200px;
             margin: 0 auto;
@@ -81,7 +83,6 @@
             max-width: 90%;
             max-height: 90%;
             border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
         }
         
         .modal-close {
@@ -158,55 +159,57 @@
     <img class="modal-content" id="modalImage">
 </div>
 
+<!-- Баг-виджет -->
+<script src="bug-report.js"></script>
+
 <script>
-    // Список фотографий (добавь сюда свои файлы)
-    // Формат: { src: "gallery/имя_файла.jpg", caption: "Подпись к фото" }
+    // Массив с человеческими подписями
    const galleryImages = [
-    { src: "Gallery/2025-01-22%2015-10-46.JPG", caption: "Мгновение" },
-    { src: "Gallery/2025-03-31%2011-57-36.JPG", caption: "Весеннее настроение" },
-    { src: "Gallery/2025-06-13%2000-30-17.JPG", caption: "Летняя ночь" },
-    { src: "Gallery/2025-07-17%2009-40-21.JPEG", caption: "Утро" },
-    { src: "Gallery/2025-07-29%2013-08-25.JPEG", caption: "День" },
-    { src: "Gallery/2025-08-03%2013-58-24.JPG", caption: "Август" },
-    { src: "Gallery/2025-08-10%2008-39-38.JPG", caption: "Рассвет" },
-    { src: "Gallery/2025-08-24%2000-16-29.JPG", caption: "Тишина" },
-    { src: "Gallery/2025-09-01%2012-19-17.JPG", caption: "Осень" },
-    { src: "Gallery/2025-09-01%2012-19-17_1758061804.JPG", caption: "Осень 2" },
-    { src: "Gallery/2025-09-01%2012-19-17_1758061806.JPG", caption: "Осень 3" },
-    { src: "Gallery/2025-09-01%2012-19-18.JPG", caption: "Листопад" },
-    { src: "Gallery/2025-09-01%2012-19-18_1758061424.JPG", caption: "Листопад 2" },
-    { src: "Gallery/2025-09-01%2012-19-18_1758061427.JPG", caption: "Листопад 3" },
-    { src: "Gallery/2025-09-01%2012-19-18_1758061432.JPG", caption: "Листопад 4" },
-    { src: "Gallery/2025-09-01%2012-19-18_1758061450.JPG", caption: "Листопад 5" },
-    { src: "Gallery/2025-09-01%2012-19-18_1758061735.JPG", caption: "Листопад 6" },
-    { src: "Gallery/2025-09-01%2012-19-18_1758061742.JPG", caption: "Листопад 7" },
-    { src: "Gallery/2025-09-01%2012-19-18_1758061752.JPG", caption: "Листопад 8" },
-    { src: "Gallery/2025-09-01%2012-19-18_1758061755.JPG", caption: "Листопад 9" },
-    { src: "Gallery/2025-09-01%2012-19-18_1758061758.JPG", caption: "Листопад 10" },
-    { src: "Gallery/2025-09-01%2012-19-18_1758061760.JPG", caption: "Листопад 11" },
-    { src: "Gallery/2025-09-01%2012-19-18_1758061779.JPG", caption: "Листопад 12" },
-    { src: "Gallery/2025-09-01%2012-19-18_1758061781.JPG", caption: "Листопад 13" },
-    { src: "Gallery/2025-09-01%2012-19-18_1758061784.JPG", caption: "Листопад 14" },
-    { src: "Gallery/2025-09-01%2012-19-18_1758061791.JPG", caption: "Листопад 15" },
-    { src: "Gallery/2025-09-01%2012-19-18_1758061794.JPG", caption: "Листопад 16" },
-    { src: "Gallery/2025-09-01%2012-19-18_1758061796.JPG", caption: "Листопад 17" },
-    { src: "Gallery/2025-09-01%2012-19-18_1758061798.JPG", caption: "Листопад 18" },
-    { src: "Gallery/2025-09-06%2009-28-53.JPG", caption: "Сентябрь" },
-    { src: "Gallery/2025-09-11%2010-04-50.JPG", caption: "Сентябрьское утро" },
-    { src: "Gallery/2025-09-18%2021-15-17.JPG", caption: "Вечер" },
-    { src: "Gallery/2025-09-24%2009-13-11.JPEG", caption: "Октябрь" },
-    { src: "Gallery/2025-10-01%2013-54-43.JPG", caption: "Первый день октября" },
-    { src: "Gallery/IMG_20260405_211457.jpg", caption: "Момент" },
-    { src: "Gallery/IMG_20260405_211518.jpg", caption: "Вдохновение" },
-    { src: "Gallery/IMG_20260405_211600.jpg", caption: "Творчество" },
-    { src: "Gallery/Picsart_26-03-30_10-04-30-926.png", caption: "Арт 1" },
-    { src: "Gallery/Picsart_26-04-04_07-48-46-984.jpg", caption: "Арт 2" },
-    { src: "Gallery/Picsart_26-04-04_18-47-22-947.jpg", caption: "Арт 3" },
-    { src: "Gallery/Picsart_26-04-06_12-03-52-393.jpg", caption: "Арт 4" },
-    { src: "Gallery/Picsart_26-04-08_18-04-41-259.jpg", caption: "Арт 5" },
-    { src: "Gallery/Picsart_26-04-22_21-10-57-701.jpg", caption: "Арт 6" },
-    { src: "Gallery/f2.jpg", caption: "Кадр" },
-    { src: "Gallery/foto.jpg", caption: "Памятное" }
+    { src: "Gallery/2025-01-22%2015-10-46.JPG", caption: "22 января 2025" },
+    { src: "Gallery/2025-03-31%2011-57-36.JPG", caption: "31 марта 2025" },
+    { src: "Gallery/2025-06-13%2000-30-17.JPG", caption: "13 июня 2025" },
+    { src: "Gallery/2025-07-17%2009-40-21.JPEG", caption: "17 июля 2025" },
+    { src: "Gallery/2025-07-29%2013-08-25.JPEG", caption: "29 июля 2025" },
+    { src: "Gallery/2025-08-03%2013-58-24.JPG", caption: "3 августа 2025" },
+    { src: "Gallery/2025-08-10%2008-39-38.JPG", caption: "10 августа 2025" },
+    { src: "Gallery/2025-08-24%2000-16-29.JPG", caption: "24 августа 2025" },
+    { src: "Gallery/2025-09-01%2012-19-17.JPG", caption: "1 сентября 2025" },
+    { src: "Gallery/2025-09-01%2012-19-17_1758061804.JPG", caption: "1 сентября 2025" },
+    { src: "Gallery/2025-09-01%2012-19-17_1758061806.JPG", caption: "1 сентября 2025" },
+    { src: "Gallery/2025-09-01%2012-19-18.JPG", caption: "1 сентября 2025" },
+    { src: "Gallery/2025-09-01%2012-19-18_1758061424.JPG", caption: "1 сентября 2025" },
+    { src: "Gallery/2025-09-01%2012-19-18_1758061427.JPG", caption: "1 сентября 2025" },
+    { src: "Gallery/2025-09-01%2012-19-18_1758061432.JPG", caption: "1 сентября 2025" },
+    { src: "Gallery/2025-09-01%2012-19-18_1758061450.JPG", caption: "1 сентября 2025" },
+    { src: "Gallery/2025-09-01%2012-19-18_1758061735.JPG", caption: "1 сентября 2025" },
+    { src: "Gallery/2025-09-01%2012-19-18_1758061742.JPG", caption: "1 сентября 2025" },
+    { src: "Gallery/2025-09-01%2012-19-18_1758061752.JPG", caption: "1 сентября 2025" },
+    { src: "Gallery/2025-09-01%2012-19-18_1758061755.JPG", caption: "1 сентября 2025" },
+    { src: "Gallery/2025-09-01%2012-19-18_1758061758.JPG", caption: "1 сентября 2025" },
+    { src: "Gallery/2025-09-01%2012-19-18_1758061760.JPG", caption: "1 сентября 2025" },
+    { src: "Gallery/2025-09-01%2012-19-18_1758061779.JPG", caption: "1 сентября 2025" },
+    { src: "Gallery/2025-09-01%2012-19-18_1758061781.JPG", caption: "1 сентября 2025" },
+    { src: "Gallery/2025-09-01%2012-19-18_1758061784.JPG", caption: "1 сентября 2025" },
+    { src: "Gallery/2025-09-01%2012-19-18_1758061791.JPG", caption: "1 сентября 2025" },
+    { src: "Gallery/2025-09-01%2012-19-18_1758061794.JPG", caption: "1 сентября 2025" },
+    { src: "Gallery/2025-09-01%2012-19-18_1758061796.JPG", caption: "1 сентября 2025" },
+    { src: "Gallery/2025-09-01%2012-19-18_1758061798.JPG", caption: "1 сентября 2025" },
+    { src: "Gallery/2025-09-06%2009-28-53.JPG", caption: "6 сентября 2025" },
+    { src: "Gallery/2025-09-11%2010-04-50.JPG", caption: "11 сентября 2025" },
+    { src: "Gallery/2025-09-18%2021-15-17.JPG", caption: "18 сентября 2025" },
+    { src: "Gallery/2025-09-24%2009-13-11.JPEG", caption: "24 сентября 2025" },
+    { src: "Gallery/2025-10-01%2013-54-43.JPG", caption: "1 октября 2025" },
+    { src: "Gallery/IMG_20260405_211457.jpg", caption: "5 апреля 2026" },
+    { src: "Gallery/IMG_20260405_211518.jpg", caption: "5 апреля 2026" },
+    { src: "Gallery/IMG_20260405_211600.jpg", caption: "5 апреля 2026" },
+    { src: "Gallery/Picsart_26-03-30_10-04-30-926.png", caption: "30 марта 2026" },
+    { src: "Gallery/Picsart_26-04-04_07-48-46-984.jpg", caption: "4 апреля 2026" },
+    { src: "Gallery/Picsart_26-04-04_18-47-22-947.jpg", caption: "4 апреля 2026" },
+    { src: "Gallery/Picsart_26-04-06_12-03-52-393.jpg", caption: "6 апреля 2026" },
+    { src: "Gallery/Picsart_26-04-08_18-04-41-259.jpg", caption: "8 апреля 2026" },
+    { src: "Gallery/Picsart_26-04-22_21-10-57-701.jpg", caption: "22 апреля 2026" },
+    { src: "Gallery/f2.jpg", caption: "Без даты" },
+    { src: "Gallery/foto.jpg", caption: "Без даты" }
 ];
     
     function openModal(imgSrc) {
@@ -235,7 +238,7 @@
             const img = galleryImages[i];
             html += `
                 <div class="gallery-card" onclick="openModal('${img.src}')">
-                    <img src="${img.src}" alt="${img.caption}" loading="lazy">
+                    <img src="${img.src}" alt="${img.caption}" loading="lazy" onerror="this.src='data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20200%20150%22%3E%3Crect%20width%3D%22200%22%20height%3D%22150%22%20fill%3D%22%23ddd%22%2F%3E%3Ctext%20x%3D%22100%22%20y%3D%2275%22%20text-anchor%3D%22middle%22%20fill%3D%22%23999%22%3EФото%20не%20найдено%3C%2Ftext%3E%3C%2Fsvg%3E'">
                     <div class="gallery-caption">${img.caption}</div>
                 </div>
             `;
@@ -245,7 +248,6 @@
     
     loadGallery();
     
-    // Закрытие по Escape
     document.addEventListener('keydown', function(e) {
         if (e.key === 'Escape') closeModal();
     });
