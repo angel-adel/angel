@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Галерея | Ádel</title>
+    
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+    
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* Стили для галереи */
+        .gallery-page {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+        
+        .gallery-title {
+            text-align: center;
+            font-size: 2.2em;
+            color: #8b6b9d;
+            margin-bottom: 40px;
+        }
+        
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px;
+        }
+        
+        .gallery-card {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 20px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        
+        .gallery-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+        }
+        
+        .gallery-card img {
+            width: 100%;
+            height: 220px;
+            object-fit: cover;
+            display: block;
+        }
+        
+        .gallery-caption {
+            padding: 15px;
+            text-align: center;
+            color: #5a4a6e;
+            font-size: 0.95em;
+        }
+        
+        /* Модальное окно */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            cursor: pointer;
+        }
+        
+        .modal-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            max-width: 90%;
+            max-height: 90%;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        .modal-close {
+            position: absolute;
+            top: 20px;
+            right: 40px;
+            font-size: 40px;
+            color: white;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        
+        .modal-close:hover {
+            color: #cbb5df;
+        }
+        
+        @media (max-width: 768px) {
+            .gallery-grid {
+                grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+                gap: 15px;
+            }
+            .gallery-card img {
+                height: 160px;
+            }
+            .modal-close {
+                top: 10px;
+                right: 20px;
+                font-size: 32px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="header-content">
+        <a href="index.html" class="logo">
+            <img src="favicon.png" alt="Ádel" class="logo-icon">
+            <span>Ádel</span>
+        </a>
+        <nav>
+            <ul>
+                <li><a href="index.html">Главная</a></li>
+                <li><a href="about.html">Об авторе</a></li>
+                <li><a href="works.html">Произведения</a></li>
+                <li><a href="gallery.html">Галерея</a></li>
+                <li><a href="prose.html">Проза</a></li>
+                <li><a href="order.html">Заказать</a></li>
+                <li><a href="guestbook.html">Гостевая книга</a></li>
+                <li><a href="contacts.html">Контакты</a></li>
+                <li><a href="download.html">Скачать</a></li>
+            </ul>
+        </nav>
+    </div>
+</header>
+
+<main>
+    <div class="gallery-page">
+        <h1 class="gallery-title">📸 Галерея</h1>
+        
+        <div class="gallery-grid" id="galleryGrid">
+            <div style="text-align:center; padding:40px;">Загрузка изображений...</div>
+        </div>
+    </div>
+</main>
+
+<footer>
+    <p>© 2025 Ádel — Ангел Поэзии</p>
+</footer>
+
+<!-- Модальное окно -->
+<div id="modal" class="modal" onclick="closeModal()">
+    <span class="modal-close">&times;</span>
+    <img class="modal-content" id="modalImage">
+</div>
+
+<script>
+    // Список фотографий (добавь сюда свои файлы)
+    // Формат: { src: "gallery/имя_файла.jpg", caption: "Подпись к фото" }
+   const galleryImages = [
+    { src: "Gallery/2025-01-22%2015-10-46.JPG", caption: "Мгновение" },
+    { src: "Gallery/2025-03-31%2011-57-36.JPG", caption: "Весеннее настроение" },
+    { src: "Gallery/2025-06-13%2000-30-17.JPG", caption: "Летняя ночь" },
+    { src: "Gallery/2025-07-17%2009-40-21.JPEG", caption: "Утро" },
+    { src: "Gallery/2025-07-29%2013-08-25.JPEG", caption: "День" },
+    { src: "Gallery/2025-08-03%2013-58-24.JPG", caption: "Август" },
+    { src: "Gallery/2025-08-10%2008-39-38.JPG", caption: "Рассвет" },
+    { src: "Gallery/2025-08-24%2000-16-29.JPG", caption: "Тишина" },
+    { src: "Gallery/2025-09-01%2012-19-17.JPG", caption: "Осень" },
+    { src: "Gallery/2025-09-01%2012-19-17_1758061804.JPG", caption: "Осень 2" },
+    { src: "Gallery/2025-09-01%2012-19-17_1758061806.JPG", caption: "Осень 3" },
+    { src: "Gallery/2025-09-01%2012-19-18.JPG", caption: "Листопад" },
+    { src: "Gallery/2025-09-01%2012-19-18_1758061424.JPG", caption: "Листопад 2" },
+    { src: "Gallery/2025-09-01%2012-19-18_1758061427.JPG", caption: "Листопад 3" },
+    { src: "Gallery/2025-09-01%2012-19-18_1758061432.JPG", caption: "Листопад 4" },
+    { src: "Gallery/2025-09-01%2012-19-18_1758061450.JPG", caption: "Листопад 5" },
+    { src: "Gallery/2025-09-01%2012-19-18_1758061735.JPG", caption: "Листопад 6" },
+    { src: "Gallery/2025-09-01%2012-19-18_1758061742.JPG", caption: "Листопад 7" },
+    { src: "Gallery/2025-09-01%2012-19-18_1758061752.JPG", caption: "Листопад 8" },
+    { src: "Gallery/2025-09-01%2012-19-18_1758061755.JPG", caption: "Листопад 9" },
+    { src: "Gallery/2025-09-01%2012-19-18_1758061758.JPG", caption: "Листопад 10" },
+    { src: "Gallery/2025-09-01%2012-19-18_1758061760.JPG", caption: "Листопад 11" },
+    { src: "Gallery/2025-09-01%2012-19-18_1758061779.JPG", caption: "Листопад 12" },
+    { src: "Gallery/2025-09-01%2012-19-18_1758061781.JPG", caption: "Листопад 13" },
+    { src: "Gallery/2025-09-01%2012-19-18_1758061784.JPG", caption: "Листопад 14" },
+    { src: "Gallery/2025-09-01%2012-19-18_1758061791.JPG", caption: "Листопад 15" },
+    { src: "Gallery/2025-09-01%2012-19-18_1758061794.JPG", caption: "Листопад 16" },
+    { src: "Gallery/2025-09-01%2012-19-18_1758061796.JPG", caption: "Листопад 17" },
+    { src: "Gallery/2025-09-01%2012-19-18_1758061798.JPG", caption: "Листопад 18" },
+    { src: "Gallery/2025-09-06%2009-28-53.JPG", caption: "Сентябрь" },
+    { src: "Gallery/2025-09-11%2010-04-50.JPG", caption: "Сентябрьское утро" },
+    { src: "Gallery/2025-09-18%2021-15-17.JPG", caption: "Вечер" },
+    { src: "Gallery/2025-09-24%2009-13-11.JPEG", caption: "Октябрь" },
+    { src: "Gallery/2025-10-01%2013-54-43.JPG", caption: "Первый день октября" },
+    { src: "Gallery/IMG_20260405_211457.jpg", caption: "Момент" },
+    { src: "Gallery/IMG_20260405_211518.jpg", caption: "Вдохновение" },
+    { src: "Gallery/IMG_20260405_211600.jpg", caption: "Творчество" },
+    { src: "Gallery/Picsart_26-03-30_10-04-30-926.png", caption: "Арт 1" },
+    { src: "Gallery/Picsart_26-04-04_07-48-46-984.jpg", caption: "Арт 2" },
+    { src: "Gallery/Picsart_26-04-04_18-47-22-947.jpg", caption: "Арт 3" },
+    { src: "Gallery/Picsart_26-04-06_12-03-52-393.jpg", caption: "Арт 4" },
+    { src: "Gallery/Picsart_26-04-08_18-04-41-259.jpg", caption: "Арт 5" },
+    { src: "Gallery/Picsart_26-04-22_21-10-57-701.jpg", caption: "Арт 6" },
+    { src: "Gallery/f2.jpg", caption: "Кадр" },
+    { src: "Gallery/foto.jpg", caption: "Памятное" }
+];
+    
+    function openModal(imgSrc) {
+        const modal = document.getElementById('modal');
+        const modalImg = document.getElementById('modalImage');
+        modal.style.display = 'block';
+        modalImg.src = imgSrc;
+        document.body.style.overflow = 'hidden';
+    }
+    
+    function closeModal() {
+        document.getElementById('modal').style.display = 'none';
+        document.body.style.overflow = 'auto';
+    }
+    
+    function loadGallery() {
+        const grid = document.getElementById('galleryGrid');
+        
+        if (!galleryImages.length) {
+            grid.innerHTML = '<div style="text-align:center; padding:40px;">📷 Пока нет фотографий. Скоро они появятся ✨</div>';
+            return;
+        }
+        
+        let html = '';
+        for (let i = 0; i < galleryImages.length; i++) {
+            const img = galleryImages[i];
+            html += `
+                <div class="gallery-card" onclick="openModal('${img.src}')">
+                    <img src="${img.src}" alt="${img.caption}" loading="lazy">
+                    <div class="gallery-caption">${img.caption}</div>
+                </div>
+            `;
+        }
+        grid.innerHTML = html;
+    }
+    
+    loadGallery();
+    
+    // Закрытие по Escape
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') closeModal();
+    });
+</script>
+</body>
+</html>
