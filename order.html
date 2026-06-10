@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Заказать стих — Ádel</title>
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .order-form, .thankyou-block {
+            background: white;
+            border-radius: var(--radius-sm);
+            padding: 1.5rem;
+            border: var(--border);
+            transition: 0.2s;
+        }
+        .form-group {
+            margin-bottom: 1rem;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 0.3rem;
+            font-weight: bold;
+        }
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 0.6rem;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--accent-light);
+            font-family: inherit;
+        }
+        button {
+            background: var(--accent);
+            color: white;
+            border: none;
+            padding: 0.7rem 1.5rem;
+            border-radius: 30px;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        .thankyou-block {
+            text-align: center;
+            background: #eaf7ea;
+            border-left: 6px solid var(--accent);
+        }
+        .thankyou-block h3 {
+            color: var(--accent);
+            margin-bottom: 0.5rem;
+        }
+        .thankyou-block p {
+            margin-bottom: 0.3rem;
+        }
+        .hidden {
+            display: none;
+        }
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #333;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 30px;
+            font-size: 0.8rem;
+            opacity: 0;
+            transition: 0.2s;
+            z-index: 1000;
+        }
+        .toast.show { opacity: 1; }
+    </style>
+</head>
+<body>
+    <header>
+        <nav class="navbar">
+            <div class="logo"><a href="index.html">Ádel</a></div>
+            <ul class="nav-links" id="navLinks"></ul>
+        </nav>
+    </header>
+
+    <main>
+        <h1>✍️ Заказать стихотворение</h1>
+        <p>Напишите, о чём вы мечтаете, — и Ádel подарит этому форму.</p>
+
+        <!-- Форма заказа -->
+        <div id="formBlock" class="order-form">
+            <form id="orderForm">
+                <div class="form-group">
+                    <label>Ваше имя *</label>
+                    <input type="text" id="name" required>
+                </div>
+                <div class="form-group">
+                    <label>Телефон или почта *</label>
+                    <input type="text" id="phone" required>
+                </div>
+                <div class="form-group">
+                    <label>Тип произведения</label>
+                    <select id="type">
+                        <option>Стихотворение</option>
+                        <option>Поэма</option>
+                        <option>Экспромт</option>
+                        <option>Любовная лирика</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Тема *</label>
+                    <input type="text" id="theme" required>
+                </div>
+                <div class="form-group">
+                    <label>Пожелания / описание *</label>
+                    <textarea id="details" rows="5" required></textarea>
+                </div>
+                <button type="submit" id="submitBtn">📜 Отправить заказ</button>
+            </form>
+        </div>
+
+        <!-- Заглушка благодарности (скрыта по умолчанию) -->
+        <div id="thankyouBlock" class="thankyou-block hidden">
+            <h3>✨ Спасибо большое за обращение!</h3>
+            <p>Ваш заказ принят.</p>
+            <p>Я свяжусь с вами в течение <strong>24 часов</strong>.</p>
+            <p>С любовью, <strong>Ádel</strong> 💜</p>
+        </div>
+    </main>
+
+    <footer>
+        <p>2026. Адель. Angel de la poesía. ✨</p>
+        <a href="index.html">Главная</a> |
+        <a href="about.html">Об авторе</a> |
+        <a href="contacts.html">Контакты</a>
+    </footer>
+
+    <div id="toast" class="toast">✅ Заказ отправлен! Я свяжусь с вами.</div>
+
+    <script src="menu.js"></script>
+    <script>
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwuH3hm1UHA4bGdoIr5gYR3UfDtxLZN4ifzplfPcy3lsIl9pqiHaTCjjUBPsWkgDhKfsw/exec';
+
+        const form = document.getElementById('orderForm');
+        const formBlock = document.getElementById('formBlock');
+        const thankyouBlock = document.getElementById('thankyouBlock');
+        const submitBtn = document.getElementById('submitBtn');
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Отправка...';
+
+            const payload = {
+                name: document.getElementById('name').value,
+                phone: document.getElementById('phone').value,
+                type: document.getElementById('type').value,
+                theme: document.getElementById('theme').value,
+                details: document.getElementById('details').value
+            };
+
+            try {
+                await fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                // Скрываем форму, показываем благодарность
+                formBlock.classList.add('hidden');
+                thankyouBlock.classList.remove('hidden');
+                showToast();
+
+                // Очищаем форму (на случай, если читатель захочет вернуться)
+                form.reset();
+            } catch (err) {
+                alert('❌ Ошибка отправки. Попробуйте позже.');
+                submitBtn.disabled = false;
+                submitBtn.textContent = '📜 Отправить заказ';
+            }
+        });
+
+        function showToast() {
+            const toast = document.getElementById('toast');
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 4000);
+        }
+    </script>
+</body>
+  </html>
