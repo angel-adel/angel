@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Блог Крылатой — Ádel</title>
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .blog-post {
+            background: white;
+            border-radius: var(--radius-sm);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            border: var(--border);
+            transition: 0.2s;
+        }
+        .blog-post:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-hover);
+        }
+        .blog-title {
+            font-size: 1.6rem;
+            color: var(--accent);
+            margin-bottom: 0.3rem;
+        }
+        .blog-date {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-bottom: 1rem;
+            border-bottom: 1px solid var(--accent-light);
+            padding-bottom: 0.5rem;
+        }
+        .blog-content {
+            line-height: 1.7;
+            font-size: 1rem;
+        }
+        .blog-content p {
+            margin-bottom: 1rem;
+        }
+        .blog-content img {
+            max-width: 100%;
+            border-radius: var(--radius-sm);
+            margin: 1rem 0;
+        }
+        .loading {
+            text-align: center;
+            padding: 2rem;
+            color: var(--text-muted);
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav class="navbar">
+            <div class="logo"><a href="index.html">Ádel</a></div>
+            <ul class="nav-links" id="navLinks"></ul>
+        </nav>
+    </header>
+
+    <main>
+        <h1>📝 Блог Крылатой</h1>
+        <p>Заметки, мысли, стихи с крыльев</p>
+
+        <div id="blogContainer">
+            <!-- ПОСТ 1 -->
+            <div class="blog-post">
+                <div class="blog-title">Название первой заметки</div>
+                <div class="blog-date">📅 10 июня 2026</div>
+                <div class="blog-content">
+                    <p>Здесь текст вашей заметки. Можно писать абзацы, вставлять картинки, цитаты.</p>
+                    <p>Второй абзац. Блог живёт в HTML, поэтому вы сами решаете, как выглядит каждая запись.</p>
+                </div>
+            </div>
+
+            <!-- ПОСТ 2 -->
+            <div class="blog-post">
+                <div class="blog-title">Ещё одна мысль</div>
+                <div class="blog-date">📅 5 июня 2026</div>
+                <div class="blog-content">
+                    <p>Содержание второго поста. Можно добавить картинку:</p>
+                    <img src="Gallery/ваше_фото.jpg" alt="Иллюстрация">
+                    <p>И продолжить текст после картинки.</p>
+                </div>
+            </div>
+
+            <!-- ПОСТ 3 - добавляй новые посты выше или ниже -->
+        </div>
+    </main>
+
+    <footer>
+        <p>2026. Адель. Angel de la poesía. ✨</p>
+        <a href="index.html">Главная</a> |
+        <a href="about.html">Об авторе</a> |
+        <a href="contacts.html">Контакты</a>
+    </footer>
+
+    <script src="menu.js"></script>
+</body>
+  </html>
