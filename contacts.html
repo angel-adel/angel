@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Контакты — Ádel</title>
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .contacts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+        .contact-card {
+            background: white;
+            border-radius: var(--radius-sm);
+            padding: 1.5rem;
+            text-align: center;
+            text-decoration: none;
+            color: inherit;
+            border: var(--border);
+            transition: all 0.2s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .contact-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-hover);
+        }
+        .contact-icon {
+            font-size: 2.5rem;
+        }
+        .contact-title {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: var(--accent);
+        }
+        .contact-desc {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+        .contact-link {
+            font-size: 0.9rem;
+            word-break: break-all;
+            background: var(--accent-light);
+            padding: 0.3rem 0.8rem;
+            border-radius: 30px;
+            color: var(--accent-dark);
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav class="navbar">
+            <div class="logo"><a href="index.html">Ádel</a></div>
+            <ul class="nav-links" id="navLinks"></ul>
+        </nav>
+    </header>
+
+    <main>
+        <h1>📞 Контакты</h1>
+        <p>Свяжитесь с Ádel любым удобным способом</p>
+
+        <div class="contacts-grid">
+            <!-- Почта для заказов -->
+            <a href="mailto:adel2026@f5.si" class="contact-card">
+                <div class="contact-icon">📩</div>
+                <div class="contact-title">Для заказов</div>
+                <div class="contact-desc">Если форма заказа не открывается</div>
+                <span class="contact-link">adel2026@f5.si</span>
+            </a>
+
+            <!-- Техподдержка -->
+            <a href="mailto:tehno_adel@sendapp.uk" class="contact-card">
+                <div class="contact-icon">🛠️</div>
+                <div class="contact-title">Техподдержка</div>
+                <div class="contact-desc">Вопросы по сайту и программам</div>
+                <span class="contact-link">tehno_adel@sendapp.uk</span>
+            </a>
+
+            <!-- Прямая связь (телефон) -->
+            <a href="tel:+79192353599" class="contact-card">
+                <div class="contact-icon">📞</div>
+                <div class="contact-title">Прямая связь</div>
+                <div class="contact-desc">Личный телефон</div>
+                <span class="contact-link">+7 (919) 235-35-99</span>
+            </a>
+
+            <!-- Новая соцсеть (Smart Social) -->
+            <a href="https://smartsocial-wyfr.onrender.com/profile/Adel" target="_blank" rel="noopener noreferrer" class="contact-card">
+                <div class="contact-icon">🌐</div>
+                <div class="contact-title">Smart Social</div>
+                <div class="contact-desc">Заметки, новости, общение</div>
+                <span class="contact-link">@Adel</span>
+            </a>
+        </div>
+    </main>
+
+    <footer>
+        <p>2026. Адель. Angel de la poesía. ✨</p>
+        <a href="index.html">Главная</a> |
+        <a href="about.html">Об авторе</a> |
+        <a href="contacts.html">Контакты</a>
+    </footer>
+
+    <script src="menu.js"></script>
+</body>
+  </html>
