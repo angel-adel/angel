@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Крылатый юмор — Ádel</title>
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .joke-card {
+            background: white;
+            border-radius: var(--radius-sm);
+            padding: 1.2rem;
+            margin-bottom: 1.5rem;
+            border: var(--border);
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+        .joke-card:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-hover);
+        }
+        .joke-title {
+            font-size: 1.3rem;
+            color: var(--accent);
+            margin-bottom: 0.5rem;
+        }
+        .joke-text {
+            line-height: 1.5;
+            white-space: pre-wrap;
+        }
+        .copy-btn {
+            margin-top: 1rem;
+            background: var(--accent-light);
+            border: none;
+            padding: 0.3rem 1rem;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.8rem;
+        }
+        .copy-btn:hover {
+            background: var(--accent);
+            color: white;
+        }
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #333;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 30px;
+            font-size: 0.8rem;
+            z-index: 1000;
+            opacity: 0;
+            transition: 0.2s;
+        }
+        .toast.show {
+            opacity: 1;
+        }
+        .loading {
+            text-align: center;
+            padding: 2rem;
+            color: var(--text-muted);
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav class="navbar">
+            <div class="logo"><a href="index.html">Ádel</a></div>
+            <ul class="nav-links" id="navLinks"></ul>
+        </nav>
+    </header>
+
+    <main>
+        <h1>😄 Крылатый юмор</h1>
+        <p>Короткие, добрые и остроумные истории от Ádel</p>
+
+        <div id="jokesContainer">
+            <div class="loading">Загрузка шуток...</div>
+        </div>
+    </main>
+
+    <footer>
+        <p>2026. Адель. Angel de la poesía. ✨</p>
+        <a href="index.html">Главная</a> |
+        <a href="about.html">Об авторе</a> |
+        <a href="contacts.html">Контакты</a>
+    </footer>
+
+    <div id="toast" class="toast">✅ Скопировано</div>
+
+    <script src="menu.js"></script>
+    <script>
+        async function loadJokes() {
+            const container = document.getElementById('jokesContainer');
+            try {
+                const response = await fetch('humor.json?_=' + Date.now());
+                if (!response.ok) throw new Error('Файл humor.json не найден');
+                const jokes = await response.json();
+                
+                if (!jokes.length) {
+                    container.innerHTML = '<p>😔 Пока нет шуток. Скоро появятся.</p>';
+                    return;
+                }
+                
+                container.innerHTML = jokes.map(joke => `
+                    <div class="joke-card">
+                        <div class="joke-title">${escapeHtml(joke.title)}</div>
+                        <div class="joke-text">${escapeHtml(joke.content).replace(/\n/g, '<br>')}</div>
+                        <button class="copy-btn" data-joke="${escapeHtml(joke.title)} — ${escapeHtml(joke.content)}">📋 Скопировать шутку</button>
+                    </div>
+                `).join('');
+                
+                document.querySelectorAll('.copy-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        const text = btn.getAttribute('data-joke');
+                        navigator.clipboard.writeText(text);
+                        showToast();
+                    });
+                });
+                
+            } catch (error) {
+                console.error('Ошибка загрузки шуток:', error);
+                container.innerHTML = '<p>❌ Не удалось загрузить шутки. Попробуйте позже.</p>';
+            }
+        }
+        
+        function showToast() {
+            const toast = document.getElementById('toast');
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 1500);
+        }
+        
+        function escapeHtml(str) {
+            if (!str) return '';
+            return str.replace(/[&<>]/g, function(m) {
+                if (m === '&') return '&amp;';
+                if (m === '<') return '&lt;';
+                if (m === '>') return '&gt;';
+                return m;
+            });
+        }
+        
+        loadJokes();
+    </script>
+</body>
+  </html>
