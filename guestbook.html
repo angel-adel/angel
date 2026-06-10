@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Гостевая книга — Ádel</title>
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .form-card, .review-card {
+            background: white;
+            border-radius: var(--radius-sm);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            border: var(--border);
+        }
+        .form-group {
+            margin-bottom: 1rem;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 0.3rem;
+            font-weight: bold;
+        }
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 0.6rem;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--accent-light);
+            font-family: inherit;
+        }
+        button {
+            background: var(--accent);
+            color: white;
+            border: none;
+            padding: 0.6rem 1.2rem;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        button:hover {
+            background: var(--accent-dark);
+        }
+        .review-card {
+            margin-bottom: 1rem;
+        }
+        .review-name {
+            font-weight: bold;
+            color: var(--accent);
+        }
+        .review-date {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-left: 1rem;
+        }
+        .review-theme {
+            font-size: 0.85rem;
+            background: var(--accent-light);
+            display: inline-block;
+            padding: 0.2rem 0.6rem;
+            border-radius: 20px;
+            margin: 0.3rem 0;
+        }
+        .review-message {
+            margin-top: 0.5rem;
+            line-height: 1.4;
+        }
+        .loading, .empty {
+            text-align: center;
+            padding: 2rem;
+            color: var(--text-muted);
+        }
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #333;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 30px;
+            font-size: 0.8rem;
+            opacity: 0;
+            transition: 0.2s;
+            z-index: 1000;
+        }
+        .toast.show { opacity: 1; }
+    </style>
+</head>
+<body>
+    <header>
+        <nav class="navbar">
+            <div class="logo"><a href="index.html">Ádel</a></div>
+            <ul class="nav-links" id="navLinks"></ul>
+        </nav>
+    </header>
+
+    <main>
+        <h1>📖 Гостевая книга</h1>
+        <p>Оставьте след в истории Ádel — ваше имя и тёплые слова останутся здесь.</p>
+
+        <!-- Форма отправки -->
+        <div class="form-card">
+            <h3>✍️ Написать в гостевую</h3>
+            <form id="guestForm">
+                <div class="form-group">
+                    <label>Ваше имя *</label>
+                    <input type="text" id="name" required>
+                </div>
+                <div class="form-group">
+                    <label>Тип обращения</label>
+                    <select id="type">
+                        <option value="отзыв">⭐ Отзыв</option>
+                        <option value="пожелание">💡 Пожелание</option>
+                        <option value="вопрос">❓ Вопрос</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Тема (необязательно)</label>
+                    <input type="text" id="theme" placeholder="Например: Любовная лирика">
+                </div>
+                <div class="form-group">
+                    <label>Сообщение *</label>
+                    <textarea id="message" rows="4" required></textarea>
+                </div>
+                <button type="submit">📨 Отправить</button>
+            </form>
+            <div id="formStatus" style="margin-top: 1rem; color: green;"></div>
+        </div>
+
+        <!-- Список одобренных отзывов -->
+        <h3>💬 Последние записи</h3>
+        <div id="reviewsContainer">
+            <div class="loading">Загрузка отзывов...</div>
+        </div>
+    </main>
+
+    <footer>
+        <p>2026. Адель. Angel de la poesía. ✨</p>
+        <a href="index.html">Главная</a> |
+        <a href="about.html">Об авторе</a> |
+        <a href="contacts.html">Контакты</a>
+    </footer>
+
+    <div id="toast" class="toast">✅ Спасибо! Ваш отзыв отправлен на модерацию.</div>
+
+    <script src="menu.js"></script>
+    <script>
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxwqrM4yR3KIs7WNkQGxfGwh13gvRM9un1b12xm2V-MyvbaSyZCd-7jHo1IAzDf4Xwt-A/exec';
+
+        async function loadReviews() {
+            const container = document.getElementById('reviewsContainer');
+            try {
+                const response = await fetch(`${SCRIPT_URL}?t=${Date.now()}`);
+                const data = await response.json();
+                const approved = data.filter(row => row.approved === true || row.approved === 'TRUE');
+                if (!approved.length) {
+                    container.innerHTML = '<div class="empty">✨ Пока нет одобренных отзывов. Будьте первым!</div>';
+                    return;
+                }
+                container.innerHTML = approved.map(row => `
+                    <div class="review-card">
+                        <div><span class="review-name">${escapeHtml(row.name)}</span>
+                        <span class="review-date">${escapeHtml(row.date)}</span></div>
+                        <div class="review-theme">${escapeHtml(row.type)}${row.theme ? ` / ${escapeHtml(row.theme)}` : ''}</div>
+                        <div class="review-message">${escapeHtml(row.message)}</div>
+                    </div>
+                `).join('');
+            } catch(e) {
+                console.error(e);
+                container.innerHTML = '<div class="empty">⚠️ Не удалось загрузить отзывы. Попробуйте позже.</div>';
+            }
+        }
+
+        document.getElementById('guestForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const submitBtn = e.target.querySelector('button');
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Отправка...';
+
+            const payload = {
+                name: document.getElementById('name').value,
+                type: document.getElementById('type').value,
+                theme: document.getElementById('theme').value,
+                message: document.getElementById('message').value,
+                approved: false,
+                date: new Date().toISOString()
+            };
+
+            try {
+                await fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                document.getElementById('guestForm').reset();
+                showToast();
+                setTimeout(() => loadReviews(), 1500);
+            } catch (err) {
+                alert('❌ Ошибка отправки. Попробуйте позже.');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = '📨 Отправить';
+            }
+        });
+
+        function showToast() {
+            const toast = document.getElementById('toast');
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 3000);
+        }
+
+        function escapeHtml(str) {
+            if (!str) return '';
+            return str.replace(/[&<>]/g, function(m) {
+                if (m === '&') return '&amp;';
+                if (m === '<') return '&lt;';
+                if (m === '>') return '&gt;';
+                return m;
+            });
+        }
+
+        loadReviews();
+    </script>
+</body>
+  </html>
