@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Админка — Ádel CMS</title>
+    <style>
+        body {
+            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 1rem;
+            background: #f5f2f0;
+        }
+        .card {
+            background: white;
+            border-radius: 24px;
+            padding: 2rem;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.05);
+            margin-bottom: 2rem;
+        }
+        label {
+            font-weight: 600;
+            display: block;
+            margin-top: 1rem;
+        }
+        input, select, textarea {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            border: 1px solid #ccc;
+            border-radius: 16px;
+            font-family: inherit;
+        }
+        button {
+            margin-top: 1.5rem;
+            background: #7c3a8c;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 40px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        button:hover { background: #5a2a68; }
+        .hidden { display: none; }
+        .msg { margin-top: 1rem; padding: 8px; border-radius: 20px; }
+        .error { background: #ffe0e0; color: #a00; }
+        .ok { background: #e0f5e0; color: #070; }
+        hr { margin: 1rem 0; }
+    </style>
+</head>
+<body>
+
+<div id="loginPanel" class="card">
+    <h2>🔐 Вход в админку Ádel</h2>
+    <label>Пароль</label>
+    <input type="password" id="adminPassword" placeholder="Введи пароль">
+    <label>GitHub токен (fine‑grained или classic)</label>
+    <input type="password" id="githubToken" placeholder="github_pat_... или ghp_...">
+    <button id="loginBtn">Войти</button>
+    <div id="loginMsg" class="msg hidden"></div>
+</div>
+
+<div id="adminPanel" class="card hidden">
+    <h2>✍️ Добавить новый материал</h2>
+
+    <label>Раздел</label>
+    <select id="contentType">
+        <option value="poem_ru">📖 Стих (русский)</option>
+        <option value="poem_bil">🌐 Стих (испанский / английский)</option>
+        <option value="prose">📓 Проза</option>
+        <option value="humor">😄 Юмор</option>
+        <option value="blog">📝 Блог</option>
+    </select>
+
+    <div id="dynamicFields"></div>
+
+    <button id="publishBtn">📤 Опубликовать</button>
+    <div id="publishMsg" class="msg hidden"></div>
+</div>
+
+<script>
+    const REPO_OWNER = 'angel-adel';
+    const REPO_NAME = 'angel';
+    let githubToken = null;
+
+    // Маппинг разделов → файлы и форматы
+    const targets = {
+        poem_ru: {
+            file: 'russian_poems_only.json',
+            fields: [
+                { name: 'title', label: 'Название стиха', type: 'text', required: true },
+                { name: 'content', label: 'Текст стиха (с переносами строк)', type: 'textarea', required: true }
+            ],
+            build: (data) => ({ title: data.title, content: data.content })
+        },
+        poem_bil: {
+            file: 'poems-bilingual.json',
+            fields: [
+                { name: 'title', label: 'Название стиха', type: 'text', required: true },
+                { name: 'language', label: 'Язык', type: 'select', options: ['es', 'en'], required: true },
+                { name: 'content', label: 'Текст стиха', type: 'textarea', required: true }
+            ],
+            build: (data) => ({ title: data.title, language: data.language, content: data.content })
+        },
+        prose: {
+            file: 'prose.json',
+            fields: [
+                { name: 'title', label: 'Заголовок', type: 'text', required: true },
+                { name: 'description', label: 'Краткое описание', type: 'text', required: true },
+                { name: 'fullText', label: 'Полный текст прозы', type: 'textarea', required: true },
+                { name: 'date', label: 'Дата (дд.мм.гггг)', type: 'text', required: true }
+            ],
+            build: (data) => ({
+                id: Date.now(),
+                title: data.title,
+                description: data.description,
+                fullText: data.fullText,
+                date: data.date
+            })
+        },
+        humor: {
+            file: 'humor.json',
+            fields: [
+                { name: 'title', label: 'Заголовок шутки', type: 'text', required: true },
+                { name: 'content', label: 'Текст шутки', type: 'textarea', required: true }
+            ],
+            build: (data) => ({ title: data.title, content: data.content })
+        }
+    };
+
+    // --- Вход ---
+    document.getElementById('loginBtn').onclick = () => {
+        const pwd = document.getElementById('adminPassword').value;
+        const token = document.getElementById('githubToken').value.trim();
+        const msgDiv = document.getElementById('loginMsg');
+        const CORRECT_PASSWORD = 'adel2026admin';  // ⚠️ ЗАМЕНИ НА СВОЙ ПАРОЛЬ
+
+        if (pwd !== CORRECT_PASSWORD) {
+            msgDiv.className = 'msg error';
+            msgDiv.innerText = '❌ Неверный пароль';
+            msgDiv.classList.remove('hidden');
+            return;
+        }
+        if (!token || (!token.startsWith('github_pat_') && !token.startsWith('ghp_'))) {
+            msgDiv.className = 'msg error';
+            msgDiv.innerText = '❌ Неверный токен (должен начинаться с github_pat_ или ghp_)';
+            msgDiv.classList.remove('hidden');
+            return;
+        }
+
+        githubToken = token;
+        document.getElementById('loginPanel').classList.add('hidden');
+        document.getElementById('adminPanel').classList.remove('hidden');
+        updateDynamicFields();
+    };
+
+    // --- Динамические поля ---
+    function updateDynamicFields() {
+        const type = document.getElementById('contentType').value;
+        const config = targets[type];
+        const container = document.getElementById('dynamicFields');
+        if (!config) return;
+
+        container.innerHTML = '';
+        config.fields.forEach(f => {
+            if (f.type === 'select') {
+                const div = document.createElement('div');
+                div.innerHTML = `
+                    <label>${f.label}</label>
+                    <select id="field_${f.name}" required>
+                        ${f.options.map(opt => `<option value="${opt}">${opt.toUpperCase()}</option>`).join('')}
+                    </select>
+                `;
+                container.appendChild(div);
+            } else if (f.type === 'textarea') {
+                const div = document.createElement('div');
+                div.innerHTML = `
+                    <label>${f.label}</label>
+                    <textarea id="field_${f.name}" rows="8" required></textarea>
+                `;
+                container.appendChild(div);
+            } else {
+                const div = document.createElement('div');
+                div.innerHTML = `
+                    <label>${f.label}</label>
+                    <input type="text" id="field_${f.name}" required>
+                `;
+                container.appendChild(div);
+            }
+        });
+    }
+
+    document.getElementById('contentType').addEventListener('change', updateDynamicFields);
+
+    // --- Публикация ---
+    document.getElementById('publishBtn').onclick = async () => {
+        const type = document.getElementById('contentType').value;
+        const msgDiv = document.getElementById('publishMsg');
+
+        if (type === 'blog') {
+            // Блог — добавляем запись в blog.html
+            const title = document.getElementById('field_title')?.value.trim();
+            const date = document.getElementById('field_date')?.value.trim();
+            const content = document.getElementById('field_content')?.value.trim();
+            if (!title || !date || !content) {
+                msgDiv.className = 'msg error';
+                msgDiv.innerText = '❌ Заполни заголовок, дату и текст';
+                msgDiv.classList.remove('hidden');
+                return;
+            }
+            await addBlogPost(title, date, content, msgDiv);
+        } else {
+            // JSON-разделы
+            const config = targets[type];
+            if (!config) return;
+
+            const data = {};
+            let valid = true;
+            config.fields.forEach(f => {
+                const val = document.getElementById(`field_${f.name}`)?.value.trim();
+                if (f.required && !val) valid = false;
+                data[f.name] = val;
+            });
+            if (!valid) {
+                msgDiv.className = 'msg error';
+                msgDiv.innerText = '❌ Заполни все обязательные поля';
+                msgDiv.classList.remove('hidden');
+                return;
+            }
+
+            const newItem = config.build(data);
+            await updateJsonFile(config.file, newItem, msgDiv);
+        }
+    };
+
+    // --- Работа с JSON ---
+    async function updateJsonFile(filePath, newItem, msgDiv) {
+        try {
+            const fileUrl = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${filePath}`;
+            const res = await fetch(fileUrl, { headers: { Authorization: `token ${githubToken}` } });
+            if (!res.ok) throw new Error('Не удалось прочитать файл');
+            const fileData = await res.json();
+            const currentContent = atob(fileData.content);
+            const jsonArray = JSON.parse(currentContent);
+            jsonArray.push(newItem);
+            const updatedBase64 = btoa(unescape(encodeURIComponent(JSON.stringify(jsonArray, null, 2))));
+            const commitRes = await fetch(fileUrl, {
+                method: 'PUT',
+                headers: {
+                    Authorization: `token ${githubToken}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    message: `Добавлено: ${newItem.title || 'новый элемент'}`,
+                    content: updatedBase64,
+                    sha: fileData.sha
+                })
+            });
+            if (!commitRes.ok) throw new Error('Ошибка сохранения');
+            msgDiv.className = 'msg ok';
+            msgDiv.innerText = `✅ Добавлено в ${filePath}`;
+            clearFields();
+        } catch (err) {
+            msgDiv.className = 'msg error';
+            msgDiv.innerText = `❌ Ошибка: ${err.message}`;
+        }
+    }
+
+    // --- Блог (вставка в HTML) ---
+    async function addBlogPost(title, date, content, msgDiv) {
+        try {
+            const fileUrl = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/blog.html`;
+            const res = await fetch(fileUrl, { headers: { Authorization: `token ${githubToken}` } });
+            if (!res.ok) throw new Error('blog.html не найден');
+            const fileData = await res.json();
+            let html = atob(fileData.content);
+
+            const newPost = `
+<div class="blog-post">
+    <div class="blog-title">${escapeHtml(title)}</div>
+    <div class="blog-date">📅 ${escapeHtml(date)}</div>
+    <div class="blog-content">
+        <p>${escapeHtml(content).replace(/\n/g, '<br>')}</p>
+    </div>
+</div>`;
+
+            if (html.includes('<div id="blogContainer">')) {
+                html = html.replace(/<div id="blogContainer">/, `<div id="blogContainer">\n${newPost}`);
+            } else {
+                html = html.replace(/<main>/, `<main>\n${newPost}`);
+            }
+
+            const updatedBase64 = btoa(unescape(encodeURIComponent(html)));
+            const commitRes = await fetch(fileUrl, {
+                method: 'PUT',
+                headers: {
+                    Authorization: `token ${githubToken}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    message: `Новый пост в блоге: ${title}`,
+                    content: updatedBase64,
+                    sha: fileData.sha
+                })
+            });
+            if (!commitRes.ok) throw new Error('Ошибка сохранения блога');
+            msgDiv.className = 'msg ok';
+            msgDiv.innerText = '✅ Запись в блоге добавлена';
+            clearFields();
+        } catch (err) {
+            msgDiv.className = 'msg error';
+            msgDiv.innerText = `❌ Ошибка: ${err.message}`;
+        }
+    }
+
+    function clearFields() {
+        document.querySelectorAll('#dynamicFields input, #dynamicFields textarea, #dynamicFields select').forEach(f => f.value = '');
+    }
+
+    function escapeHtml(str) {
+        if (!str) return '';
+        return str.replace(/[&<>]/g, function(m) {
+            if (m === '&') return '&amp;';
+            if (m === '<') return '&lt;';
+            if (m === '>') return '&gt;';
+            return m;
+        });
+    }
+</script>
+</body>
+</html>
