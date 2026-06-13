@@ -275,15 +275,15 @@
         }
     }
 
-    async function addBlogPost(title, date, content, msgDiv) {
-        try {
-            const fileUrl = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/blog.html`;
-            const res = await fetch(fileUrl, { headers: { Authorization: `token ${githubToken}` } });
-            if (!res.ok) throw new Error('blog.html не найден');
-            const fileData = await res.json();
-            let html = atob(fileData.content);
+async function addBlogPost(title, date, content, msgDiv) {
+    try {
+        const fileUrl = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/blog.html`;
+        const res = await fetch(fileUrl, { headers: { Authorization: `token ${githubToken}` } });
+        if (!res.ok) throw new Error('blog.html не найден');
+        const fileData = await res.json();
+        let html = atob(fileData.content);
 
-            const newPost = `
+        const newPost = `
 <div class="blog-post">
     <div class="blog-title">${escapeHtml(title)}</div>
     <div class="blog-date">📅 ${escapeHtml(date)}</div>
@@ -292,34 +292,37 @@
     </div>
 </div>`;
 
-            if (html.includes('<div id="blogContainer">')) {
-                html = html.replace(/<div id="blogContainer">/, `<div id="blogContainer">\n${newPost}`);
-            } else {
-                html = html.replace(/<main>/, `<main>\n${newPost}`);
-            }
-
-            const updatedBase64 = btoa(unescape(encodeURIComponent(html)));
-            const commitRes = await fetch(fileUrl, {
-                method: 'PUT',
-                headers: {
-                    Authorization: `token ${githubToken}`,
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    message: `Новый пост в блоге: ${title}`,
-                    content: updatedBase64,
-                    sha: fileData.sha
-                })
-            });
-            if (!commitRes.ok) throw new Error('Ошибка сохранения блога');
-            msgDiv.className = 'msg ok';
-            msgDiv.innerText = '✅ Запись в блоге добавлена';
-            clearFields();
-        } catch (err) {
-            msgDiv.className = 'msg error';
-            msgDiv.innerText = `❌ Ошибка: ${err.message}`;
+        if (html.includes('<div id="blogContainer">')) {
+            html = html.replace(/<div id="blogContainer">/, `<div id="blogContainer">\n${newPost}`);
+        } else {
+            html = html.replace(/<main>/, `<main>\n${newPost}`);
         }
+
+        // Надёжное преобразование UTF-8 → base64
+        const utf8Bytes = new TextEncoder().encode(html);
+        const base64 = btoa(String.fromCharCode(...utf8Bytes));
+
+        const commitRes = await fetch(fileUrl, {
+            method: 'PUT',
+            headers: {
+                Authorization: `token ${githubToken}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                message: `Новый пост в блоге: ${title}`,
+                content: base64,
+                sha: fileData.sha
+            })
+        });
+        if (!commitRes.ok) throw new Error('Ошибка сохранения блога');
+        msgDiv.className = 'msg ok';
+        msgDiv.innerText = '✅ Запись в блоге добавлена';
+        clearFields();
+    } catch (err) {
+        msgDiv.className = 'msg error';
+        msgDiv.innerText = `❌ Ошибка: ${err.message}`;
     }
+}
 
     function clearFields() {
         document.querySelectorAll('#dynamicFields input, #dynamicFields textarea, #dynamicFields select').forEach(f => f.value = '');
