@@ -137,8 +137,8 @@
             padding-right: 2rem;
         }
         .modal-text {
-            line-height: 1.7;
             white-space: pre-wrap;
+            line-height: 1.7;
             font-family: 'Georgia', serif;
         }
     </style>
@@ -158,8 +158,8 @@
         <div class="filters-bar">
             <button class="filter-btn active-filter" data-lang="all">🌍 Все языки</button>
             <button class="filter-btn" data-lang="ru">🇷🇺 Русский</button>
-            <button class="filter-btn" data-lang="en">🇬🇧 English</button>
             <button class="filter-btn" data-lang="es">🇪🇸 Español</button>
+            <button class="filter-btn" data-lang="en">🇬🇧 English</button>
         </div>
 
         <div class="search-box">
@@ -197,33 +197,27 @@
             const container = document.getElementById('worksContainer');
             
             try {
-                // Загружаем оба файла
                 const [ruRes, biRes] = await Promise.all([
                     fetch('russian_poems_only.json?_=' + Date.now()),
                     fetch('poems-bilingual.json?_=' + Date.now())
                 ]);
                 
-                if (!ruRes.ok) console.warn('russian_poems_only.json не загружен');
-                if (!biRes.ok) console.warn('poems-bilingual.json не загружен');
-                
                 const ruPoems = ruRes.ok ? await ruRes.json() : [];
                 const biPoems = biRes.ok ? await biRes.json() : [];
                 
-                // Преобразуем русские стихи
+                // Русские стихи
                 const ruWorks = ruPoems.map(poem => ({
                     title: poem.title,
                     content: poem.content,
                     lang: 'ru',
-                    genre: 'lyrics',
                     firstLine: poem.content ? poem.content.split('\n')[0] : ''
                 }));
                 
-                // Преобразуем двуязычные стихи
+                // Испанские/английские стихи
                 const biWorks = biPoems.map(poem => ({
                     title: poem.title,
                     content: poem.content,
                     lang: poem.language || 'es',
-                    genre: 'lyrics',
                     firstLine: poem.content ? poem.content.split('\n')[0] : ''
                 }));
                 
@@ -234,25 +228,25 @@
                     return;
                 }
                 
-                filterWorks();
-                
+                applyFilters();
             } catch (error) {
                 console.error('Ошибка загрузки:', error);
                 container.innerHTML = '<p>❌ Не удалось загрузить произведения. Попробуйте позже.</p>';
             }
         }
 
-        function filterWorks() {
-            const filtered = allWorks.filter(work => {
-                const matchesSearch = !searchTerm || 
-                    work.title.toLowerCase().includes(searchTerm);
-                const matchesLang = activeLang === 'all' || work.lang === activeLang;
-                return matchesSearch && matchesLang;
-            });
-            renderWorks(filtered);
+        function applyFilters() {
+            let filtered = allWorks;
+            if (activeLang !== 'all') {
+                filtered = filtered.filter(work => work.lang === activeLang);
+            }
+            if (searchTerm) {
+                filtered = filtered.filter(work => work.title.toLowerCase().includes(searchTerm));
+            }
+            displayWorks(filtered);
         }
 
-        function renderWorks(works) {
+        function displayWorks(works) {
             const container = document.getElementById('worksContainer');
             
             if (!works.length) {
@@ -264,16 +258,12 @@
                 <div class="work-card" data-idx="${idx}">
                     <div class="work-title">${escapeHtml(work.title)}</div>
                     <div class="work-meta">
-                        <span>${getLangName(work.lang)}</span>
-                        <span class="badge">${getGenreName(work.genre)}</span>
+                        <span class="badge">${getLangName(work.lang)}</span>
                     </div>
-                    <div class="work-excerpt">
-                        ${escapeHtml(work.firstLine || work.content?.substring(0, 120) || '')}...
-                    </div>
+                    <div class="work-excerpt">${escapeHtml(work.firstLine || work.content?.substring(0, 120) || '')}...</div>
                 </div>
             `).join('');
             
-            // Навешиваем обработчики на карточки
             document.querySelectorAll('.work-card').forEach(card => {
                 card.addEventListener('click', () => {
                     const idx = parseInt(card.dataset.idx);
@@ -289,7 +279,8 @@
             const text = document.getElementById('modalText');
             
             title.textContent = work.title;
-            text.innerHTML = escapeHtml(work.content || work.fullText || '').replace(/\n/g, '<br>');
+            // Сохраняем переносы строк
+            text.innerHTML = escapeHtml(work.content).replace(/\n/g, '<br>');
             
             modal.classList.add('active');
             document.body.style.overflow = 'hidden';
@@ -300,23 +291,13 @@
             document.body.style.overflow = '';
         }
 
-        function getGenreName(genre) {
-            const genres = {
-                lyrics: 'Лирика',
-                philosophy: 'Философия',
-                humor: 'Юмор',
-                prose: 'Проза'
-            };
-            return genres[genre] || 'Поэзия';
-        }
-
         function getLangName(lang) {
-            const langs = {
+            const names = {
                 ru: '🇷🇺 Русский',
-                en: '🇬🇧 English',
-                es: '🇪🇸 Español'
+                es: '🇪🇸 Español',
+                en: '🇬🇧 English'
             };
-            return langs[lang] || lang;
+            return names[lang] || lang;
         }
 
         function escapeHtml(str) {
@@ -329,31 +310,29 @@
             });
         }
 
-        function bindFilters() {
-            document.querySelectorAll('[data-lang]').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    document.querySelectorAll('[data-lang]').forEach(b => b.classList.remove('active-filter'));
-                    btn.classList.add('active-filter');
-                    activeLang = btn.getAttribute('data-lang');
-                    filterWorks();
-                });
+        document.querySelectorAll('[data-lang]').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('[data-lang]').forEach(b => b.classList.remove('active-filter'));
+                btn.classList.add('active-filter');
+                activeLang = btn.getAttribute('data-lang');
+                applyFilters();
             });
+        });
 
-            document.getElementById('searchInput').addEventListener('input', (e) => {
-                searchTerm = e.target.value.toLowerCase();
-                filterWorks();
-            });
-        }
+        document.getElementById('searchInput').addEventListener('input', (e) => {
+            searchTerm = e.target.value.toLowerCase();
+            applyFilters();
+        });
 
-        document.getElementById('modalClose')?.addEventListener('click', closeModal);
-        document.getElementById('modal')?.addEventListener('click', (e) => {
+        document.getElementById('modalClose').addEventListener('click', closeModal);
+        document.getElementById('modal').addEventListener('click', (e) => {
             if (e.target === document.getElementById('modal')) closeModal();
         });
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') closeModal();
         });
 
-        loadWorks().then(() => bindFilters());
+        loadWorks();
     </script>
 </body>
 </html>
