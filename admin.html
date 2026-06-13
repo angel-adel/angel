@@ -156,39 +156,49 @@
         updateDynamicFields();
     };
 
-    // --- Динамические поля ---
+    // --- Динамические поля (включая блог) ---
     function updateDynamicFields() {
         const type = document.getElementById('contentType').value;
-        const config = targets[type];
         const container = document.getElementById('dynamicFields');
+        container.innerHTML = '';
+
+        if (type === 'blog') {
+            // Поля для блога
+            const fields = [
+                { name: 'title', label: 'Заголовок записи', type: 'text' },
+                { name: 'date', label: 'Дата (например: 13 июня 2026)', type: 'text' },
+                { name: 'content', label: 'Текст записи', type: 'textarea' }
+            ];
+            fields.forEach(f => {
+                const div = document.createElement('div');
+                if (f.type === 'textarea') {
+                    div.innerHTML = `<label>${f.label}</label><textarea id="field_${f.name}" rows="6" required></textarea>`;
+                } else {
+                    div.innerHTML = `<label>${f.label}</label><input type="text" id="field_${f.name}" required>`;
+                }
+                container.appendChild(div);
+            });
+            return;
+        }
+
+        const config = targets[type];
         if (!config) return;
 
-        container.innerHTML = '';
         config.fields.forEach(f => {
+            const div = document.createElement('div');
             if (f.type === 'select') {
-                const div = document.createElement('div');
                 div.innerHTML = `
                     <label>${f.label}</label>
                     <select id="field_${f.name}" required>
                         ${f.options.map(opt => `<option value="${opt}">${opt.toUpperCase()}</option>`).join('')}
                     </select>
                 `;
-                container.appendChild(div);
             } else if (f.type === 'textarea') {
-                const div = document.createElement('div');
-                div.innerHTML = `
-                    <label>${f.label}</label>
-                    <textarea id="field_${f.name}" rows="8" required></textarea>
-                `;
-                container.appendChild(div);
+                div.innerHTML = `<label>${f.label}</label><textarea id="field_${f.name}" rows="8" required></textarea>`;
             } else {
-                const div = document.createElement('div');
-                div.innerHTML = `
-                    <label>${f.label}</label>
-                    <input type="text" id="field_${f.name}" required>
-                `;
-                container.appendChild(div);
+                div.innerHTML = `<label>${f.label}</label><input type="text" id="field_${f.name}" required>`;
             }
+            container.appendChild(div);
         });
     }
 
@@ -200,7 +210,6 @@
         const msgDiv = document.getElementById('publishMsg');
 
         if (type === 'blog') {
-            // Блог — добавляем запись в blog.html
             const title = document.getElementById('field_title')?.value.trim();
             const date = document.getElementById('field_date')?.value.trim();
             const content = document.getElementById('field_content')?.value.trim();
@@ -212,7 +221,6 @@
             }
             await addBlogPost(title, date, content, msgDiv);
         } else {
-            // JSON-разделы
             const config = targets[type];
             if (!config) return;
 
@@ -235,7 +243,6 @@
         }
     };
 
-    // --- Работа с JSON ---
     async function updateJsonFile(filePath, newItem, msgDiv) {
         try {
             const fileUrl = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${filePath}`;
@@ -268,7 +275,6 @@
         }
     }
 
-    // --- Блог (вставка в HTML) ---
     async function addBlogPost(title, date, content, msgDiv) {
         try {
             const fileUrl = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/blog.html`;
