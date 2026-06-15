@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>ÐÐ»Ð¾Ð³ ÐÑÑÐ»Ð°ÑÐ¾Ð¹ â Ãdel</title>
+    <title>Блог Крылатой — Ádel</title>
     <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
     <link rel="stylesheet" href="style.css">
     <style>
@@ -38,53 +38,81 @@
         .blog-content p {
             margin-bottom: 1rem;
         }
-        .blog-content img {
-            max-width: 100%;
-            border-radius: var(--radius-sm);
-            margin: 1rem 0;
+        .loading {
+            text-align: center;
+            padding: 2rem;
+            color: var(--text-muted);
         }
     </style>
 </head>
 <body>
     <header>
         <nav class="navbar">
-            <div class="logo"><a href="index.html">Ãdel</a></div>
+            <div class="logo"><a href="index.html">Ádel</a></div>
             <ul class="nav-links" id="navLinks"></ul>
         </nav>
     </header>
 
     <main>
-        <h1>ð ÐÐ»Ð¾Ð³ ÐÑÑÐ»Ð°ÑÐ¾Ð¹</h1>
-        <p>ÐÐ°Ð¼ÐµÑÐºÐ¸, Ð¼ÑÑÐ»Ð¸, ÑÑÐ¸ÑÐ¸ Ñ ÐºÑÑÐ»ÑÐµÐ²</p>
+        <h1>📝 Блог Крылатой</h1>
+        <p>Заметки, мысли, стихи с крыльев</p>
 
         <div id="blogContainer">
-
-<div class="blog-post">
-    <div class="blog-title">Возвращение уже основательно</div>
-    <div class="blog-date">📅 14 июня 2026</div>
-    <div class="blog-content">
-        <p>Сегодня начала писать новую песню. Думаю, получится.<br><br>Целую, ваша Крылатая,🕊️🥰</p>
-    </div>
-</div>
-            <!-- ÐÐ¾Ð²Ð°Ñ Ð·Ð°Ð¿Ð¸ÑÑ Ð±ÑÐ´ÐµÑ Ð´Ð¾Ð±Ð°Ð²Ð»ÑÑÑÑÑ ÑÑÐ´Ð° -->
-            <div class="blog-post">
-                <div class="blog-title">Ð¢ÐµÑÑÐ¾Ð²Ð°Ñ Ð·Ð°Ð¿Ð¸ÑÑ</div>
-                <div class="blog-date">ð 13 Ð¸ÑÐ½Ñ 2026</div>
-                <div class="blog-content">
-                    <p>ÐÐµÑÑÐ°Ð»ÑÑ Ð¿Ð¾ ÑÐ°Ð¹ÑÐ°Ð¼ Ð»Ð¸ÑÐµÑÐ°ÑÑÑÑ Ð·Ð°ÐºÑÑÑ, Ñ Ð¿Ð¾Ð»Ð½Ð¾ÑÑÑÑ ÑÐ´Ð¾Ð²Ð»ÐµÑÐ²Ð¾ÑÐµÐ½Ð°. <br>ÐÑÐµ 616 Ð¿ÑÐ¾Ð¸Ð·Ð²ÐµÐ´ÐµÐ½Ð¸Ð¹ Ð¸Ð¼Ð¿Ð¾ÑÑÐ¸ÑÐ¾Ð²Ð°Ð½Ñ, ÑÐµÐ¿ÐµÑÑ Ð±ÑÐ´Ñ Ð²ÑÑ Ð´ÐµÐ»Ð°ÑÑ Ð¸Ð¼ÐµÐ½Ð½Ð¾ ÑÐ°Ðº, Ð° Ð¸Ð¼ÐµÐ½Ð½Ð¾ â Ð¿Ð°ÑÐ°Ð»Ð»ÐµÐ»Ð¸ÑÑ Ð´ÐµÐ¹ÑÑÐ²Ð¸Ñ.</p>
-                    <p>ÐÐ°ÑÐ° ÐÐ´ÐµÐ»Ñ ð</p>
-                </div>
-            </div>
+            <div class="loading">Загрузка записей...</div>
         </div>
     </main>
 
     <footer>
-        <p>2026. ÐÐ´ÐµÐ»Ñ. Angel de la poesÃ­a. â¨</p>
-        <a href="index.html">ÐÐ»Ð°Ð²Ð½Ð°Ñ</a> |
-        <a href="about.html">ÐÐ± Ð°Ð²ÑÐ¾ÑÐµ</a> |
-        <a href="contacts.html">ÐÐ¾Ð½ÑÐ°ÐºÑÑ</a>
+        <p>2026. Адель. Angel de la poesía. ✨</p>
+        <a href="index.html">Главная</a> |
+        <a href="about.html">Об авторе</a> |
+        <a href="contacts.html">Контакты</a>
     </footer>
 
     <script src="menu.js"></script>
+    <script>
+        async function loadBlog() {
+            const container = document.getElementById('blogContainer');
+            try {
+                const response = await fetch('blog.json?_=' + Date.now());
+                if (!response.ok) throw new Error('Файл blog.json не найден');
+                const posts = await response.json();
+                
+                if (!posts.length) {
+                    container.innerHTML = '<p>📭 Пока нет записей в блоге. Скоро появятся.</p>';
+                    return;
+                }
+                
+                // Сортируем от новых к старым
+                posts.sort((a, b) => b.id - a.id);
+                
+                container.innerHTML = posts.map(post => `
+                    <div class="blog-post">
+                        <div class="blog-title">${escapeHtml(post.title)}</div>
+                        <div class="blog-date">📅 ${escapeHtml(post.date)}</div>
+                        <div class="blog-content">
+                            <p>${escapeHtml(post.content).replace(/\n/g, '<br>')}</p>
+                        </div>
+                    </div>
+                `).join('');
+                
+            } catch (error) {
+                console.error('Ошибка загрузки блога:', error);
+                container.innerHTML = '<p>❌ Не удалось загрузить записи. Попробуйте позже.</p>';
+            }
+        }
+        
+        function escapeHtml(str) {
+            if (!str) return '';
+            return str.replace(/[&<>]/g, function(m) {
+                if (m === '&') return '&amp;';
+                if (m === '<') return '&lt;';
+                if (m === '>') return '&gt;';
+                return m;
+            });
+        }
+        
+        loadBlog();
+    </script>
 </body>
 </html>
