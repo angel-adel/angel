@@ -2,65 +2,57 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ádel CMS — Админка</title>
+    <title>Ádel CMS</title>
     <style>
-        body { font-family: system-ui; background: #f5f2f0; margin: 0; padding: 2rem 1rem; }
-        .container { max-width: 1200px; margin: 0 auto; }
-        .card { background: white; border-radius: 24px; padding: 2rem; margin-bottom: 2rem; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+        body { font-family: system-ui; background: #f5f2f0; padding: 2rem 1rem; }
+        .card { background: white; border-radius: 24px; padding: 2rem; margin-bottom: 2rem; max-width: 1100px; margin-left: auto; margin-right: auto; }
         .hidden { display: none; }
-        label { font-weight: 600; display: block; margin-top: 1rem; }
-        input, select, textarea { width: 100%; padding: 8px 12px; margin-top: 4px; border-radius: 40px; border: 1px solid #ccc; }
-        textarea { border-radius: 20px; font-family: monospace; }
+        label { font-weight: bold; display: block; margin-top: 1rem; }
+        input, select, textarea { width: 100%; padding: 8px; margin-top: 4px; border-radius: 40px; border: 1px solid #ccc; }
+        textarea { border-radius: 20px; }
         button { background: #7c3a8c; color: white; border: none; padding: 8px 20px; border-radius: 40px; cursor: pointer; margin-top: 1rem; }
-        button:hover { background: #5a2a68; }
         .btn-outline { background: transparent; color: #7c3a8c; border: 1px solid #7c3a8c; }
-        .flex-between { display: flex; justify-content: space-between; align-items: center; gap: 1rem; flex-wrap: wrap; }
+        .flex { display: flex; gap: 1rem; flex-wrap: wrap; justify-content: space-between; align-items: center; }
         table { width: 100%; border-collapse: collapse; }
         th, td { text-align: left; padding: 8px 4px; border-bottom: 1px solid #eee; }
-        .badge { background: #f0e6f5; padding: 2px 8px; border-radius: 20px; font-size: 0.7rem; }
-        .msg { margin-top: 1rem; padding: 10px; border-radius: 20px; }
-        .error { background: #ffe0e0; color: #a00; }
-        .ok { background: #e0f5e0; color: #070; }
+        .error { background: #ffe0e0; color: #a00; padding: 10px; border-radius: 20px; margin-top: 1rem; }
+        .ok { background: #e0f5e0; color: #070; padding: 10px; border-radius: 20px; margin-top: 1rem; }
     </style>
 </head>
 <body>
-<div class="container">
-    <div id="loginPanel" class="card">
-        <h2>🔐 Вход в CMS</h2>
-        <label>Пароль</label>
-        <input type="password" id="adminPassword">
-        <label>GitHub токен</label>
-        <input type="password" id="githubToken">
-        <button id="loginBtn">Войти</button>
-        <div id="loginMsg" class="msg hidden"></div>
-    </div>
+<div class="card" id="loginPanel">
+    <h2>🔐 Вход в CMS</h2>
+    <label>Пароль</label>
+    <input type="password" id="pwd">
+    <label>GitHub токен</label>
+    <input type="password" id="token">
+    <button id="loginBtn">Войти</button>
+    <div id="loginMsg"></div>
+</div>
 
-    <div id="adminPanel" class="hidden">
-        <div class="card">
-            <div class="flex-between">
-                <select id="sectionSelect">
-                    <option value="ru">📖 Русские стихи</option>
-                    <option value="bil">🌐 Иностранные стихи</option>
-                    <option value="prose">📓 Проза</option>
-                    <option value="humor">😄 Юмор</option>
-                    <option value="blog">📝 Блог</option>
-                </select>
-                <button id="refreshBtn">🔄 Обновить</button>
-                <button id="addBtn" class="btn-outline">➕ Новая запись</button>
-            </div>
-        </div>
-        <div id="listPanel" class="card"><div style="text-align:center;">📡 Загрузка...</div></div>
-        <div id="editPanel" class="card hidden">
-            <h3 id="editTitle">Редактировать</h3>
-            <div id="editFields"></div>
-            <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
-                <button id="saveBtn">💾 Сохранить</button>
-                <button id="cancelBtn" class="btn-outline">Отмена</button>
-            </div>
-            <div id="editMsg" class="msg hidden"></div>
-        </div>
+<div class="card hidden" id="adminPanel">
+    <div class="flex">
+        <select id="section">
+            <option value="ru">📖 Русские стихи</option>
+            <option value="bil">🌐 Иностранные стихи</option>
+            <option value="prose">📓 Проза</option>
+            <option value="humor">😄 Юмор</option>
+            <option value="blog">📝 Блог</option>
+        </select>
+        <button id="refresh">🔄 Обновить</button>
+        <button id="addNew" class="btn-outline">➕ Новая запись</button>
     </div>
+    <div id="list"></div>
+</div>
+
+<div class="card hidden" id="editPanel">
+    <h3 id="editTitle">Редактировать</h3>
+    <div id="editFields"></div>
+    <div class="flex">
+        <button id="save">💾 Сохранить</button>
+        <button id="cancel" class="btn-outline">Отмена</button>
+    </div>
+    <div id="editMsg"></div>
 </div>
 
 <script>
@@ -68,7 +60,7 @@
     let TOKEN = null;
     let currentSection = 'ru';
     let currentData = [];
-    let editId = null;
+    let editIndex = null;
 
     const FILES = {
         ru: 'russian_poems_only.json',
@@ -80,40 +72,40 @@
 
     const FIELDS = {
         ru: [
-            { name: 'title', label: 'Название', type: 'text' },
+            { name: 'title', label: 'Название' },
             { name: 'content', label: 'Текст', type: 'textarea' }
         ],
         bil: [
-            { name: 'title', label: 'Название', type: 'text' },
+            { name: 'title', label: 'Название' },
             { name: 'language', label: 'Язык', type: 'select', options: ['es','en'] },
             { name: 'content', label: 'Текст', type: 'textarea' }
         ],
         prose: [
-            { name: 'title', label: 'Заголовок', type: 'text' },
-            { name: 'description', label: 'Краткое описание', type: 'text' },
+            { name: 'title', label: 'Заголовок' },
+            { name: 'description', label: 'Описание' },
             { name: 'fullText', label: 'Полный текст', type: 'textarea' },
-            { name: 'date', label: 'Дата', type: 'text' }
+            { name: 'date', label: 'Дата' }
         ],
         humor: [
-            { name: 'title', label: 'Заголовок', type: 'text' },
-            { name: 'content', label: 'Текст шутки', type: 'textarea' }
+            { name: 'title', label: 'Заголовок' },
+            { name: 'content', label: 'Текст', type: 'textarea' }
         ],
         blog: [
-            { name: 'title', label: 'Заголовок', type: 'text' },
-            { name: 'date', label: 'Дата', type: 'text' },
-            { name: 'content', label: 'Текст записи', type: 'textarea' }
+            { name: 'title', label: 'Заголовок' },
+            { name: 'date', label: 'Дата' },
+            { name: 'content', label: 'Текст', type: 'textarea' }
         ]
     };
 
     document.getElementById('loginBtn').onclick = () => {
-        const pwd = document.getElementById('adminPassword').value;
-        const token = document.getElementById('githubToken').value.trim();
-        if (pwd !== 'adel2026admin') {  // поменяй пароль!
-            document.getElementById('loginMsg').innerHTML = '❌ Неверный пароль';
+        const pwd = document.getElementById('pwd').value;
+        const token = document.getElementById('token').value.trim();
+        if (pwd !== 'adel2026admin') {
+            document.getElementById('loginMsg').innerHTML = '<div class="error">❌ Неверный пароль</div>';
             return;
         }
         if (!token || (!token.startsWith('github_pat_') && !token.startsWith('ghp_'))) {
-            document.getElementById('loginMsg').innerHTML = '❌ Неверный токен';
+            document.getElementById('loginMsg').innerHTML = '<div class="error">❌ Неверный токен</div>';
             return;
         }
         TOKEN = token;
@@ -123,12 +115,13 @@
     };
 
     async function loadData() {
-        const container = document.getElementById('listPanel');
-        container.innerHTML = '<div style="text-align:center;">⏳ Загрузка...</div>';
+        const container = document.getElementById('list');
+        container.innerHTML = '⏳ Загрузка...';
         const file = FILES[currentSection];
         try {
-            const url = `https://api.github.com/repos/${REPO}/contents/${file}`;
-            const res = await fetch(url, { headers: { Authorization: `token ${TOKEN}` } });
+            const res = await fetch(`https://api.github.com/repos/${REPO}/contents/${file}`, {
+                headers: { Authorization: `token ${TOKEN}` }
+            });
             if (!res.ok) throw new Error(`Файл ${file} не найден`);
             const data = await res.json();
             const content = atob(data.content);
@@ -136,122 +129,111 @@
             if (!Array.isArray(currentData)) currentData = [];
             renderList();
         } catch(e) {
-            container.innerHTML = `<div class="msg error">❌ Ошибка: ${e.message}</div>`;
+            container.innerHTML = `<div class="error">❌ ${e.message}</div>`;
         }
     }
 
     function renderList() {
-        const container = document.getElementById('listPanel');
+        const container = document.getElementById('list');
         if (!currentData.length) {
-            container.innerHTML = '<p>📭 Нет записей. Нажмите «Новая запись».</p>';
+            container.innerHTML = '<p>📭 Нет записей</p>';
             return;
         }
-        let html = '</td><thead><tr><th>Название</th><th>Действия</th></tr></thead><tbody>';
+        let html = '<table><thead><tr><th>Название</th><th>Действия</th></tr></thead><tbody>';
         currentData.forEach((item, idx) => {
-            const title = item.title || item.id || `Запись ${idx+1}`;
+            const name = item.title || item.id || `Запись ${idx+1}`;
             html += `<tr>
-                        <td>${escapeHtml(title)}</td>
+                        <td>${escapeHtml(name)}</td>
                         <td>
-                            <button class="edit-btn" data-idx="${idx}">✏️ Ред.</button>
-                            <button class="del-btn" data-idx="${idx}">🗑️ Удалить</button>
+                            <button class="editBtn" data-idx="${idx}">✏️ Ред.</button>
+                            <button class="delBtn" data-idx="${idx}">🗑️ Удалить</button>
                         </td>
                      </tr>`;
         });
-        html += `</tbody></table>`;
+        html += '</tbody>赶';
         container.innerHTML = html;
-        document.querySelectorAll('.edit-btn').forEach(btn => {
+        document.querySelectorAll('.editBtn').forEach(btn => {
             btn.onclick = () => editItem(parseInt(btn.dataset.idx));
         });
-        document.querySelectorAll('.del-btn').forEach(btn => {
+        document.querySelectorAll('.delBtn').forEach(btn => {
             btn.onclick = () => deleteItem(parseInt(btn.dataset.idx));
         });
     }
 
     function editItem(idx) {
-        editId = idx;
+        editIndex = idx;
         const item = currentData[idx];
         const fields = FIELDS[currentSection];
         const container = document.getElementById('editFields');
         container.innerHTML = '';
-        fields.forEach(f => {
-            const value = item[f.name] || '';
+        for (let f of fields) {
+            const label = document.createElement('label');
+            label.textContent = f.label;
+            container.appendChild(label);
             if (f.type === 'select') {
                 const select = document.createElement('select');
                 select.id = f.name;
-                f.options.forEach(opt => {
+                for (let opt of f.options) {
                     const option = document.createElement('option');
                     option.value = opt;
                     option.textContent = opt.toUpperCase();
-                    if (value === opt) option.selected = true;
+                    if (item[f.name] === opt) option.selected = true;
                     select.appendChild(option);
-                });
-                const label = document.createElement('label');
-                label.textContent = f.label;
-                container.appendChild(label);
+                }
                 container.appendChild(select);
             } else if (f.type === 'textarea') {
                 const ta = document.createElement('textarea');
                 ta.id = f.name;
-                ta.value = value;
                 ta.rows = 6;
-                const label = document.createElement('label');
-                label.textContent = f.label;
-                container.appendChild(label);
+                ta.value = item[f.name] || '';
                 container.appendChild(ta);
             } else {
                 const input = document.createElement('input');
                 input.type = 'text';
                 input.id = f.name;
-                input.value = value;
-                const label = document.createElement('label');
-                label.textContent = f.label;
-                container.appendChild(label);
+                input.value = item[f.name] || '';
                 container.appendChild(input);
             }
-        });
+        }
         document.getElementById('editPanel').classList.remove('hidden');
-        document.getElementById('editTitle').innerText = '✏️ Редактировать запись';
+        document.getElementById('editTitle').innerText = '✏️ Редактировать';
+        document.getElementById('editMsg').innerHTML = '';
     }
 
     function addNew() {
-        editId = null;
+        editIndex = null;
         const fields = FIELDS[currentSection];
         const container = document.getElementById('editFields');
         container.innerHTML = '';
-        fields.forEach(f => {
+        for (let f of fields) {
+            const label = document.createElement('label');
+            label.textContent = f.label;
+            container.appendChild(label);
             if (f.type === 'select') {
                 const select = document.createElement('select');
                 select.id = f.name;
-                f.options.forEach(opt => {
+                for (let opt of f.options) {
                     const option = document.createElement('option');
                     option.value = opt;
                     option.textContent = opt.toUpperCase();
                     select.appendChild(option);
-                });
-                const label = document.createElement('label');
-                label.textContent = f.label;
-                container.appendChild(label);
+                }
                 container.appendChild(select);
             } else if (f.type === 'textarea') {
                 const ta = document.createElement('textarea');
                 ta.id = f.name;
                 ta.rows = 6;
-                const label = document.createElement('label');
-                label.textContent = f.label;
-                container.appendChild(label);
                 container.appendChild(ta);
             } else {
                 const input = document.createElement('input');
                 input.type = 'text';
                 input.id = f.name;
-                const label = document.createElement('label');
-                label.textContent = f.label;
-                container.appendChild(label);
                 container.appendChild(input);
             }
-        });
+        }
         document.getElementById('editPanel').classList.remove('hidden');
         document.getElementById('editTitle').innerText = '➕ Новая запись';
+        document.getElementById('editMsg').innerHTML = '';
     }
 
     async function saveItem() {
@@ -261,8 +243,8 @@
             const el = document.getElementById(f.name);
             if (el) newItem[f.name] = el.value.trim();
         }
-        if (editId !== null) {
-            currentData[editId] = { ...currentData[editId], ...newItem };
+        if (editIndex !== null) {
+            currentData[editIndex] = { ...currentData[editIndex], ...newItem };
         } else {
             if (currentSection === 'blog' || currentSection === 'prose') {
                 newItem.id = Date.now();
@@ -280,7 +262,6 @@
 
     async function saveToGithub() {
         const msgDiv = document.getElementById('editMsg');
-        msgDiv.classList.add('hidden');
         const file = FILES[currentSection];
         try {
             const url = `https://api.github.com/repos/${REPO}/contents/${file}`;
@@ -290,203 +271,28 @@
             await fetch(url, {
                 method: 'PUT',
                 headers: { Authorization: `token ${TOKEN}`, 'Content-Type': 'application/json' },
-                body: JSON.stringify({ message: 'Update from CMS', content: newBase64, sha: fileData.sha })
+                body: JSON.stringify({ message: 'CMS update', content: newBase64, sha: fileData.sha })
             });
             document.getElementById('editPanel').classList.add('hidden');
             await loadData();
         } catch(e) {
-            msgDiv.className = 'msg error';
-            msgDiv.innerHTML = `❌ Ошибка: ${e.message}`;
-            msgDiv.classList.remove('hidden');
+            msgDiv.innerHTML = `<div class="error">❌ ${e.message}</div>`;
         }
     }
 
-    document.getElementById('sectionSelect').onchange = () => {
-        currentSection = document.getElementById('sectionSelect').value;
+    document.getElementById('section').onchange = () => {
+        currentSection = document.getElementById('section').value;
         loadData();
     };
-    document.getElementById('refreshBtn').onclick = () => loadData();
-    document.getElementById('addBtn').onclick = addNew;
-    document.getElementById('saveBtn').onclick = saveItem;
-    document.getElementById('cancelBtn').onclick = () => document.getElementById('editPanel').classList.add('hidden');
+    document.getElementById('refresh').onclick = () => loadData();
+    document.getElementById('addNew').onclick = addNew;
+    document.getElementById('save').onclick = saveItem;
+    document.getElementById('cancel').onclick = () => document.getElementById('editPanel').classList.add('hidden');
 
     function escapeHtml(str) {
         if (!str) return '';
         return str.replace(/[&<>]/g, (m) => m === '&' ? '&amp;' : (m === '<' ? '&lt;' : '&gt;'));
     }
-</script>
-</body>
-    </html>em.id : idx}">✏️ Ред.</button>
-                    <button class="delete-item" data-idx="${item.id !== undefined ? item.id : idx}" data-title="${escapeHtml(title)}">🗑️ Удалить</button>
-                </td>
-            </tr>`;
-        });
-        html += `</tbody></table>`;
-        container.innerHTML = html;
-        // Кнопки редактирования
-        document.querySelectorAll('.edit-item').forEach(btn => {
-            btn.onclick = () => editItemById(btn.getAttribute('data-idx'));
-        });
-        document.querySelectorAll('.delete-item').forEach(btn => {
-            btn.onclick = () => deleteItemById(btn.getAttribute('data-idx'), btn.getAttribute('data-title'));
-        });
-    }
-
-    function findItemById(id) {
-        if (id === null) return null;
-        const numId = parseInt(id);
-        return currentData.find(item => item.id === numId);
-    }
-
-    function editItemById(id) {
-        const item = findItemById(id);
-        if (!item) return;
-        currentEditId = id;
-        editingItem = JSON.parse(JSON.stringify(item));
-        showEditForm(item);
-    }
-
-    function showEditForm(item) {
-        const cfg = targets[currentSection];
-        const container = document.getElementById('editFields');
-        container.innerHTML = '';
-        cfg.fields.forEach(f => {
-            const val = item[f.name] || '';
-            if (f.type === 'select') {
-                const select = document.createElement('select');
-                select.id = `field_${f.name}`;
-                f.options.forEach(opt => {
-                    const option = document.createElement('option');
-                    option.value = opt;
-                    option.textContent = opt.toUpperCase();
-                    if (val === opt) option.selected = true;
-                    select.appendChild(option);
-                });
-                const label = document.createElement('label');
-                label.textContent = f.label;
-                label.style.fontWeight = 'bold';
-                container.appendChild(label);
-                container.appendChild(select);
-            } else if (f.type === 'textarea') {
-                const textarea = document.createElement('textarea');
-                textarea.id = `field_${f.name}`;
-                textarea.rows = 6;
-                textarea.value = val;
-                const label = document.createElement('label');
-                label.textContent = f.label;
-                label.style.fontWeight = 'bold';
-                container.appendChild(label);
-                container.appendChild(textarea);
-            } else {
-                const input = document.createElement('input');
-                input.type = 'text';
-                input.id = `field_${f.name}`;
-                input.value = val;
-                const label = document.createElement('label');
-                label.textContent = f.label;
-                label.style.fontWeight = 'bold';
-                container.appendChild(label);
-                container.appendChild(input);
-            }
-        });
-        document.getElementById('editPanel').classList.remove('hidden');
-        document.getElementById('editTitle').innerText = currentEditId ? '✏️ Редактировать запись' : '➕ Новая запись';
-        document.getElementById('editMsg').classList.add('hidden');
-    }
-
-    async function saveEdit() {
-        const msgDiv = document.getElementById('editMsg');
-        msgDiv.classList.add('hidden');
-        const cfg = targets[currentSection];
-        const newData = {};
-        let valid = true;
-        cfg.fields.forEach(f => {
-            const el = document.getElementById(`field_${f.name}`);
-            if (!el) return;
-            const val = el.value.trim();
-            if (f.required && !val) valid = false;
-            newData[f.name] = val;
-        });
-        if (!valid) {
-            msgDiv.className = 'msg msg-error';
-            msgDiv.innerText = '❌ Заполните все обязательные поля';
-            msgDiv.classList.remove('hidden');
-            return;
-        }
-        let updatedArray = [...currentData];
-        if (currentEditId) {
-            // редактирование
-            const index = updatedArray.findIndex(i => i.id === parseInt(currentEditId));
-            if (index !== -1) {
-                const built = cfg.build(newData);
-                built.id = updatedArray[index].id; // сохраняем старый id
-                updatedArray[index] = built;
-            }
-        } else {
-            // добавление
-            const newItem = cfg.build(newData);
-            updatedArray.push(newItem);
-        }
-        await saveToGithub(updatedArray, cfg.file, msgDiv);
-    }
-
-    async function deleteItemById(id, title) {
-        if (!confirm(`Удалить "${title}"? Отменить будет нельзя.`)) return;
-        const cfg = targets[currentSection];
-        const numId = parseInt(id);
-        const updatedArray = currentData.filter(item => item.id !== numId);
-        const msgDiv = document.getElementById('listPanel');
-        await saveToGithub(updatedArray, cfg.file, msgDiv, true);
-    }
-
-    async function saveToGithub(array, filePath, msgDiv, isDelete=false) {
-        try {
-            const url = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${filePath}`;
-            const res = await fetch(url, { headers: { Authorization: `token ${githubToken}` } });
-            if (!res.ok) throw new Error('Не удалось прочитать файл');
-            const fileData = await res.json();
-            const newBase64 = btoa(unescape(encodeURIComponent(JSON.stringify(array, null, 2))));
-            const commitRes = await fetch(url, {
-                method: 'PUT',
-                headers: { Authorization: `token ${githubToken}`, 'Content-Type': 'application/json' },
-                body: JSON.stringify({ message: 'Обновление через CMS', content: newBase64, sha: fileData.sha })
-            });
-            if (!commitRes.ok) throw new Error('Ошибка сохранения');
-            if (msgDiv) {
-                msgDiv.className = 'msg msg-ok';
-                msgDiv.innerText = isDelete ? '✅ Запись удалена' : '✅ Сохранено успешно';
-                msgDiv.classList.remove('hidden');
-                setTimeout(() => msgDiv.classList.add('hidden'), 3000);
-            }
-            await loadSection();
-            document.getElementById('editPanel').classList.add('hidden');
-        } catch(err) {
-            if (msgDiv) {
-                msgDiv.className = 'msg msg-error';
-                msgDiv.innerText = `❌ Ошибка: ${err.message}`;
-                msgDiv.classList.remove('hidden');
-            }
-        }
-    }
-
-    function escapeHtml(str) {
-        if (!str) return '';
-        return str.replace(/[&<>]/g, (m) => m === '&' ? '&amp;' : (m === '<' ? '&lt;' : '&gt;'));
-    }
-
-    document.getElementById('contentTypeSelect').addEventListener('change', () => loadSection());
-    document.getElementById('refreshBtn').addEventListener('click', () => loadSection());
-    document.getElementById('addNewBtn').addEventListener('click', () => {
-        currentEditId = null;
-        editingItem = null;
-        const emptyItem = {};
-        targets[currentSection].fields.forEach(f => { emptyItem[f.name] = ''; });
-        showEditForm(emptyItem);
-    });
-    document.getElementById('saveBtn').addEventListener('click', saveEdit);
-    document.getElementById('cancelEditBtn').addEventListener('click', () => {
-        document.getElementById('editPanel').classList.add('hidden');
-    });
 </script>
 </body>
     </html>
