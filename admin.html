@@ -3,340 +3,424 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>Админка — Ádel CMS</title>
+    <title>Ádel CMS — Админка</title>
     <style>
+        * {
+            box-sizing: border-box;
+        }
         body {
             font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
-            max-width: 800px;
-            margin: 2rem auto;
-            padding: 1rem;
             background: #f5f2f0;
+            margin: 0;
+            padding: 2rem 1rem;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
         }
         .card {
             background: white;
-            border-radius: 24px;
+            border-radius: 28px;
             padding: 2rem;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.05);
             margin-bottom: 2rem;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.05);
         }
-        label {
-            font-weight: 600;
-            display: block;
-            margin-top: 1rem;
+        .hidden {
+            display: none;
         }
-        input, select, textarea {
-            width: 100%;
-            padding: 10px;
-            margin-top: 5px;
-            border: 1px solid #ccc;
-            border-radius: 16px;
+        .flex-between {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        select, input, textarea, button {
             font-family: inherit;
+            font-size: 0.95rem;
+            padding: 8px 14px;
+            border-radius: 40px;
+            border: 1px solid #ccc;
+            background: white;
+        }
+        textarea {
+            border-radius: 20px;
+            width: 100%;
+            font-family: monospace;
         }
         button {
-            margin-top: 1.5rem;
             background: #7c3a8c;
             color: white;
             border: none;
-            padding: 10px 20px;
-            border-radius: 40px;
-            font-weight: bold;
             cursor: pointer;
+            transition: 0.2s;
+            font-weight: bold;
         }
-        button:hover { background: #5a2a68; }
-        .hidden { display: none; }
-        .msg { margin-top: 1rem; padding: 8px; border-radius: 20px; }
-        .error { background: #ffe0e0; color: #a00; }
-        .ok { background: #e0f5e0; color: #070; }
-        hr { margin: 1rem 0; }
+        button:hover {
+            background: #5a2a68;
+            transform: translateY(-2px);
+        }
+        .btn-outline {
+            background: transparent;
+            color: #7c3a8c;
+            border: 1px solid #7c3a8c;
+        }
+        .btn-outline:hover {
+            background: #f0e6f5;
+            transform: none;
+        }
+        .btn-danger {
+            background: #b91c1c;
+        }
+        .btn-danger:hover {
+            background: #991b1b;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            text-align: left;
+            padding: 10px 6px;
+            border-bottom: 1px solid #eee;
+            vertical-align: top;
+        }
+        .badge {
+            background: #f0e6f5;
+            padding: 2px 8px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+        }
+        .msg {
+            margin-top: 1rem;
+            padding: 10px;
+            border-radius: 20px;
+        }
+        .msg-error {
+            background: #ffe0e0;
+            color: #a00;
+        }
+        .msg-ok {
+            background: #e0f5e0;
+            color: #070;
+        }
     </style>
 </head>
 <body>
+<div class="container">
+    <!-- Панель входа -->
+    <div id="loginPanel" class="card">
+        <h2>🔐 Вход в CMS Ádel</h2>
+        <label>Пароль</label>
+        <input type="password" id="adminPassword" placeholder="Пароль">
+        <label>GitHub токен (fine-grained или classic)</label>
+        <input type="password" id="githubToken" placeholder="github_pat_... или ghp_...">
+        <button id="loginBtn">Войти</button>
+        <div id="loginMsg" class="msg hidden"></div>
+    </div>
 
-<div id="loginPanel" class="card">
-    <h2>🔐 Вход в админку Ádel</h2>
-    <label>Пароль</label>
-    <input type="password" id="adminPassword" placeholder="Введи пароль">
-    <label>GitHub токен (fine‑grained или classic)</label>
-    <input type="password" id="githubToken" placeholder="github_pat_... или ghp_...">
-    <button id="loginBtn">Войти</button>
-    <div id="loginMsg" class="msg hidden"></div>
-</div>
+    <!-- Панель управления -->
+    <div id="adminPanel" class="hidden">
+        <div class="card">
+            <h2>✍️ Ádel CMS — Управление контентом</h2>
+            <div class="flex-between">
+                <select id="contentTypeSelect">
+                    <option value="poem_ru">📖 Русские стихи</option>
+                    <option value="poem_bil">🌐 Иностранные стихи</option>
+                    <option value="prose">📓 Проза</option>
+                    <option value="humor">😄 Юмор</option>
+                    <option value="blog">📝 Блог</option>
+                </select>
+                <button id="refreshBtn">🔄 Обновить список</button>
+                <button id="addNewBtn" class="btn-outline">➕ Новая запись</button>
+            </div>
+        </div>
 
-<div id="adminPanel" class="card hidden">
-    <h2>✍️ Добавить новый материал</h2>
+        <div id="listPanel" class="card">
+            <div style="text-align: center; padding: 2rem;">📡 Загрузка...</div>
+        </div>
 
-    <label>Раздел</label>
-    <select id="contentType">
-        <option value="poem_ru">📖 Стих (русский)</option>
-        <option value="poem_bil">🌐 Стих (испанский / английский)</option>
-        <option value="prose">📓 Проза</option>
-        <option value="humor">😄 Юмор</option>
-        <option value="blog">📝 Блог</option>
-    </select>
-
-    <div id="dynamicFields"></div>
-
-    <button id="publishBtn">📤 Опубликовать</button>
-    <div id="publishMsg" class="msg hidden"></div>
+        <!-- Форма редактирования / добавления (скрыта по умолчанию) -->
+        <div id="editPanel" class="card hidden">
+            <h3 id="editTitle">Редактировать запись</h3>
+            <div id="editFields"></div>
+            <div style="display: flex; gap: 1rem; margin-top: 1.5rem; flex-wrap: wrap;">
+                <button id="saveBtn">💾 Сохранить</button>
+                <button id="cancelEditBtn" class="btn-outline">Отмена</button>
+            </div>
+            <div id="editMsg" class="msg hidden"></div>
+        </div>
+    </div>
 </div>
 
 <script>
     const REPO_OWNER = 'angel-adel';
     const REPO_NAME = 'angel';
     let githubToken = null;
+    let currentSection = 'poem_ru';
+    let currentData = [];     // массив записей текущего раздела
+    let currentEditId = null; // null = добавление, число = редактирование
+    let editingItem = null;    // оригинал для сравнения
 
-    // Маппинг разделов → файлы и форматы
+    // Маппинг разделов
     const targets = {
-        poem_ru: {
-            file: 'russian_poems_only.json',
-            fields: [
-                { name: 'title', label: 'Название стиха', type: 'text', required: true },
-                { name: 'content', label: 'Текст стиха (с переносами строк)', type: 'textarea', required: true }
-            ],
-            build: (data) => ({ title: data.title, content: data.content })
-        },
-        poem_bil: {
-            file: 'poems-bilingual.json',
-            fields: [
-                { name: 'title', label: 'Название стиха', type: 'text', required: true },
-                { name: 'language', label: 'Язык', type: 'select', options: ['es', 'en'], required: true },
-                { name: 'content', label: 'Текст стиха', type: 'textarea', required: true }
-            ],
-            build: (data) => ({ title: data.title, language: data.language, content: data.content })
-        },
-        prose: {
-            file: 'prose.json',
-            fields: [
-                { name: 'title', label: 'Заголовок', type: 'text', required: true },
-                { name: 'description', label: 'Краткое описание', type: 'text', required: true },
-                { name: 'fullText', label: 'Полный текст прозы', type: 'textarea', required: true },
-                { name: 'date', label: 'Дата (дд.мм.гггг)', type: 'text', required: true }
-            ],
-            build: (data) => ({
-                id: Date.now(),
-                title: data.title,
-                description: data.description,
-                fullText: data.fullText,
-                date: data.date
-            })
-        },
-        humor: {
-            file: 'humor.json',
-            fields: [
-                { name: 'title', label: 'Заголовок шутки', type: 'text', required: true },
-                { name: 'content', label: 'Текст шутки', type: 'textarea', required: true }
-            ],
-            build: (data) => ({ title: data.title, content: data.content })
-        }
+        poem_ru: { file: 'russian_poems_only.json', fields: [
+            { name: 'title', label: 'Название', type: 'text', required: true },
+            { name: 'content', label: 'Текст стиха', type: 'textarea', required: true }
+        ], build: (data) => ({ title: data.title, content: data.content }) },
+        poem_bil: { file: 'poems-bilingual.json', fields: [
+            { name: 'title', label: 'Название', type: 'text', required: true },
+            { name: 'language', label: 'Язык', type: 'select', options: ['es','en'], required: true },
+            { name: 'content', label: 'Текст стиха', type: 'textarea', required: true }
+        ], build: (data) => ({ title: data.title, language: data.language, content: data.content }) },
+        prose: { file: 'prose.json', fields: [
+            { name: 'title', label: 'Заголовок', type: 'text', required: true },
+            { name: 'description', label: 'Краткое описание', type: 'text', required: true },
+            { name: 'fullText', label: 'Полный текст', type: 'textarea', required: true },
+            { name: 'date', label: 'Дата (дд.мм.гггг)', type: 'text', required: true }
+        ], build: (data) => ({ id: Date.now(), title: data.title, description: data.description, fullText: data.fullText, date: data.date }) },
+        humor: { file: 'humor.json', fields: [
+            { name: 'title', label: 'Заголовок шутки', type: 'text', required: true },
+            { name: 'content', label: 'Текст шутки', type: 'textarea', required: true }
+        ], build: (data) => ({ title: data.title, content: data.content }) },
+        blog: { file: 'blog.json', fields: [
+            { name: 'title', label: 'Заголовок', type: 'text', required: true },
+            { name: 'date', label: 'Дата', type: 'text', required: true },
+            { name: 'content', label: 'Текст записи', type: 'textarea', required: true }
+        ], build: (data) => ({ id: Date.now(), title: data.title, date: data.date, content: data.content }) }
     };
 
-    // --- Вход ---
-    document.getElementById('loginBtn').onclick = () => {
+    // ========== Вход ==========
+    document.getElementById('loginBtn').onclick = async () => {
         const pwd = document.getElementById('adminPassword').value;
         const token = document.getElementById('githubToken').value.trim();
         const msgDiv = document.getElementById('loginMsg');
-        const CORRECT_PASSWORD = 'adel2026admin';  // ⚠️ ЗАМЕНИ НА СВОЙ ПАРОЛЬ
+        const CORRECT_PASSWORD = 'adel2026admin'; // ⚠️ ЗАМЕНИ НА СВОЙ ПАРОЛЬ
 
         if (pwd !== CORRECT_PASSWORD) {
-            msgDiv.className = 'msg error';
+            msgDiv.className = 'msg msg-error';
             msgDiv.innerText = '❌ Неверный пароль';
             msgDiv.classList.remove('hidden');
             return;
         }
         if (!token || (!token.startsWith('github_pat_') && !token.startsWith('ghp_'))) {
-            msgDiv.className = 'msg error';
-            msgDiv.innerText = '❌ Неверный токен (должен начинаться с github_pat_ или ghp_)';
+            msgDiv.className = 'msg msg-error';
+            msgDiv.innerText = '❌ Неверный токен';
             msgDiv.classList.remove('hidden');
             return;
         }
-
         githubToken = token;
         document.getElementById('loginPanel').classList.add('hidden');
         document.getElementById('adminPanel').classList.remove('hidden');
-        updateDynamicFields();
+        await loadSection();
     };
 
-    // --- Динамические поля (включая блог) ---
-    function updateDynamicFields() {
-        const type = document.getElementById('contentType').value;
-        const container = document.getElementById('dynamicFields');
-        container.innerHTML = '';
+    // ========== Загрузка раздела ==========
+    async function loadSection() {
+        const container = document.getElementById('listPanel');
+        container.innerHTML = '<div style="text-align: center;">⏳ Загрузка...</div>';
+        currentSection = document.getElementById('contentTypeSelect').value;
+        const cfg = targets[currentSection];
+        if (!cfg) return;
+        try {
+            const url = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${cfg.file}`;
+            const res = await fetch(url, { headers: { Authorization: `token ${githubToken}` } });
+            if (!res.ok) throw new Error('Файл не найден');
+            const fileData = await res.json();
+            const content = atob(fileData.content);
+            currentData = JSON.parse(content);
+            renderList();
+        } catch(e) {
+            container.innerHTML = `<div class="msg msg-error">❌ Ошибка: ${e.message}</div>`;
+        }
+    }
 
-        if (type === 'blog') {
-            // Поля для блога
-            const fields = [
-                { name: 'title', label: 'Заголовок записи', type: 'text' },
-                { name: 'date', label: 'Дата (например: 13 июня 2026)', type: 'text' },
-                { name: 'content', label: 'Текст записи', type: 'textarea' }
-            ];
-            fields.forEach(f => {
-                const div = document.createElement('div');
-                if (f.type === 'textarea') {
-                    div.innerHTML = `<label>${f.label}</label><textarea id="field_${f.name}" rows="6" required></textarea>`;
-                } else {
-                    div.innerHTML = `<label>${f.label}</label><input type="text" id="field_${f.name}" required>`;
-                }
-                container.appendChild(div);
-            });
+    function renderList() {
+        const container = document.getElementById('listPanel');
+        if (!currentData.length) {
+            container.innerHTML = '<p>📭 Нет записей. Нажмите «➕ Новая запись».</p>';
             return;
         }
-
-        const config = targets[type];
-        if (!config) return;
-
-        config.fields.forEach(f => {
-            const div = document.createElement('div');
-            if (f.type === 'select') {
-                div.innerHTML = `
-                    <label>${f.label}</label>
-                    <select id="field_${f.name}" required>
-                        ${f.options.map(opt => `<option value="${opt}">${opt.toUpperCase()}</option>`).join('')}
-                    </select>
-                `;
-            } else if (f.type === 'textarea') {
-                div.innerHTML = `<label>${f.label}</label><textarea id="field_${f.name}" rows="8" required></textarea>`;
-            } else {
-                div.innerHTML = `<label>${f.label}</label><input type="text" id="field_${f.name}" required>`;
-            }
-            container.appendChild(div);
+        // Сортировка: по id (новые сверху), если id нет — по индексу
+        const sorted = [...currentData].sort((a,b) => (b.id || 0) - (a.id || 0));
+        const cfg = targets[currentSection];
+        let html = `<table><thead><tr><th>Название / ID</th><th>Действия</th></tr></thead><tbody>`;
+        sorted.forEach((item, idx) => {
+            const title = item.title || item.id || `Запись ${idx+1}`;
+            html += `<tr>
+                <td><strong>${escapeHtml(title)}</strong></td>
+                <td>
+                    <button class="edit-item" data-idx="${item.id !== undefined ? item.id : idx}">✏️ Ред.</button>
+                    <button class="delete-item" data-idx="${item.id !== undefined ? item.id : idx}" data-title="${escapeHtml(title)}">🗑️ Удалить</button>
+                </td>
+            </tr>`;
+        });
+        html += `</tbody></table>`;
+        container.innerHTML = html;
+        // Кнопки редактирования
+        document.querySelectorAll('.edit-item').forEach(btn => {
+            btn.onclick = () => editItemById(btn.getAttribute('data-idx'));
+        });
+        document.querySelectorAll('.delete-item').forEach(btn => {
+            btn.onclick = () => deleteItemById(btn.getAttribute('data-idx'), btn.getAttribute('data-title'));
         });
     }
 
-    document.getElementById('contentType').addEventListener('change', updateDynamicFields);
+    function findItemById(id) {
+        if (id === null) return null;
+        const numId = parseInt(id);
+        return currentData.find(item => item.id === numId);
+    }
 
-    // --- Публикация ---
-    document.getElementById('publishBtn').onclick = async () => {
-        const type = document.getElementById('contentType').value;
-        const msgDiv = document.getElementById('publishMsg');
+    function editItemById(id) {
+        const item = findItemById(id);
+        if (!item) return;
+        currentEditId = id;
+        editingItem = JSON.parse(JSON.stringify(item));
+        showEditForm(item);
+    }
 
-        if (type === 'blog') {
-            const title = document.getElementById('field_title')?.value.trim();
-            const date = document.getElementById('field_date')?.value.trim();
-            const content = document.getElementById('field_content')?.value.trim();
-            if (!title || !date || !content) {
-                msgDiv.className = 'msg error';
-                msgDiv.innerText = '❌ Заполни заголовок, дату и текст';
-                msgDiv.classList.remove('hidden');
-                return;
+    function showEditForm(item) {
+        const cfg = targets[currentSection];
+        const container = document.getElementById('editFields');
+        container.innerHTML = '';
+        cfg.fields.forEach(f => {
+            const val = item[f.name] || '';
+            if (f.type === 'select') {
+                const select = document.createElement('select');
+                select.id = `field_${f.name}`;
+                f.options.forEach(opt => {
+                    const option = document.createElement('option');
+                    option.value = opt;
+                    option.textContent = opt.toUpperCase();
+                    if (val === opt) option.selected = true;
+                    select.appendChild(option);
+                });
+                const label = document.createElement('label');
+                label.textContent = f.label;
+                label.style.fontWeight = 'bold';
+                container.appendChild(label);
+                container.appendChild(select);
+            } else if (f.type === 'textarea') {
+                const textarea = document.createElement('textarea');
+                textarea.id = `field_${f.name}`;
+                textarea.rows = 6;
+                textarea.value = val;
+                const label = document.createElement('label');
+                label.textContent = f.label;
+                label.style.fontWeight = 'bold';
+                container.appendChild(label);
+                container.appendChild(textarea);
+            } else {
+                const input = document.createElement('input');
+                input.type = 'text';
+                input.id = `field_${f.name}`;
+                input.value = val;
+                const label = document.createElement('label');
+                label.textContent = f.label;
+                label.style.fontWeight = 'bold';
+                container.appendChild(label);
+                container.appendChild(input);
             }
-            await addBlogPost(title, date, content, msgDiv);
-        } else {
-            const config = targets[type];
-            if (!config) return;
+        });
+        document.getElementById('editPanel').classList.remove('hidden');
+        document.getElementById('editTitle').innerText = currentEditId ? '✏️ Редактировать запись' : '➕ Новая запись';
+        document.getElementById('editMsg').classList.add('hidden');
+    }
 
-            const data = {};
-            let valid = true;
-            config.fields.forEach(f => {
-                const val = document.getElementById(`field_${f.name}`)?.value.trim();
-                if (f.required && !val) valid = false;
-                data[f.name] = val;
-            });
-            if (!valid) {
-                msgDiv.className = 'msg error';
-                msgDiv.innerText = '❌ Заполни все обязательные поля';
-                msgDiv.classList.remove('hidden');
-                return;
-            }
-
-            const newItem = config.build(data);
-            await updateJsonFile(config.file, newItem, msgDiv);
+    async function saveEdit() {
+        const msgDiv = document.getElementById('editMsg');
+        msgDiv.classList.add('hidden');
+        const cfg = targets[currentSection];
+        const newData = {};
+        let valid = true;
+        cfg.fields.forEach(f => {
+            const el = document.getElementById(`field_${f.name}`);
+            if (!el) return;
+            const val = el.value.trim();
+            if (f.required && !val) valid = false;
+            newData[f.name] = val;
+        });
+        if (!valid) {
+            msgDiv.className = 'msg msg-error';
+            msgDiv.innerText = '❌ Заполните все обязательные поля';
+            msgDiv.classList.remove('hidden');
+            return;
         }
-    };
+        let updatedArray = [...currentData];
+        if (currentEditId) {
+            // редактирование
+            const index = updatedArray.findIndex(i => i.id === parseInt(currentEditId));
+            if (index !== -1) {
+                const built = cfg.build(newData);
+                built.id = updatedArray[index].id; // сохраняем старый id
+                updatedArray[index] = built;
+            }
+        } else {
+            // добавление
+            const newItem = cfg.build(newData);
+            updatedArray.push(newItem);
+        }
+        await saveToGithub(updatedArray, cfg.file, msgDiv);
+    }
 
-    async function updateJsonFile(filePath, newItem, msgDiv) {
+    async function deleteItemById(id, title) {
+        if (!confirm(`Удалить "${title}"? Отменить будет нельзя.`)) return;
+        const cfg = targets[currentSection];
+        const numId = parseInt(id);
+        const updatedArray = currentData.filter(item => item.id !== numId);
+        const msgDiv = document.getElementById('listPanel');
+        await saveToGithub(updatedArray, cfg.file, msgDiv, true);
+    }
+
+    async function saveToGithub(array, filePath, msgDiv, isDelete=false) {
         try {
-            const fileUrl = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${filePath}`;
-            const res = await fetch(fileUrl, { headers: { Authorization: `token ${githubToken}` } });
+            const url = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${filePath}`;
+            const res = await fetch(url, { headers: { Authorization: `token ${githubToken}` } });
             if (!res.ok) throw new Error('Не удалось прочитать файл');
             const fileData = await res.json();
-            const currentContent = atob(fileData.content);
-            const jsonArray = JSON.parse(currentContent);
-            jsonArray.push(newItem);
-            const updatedBase64 = btoa(unescape(encodeURIComponent(JSON.stringify(jsonArray, null, 2))));
-            const commitRes = await fetch(fileUrl, {
+            const newBase64 = btoa(unescape(encodeURIComponent(JSON.stringify(array, null, 2))));
+            const commitRes = await fetch(url, {
                 method: 'PUT',
-                headers: {
-                    Authorization: `token ${githubToken}`,
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    message: `Добавлено: ${newItem.title || 'новый элемент'}`,
-                    content: updatedBase64,
-                    sha: fileData.sha
-                })
+                headers: { Authorization: `token ${githubToken}`, 'Content-Type': 'application/json' },
+                body: JSON.stringify({ message: 'Обновление через CMS', content: newBase64, sha: fileData.sha })
             });
             if (!commitRes.ok) throw new Error('Ошибка сохранения');
-            msgDiv.className = 'msg ok';
-            msgDiv.innerText = `✅ Добавлено в ${filePath}`;
-            clearFields();
-        } catch (err) {
-            msgDiv.className = 'msg error';
-            msgDiv.innerText = `❌ Ошибка: ${err.message}`;
+            if (msgDiv) {
+                msgDiv.className = 'msg msg-ok';
+                msgDiv.innerText = isDelete ? '✅ Запись удалена' : '✅ Сохранено успешно';
+                msgDiv.classList.remove('hidden');
+                setTimeout(() => msgDiv.classList.add('hidden'), 3000);
+            }
+            await loadSection();
+            document.getElementById('editPanel').classList.add('hidden');
+        } catch(err) {
+            if (msgDiv) {
+                msgDiv.className = 'msg msg-error';
+                msgDiv.innerText = `❌ Ошибка: ${err.message}`;
+                msgDiv.classList.remove('hidden');
+            }
         }
-    }
-
-async function addBlogPost(title, date, content, msgDiv) {
-    try {
-        const fileUrl = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/blog.html`;
-        const res = await fetch(fileUrl, { headers: { Authorization: `token ${githubToken}` } });
-        if (!res.ok) throw new Error('blog.html не найден');
-        const fileData = await res.json();
-        let html = atob(fileData.content);
-
-        const newPost = `
-<div class="blog-post">
-    <div class="blog-title">${escapeHtml(title)}</div>
-    <div class="blog-date">📅 ${escapeHtml(date)}</div>
-    <div class="blog-content">
-        <p>${escapeHtml(content).replace(/\n/g, '<br>')}</p>
-    </div>
-</div>`;
-
-        if (html.includes('<div id="blogContainer">')) {
-            html = html.replace(/<div id="blogContainer">/, `<div id="blogContainer">\n${newPost}`);
-        } else {
-            html = html.replace(/<main>/, `<main>\n${newPost}`);
-        }
-
-        // Надёжное преобразование UTF-8 → base64
-        const utf8Bytes = new TextEncoder().encode(html);
-        const base64 = btoa(String.fromCharCode(...utf8Bytes));
-
-        const commitRes = await fetch(fileUrl, {
-            method: 'PUT',
-            headers: {
-                Authorization: `token ${githubToken}`,
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                message: `Новый пост в блоге: ${title}`,
-                content: base64,
-                sha: fileData.sha
-            })
-        });
-        if (!commitRes.ok) throw new Error('Ошибка сохранения блога');
-        msgDiv.className = 'msg ok';
-        msgDiv.innerText = '✅ Запись в блоге добавлена';
-        clearFields();
-    } catch (err) {
-        msgDiv.className = 'msg error';
-        msgDiv.innerText = `❌ Ошибка: ${err.message}`;
-    }
-}
-
-    function clearFields() {
-        document.querySelectorAll('#dynamicFields input, #dynamicFields textarea, #dynamicFields select').forEach(f => f.value = '');
     }
 
     function escapeHtml(str) {
         if (!str) return '';
-        return str.replace(/[&<>]/g, function(m) {
-            if (m === '&') return '&amp;';
-            if (m === '<') return '&lt;';
-            if (m === '>') return '&gt;';
-            return m;
-        });
+        return str.replace(/[&<>]/g, (m) => m === '&' ? '&amp;' : (m === '<' ? '&lt;' : '&gt;'));
     }
+
+    document.getElementById('contentTypeSelect').addEventListener('change', () => loadSection());
+    document.getElementById('refreshBtn').addEventListener('click', () => loadSection());
+    document.getElementById('addNewBtn').addEventListener('click', () => {
+        currentEditId = null;
+        editingItem = null;
+        const emptyItem = {};
+        targets[currentSection].fields.forEach(f => { emptyItem[f.name] = ''; });
+        showEditForm(emptyItem);
+    });
+    document.getElementById('saveBtn').addEventListener('click', saveEdit);
+    document.getElementById('cancelEditBtn').addEventListener('click', () => {
+        document.getElementById('editPanel').classList.add('hidden');
+    });
 </script>
 </body>
-</html>
+    </html>
