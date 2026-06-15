@@ -2,26 +2,79 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Ádel CMS — Админка</title>
+    <title>Админка — Блог Ádel</title>
     <style>
-        body { font-family: system-ui; background: #f5f2f0; padding: 2rem 1rem; }
-        .card { background: white; border-radius: 24px; padding: 2rem; margin-bottom: 2rem; max-width: 1200px; margin: 0 auto 2rem auto; }
+        body {
+            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f2f0;
+            margin: 0;
+            padding: 1rem;
+        }
+        .card {
+            background: white;
+            border-radius: 24px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            max-width: 1000px;
+            margin-left: auto;
+            margin-right: auto;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
         .hidden { display: none; }
-        label { font-weight: bold; display: block; margin-top: 1rem; }
-        input, select, textarea { width: 100%; padding: 8px; margin-top: 4px; border-radius: 40px; border: 1px solid #ccc; font-family: inherit; }
-        textarea { border-radius: 20px; font-family: monospace; }
-        button { background: #7c3a8c; color: white; border: none; padding: 8px 20px; border-radius: 40px; cursor: pointer; margin-top: 1rem; }
-        .btn-outline { background: transparent; color: #7c3a8c; border: 1px solid #7c3a8c; }
-        .flex { display: flex; gap: 1rem; flex-wrap: wrap; justify-content: space-between; align-items: center; }
-        table { width: 100%; border-collapse: collapse; }
-        th, td { text-align: left; padding: 8px 4px; border-bottom: 1px solid #eee; vertical-align: top; }
+        label {
+            font-weight: 600;
+            display: block;
+            margin-top: 1rem;
+        }
+        input, textarea {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            border-radius: 30px;
+            border: 1px solid #ccc;
+            font-family: inherit;
+        }
+        textarea {
+            border-radius: 20px;
+            font-family: monospace;
+        }
+        button {
+            background: #7c3a8c;
+            color: white;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 40px;
+            cursor: pointer;
+            margin-top: 1rem;
+        }
+        .btn-outline {
+            background: transparent;
+            color: #7c3a8c;
+            border: 1px solid #7c3a8c;
+        }
+        .flex {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            text-align: left;
+            padding: 8px 4px;
+            border-bottom: 1px solid #eee;
+        }
         .error { background: #ffe0e0; color: #a00; padding: 10px; border-radius: 20px; margin-top: 1rem; }
         .ok { background: #e0f5e0; color: #070; padding: 10px; border-radius: 20px; margin-top: 1rem; }
     </style>
 </head>
 <body>
 <div class="card" id="loginPanel">
-    <h2>🔐 Вход в CMS</h2>
+    <h2>🔐 Вход в админку блога</h2>
     <label>Пароль</label>
     <input type="password" id="pwd">
     <label>GitHub токен</label>
@@ -32,69 +85,33 @@
 
 <div class="card hidden" id="adminPanel">
     <div class="flex">
-        <select id="section">
-            <option value="bil">🌐 Иностранные стихи</option>
-            <option value="prose">📓 Проза</option>
-            <option value="humor">😄 Юмор</option>
-            <option value="blog">📝 Блог</option>
-        </select>
-        <button id="refresh">🔄 Обновить</button>
+        <h2>📝 Управление блогом</h2>
         <button id="addNew" class="btn-outline">➕ Новая запись</button>
     </div>
     <div id="list"></div>
 </div>
 
 <div class="card hidden" id="editPanel">
-    <h3 id="editTitle">Редактировать</h3>
-    <div id="editFields"></div>
+    <h3 id="editTitle">Редактировать запись</h3>
+    <label>Заголовок</label>
+    <input type="text" id="title">
+    <label>Дата (например: 15 июня 2026)</label>
+    <input type="text" id="date">
+    <label>Текст записи</label>
+    <textarea id="content" rows="8"></textarea>
     <div class="flex">
-        <button id="save">💾 Сохранить</button>
-        <button id="cancel" class="btn-outline">Отмена</button>
+        <button id="saveBtn">💾 Сохранить</button>
+        <button id="cancelBtn" class="btn-outline">Отмена</button>
     </div>
     <div id="editMsg"></div>
 </div>
 
 <script>
     const REPO = 'angel-adel/angel';
+    const FILE = 'blog.json';
     let TOKEN = null;
-    let currentSection = 'ru';
-    let currentData = [];
+    let posts = [];
     let editIndex = null;
-
-    const FILES = {
-        //ru: 'russian_poems_only.json',
-        bil: 'poems-bilingual.json',
-        prose: 'prose.json',
-        humor: 'humor.json',
-        blog: 'blog.json'
-    };
-
-    const FIELDS = {
-    //    ru: [
-        //    { name: 'title', label: 'Название' },
-           // { name: 'content', label: 'Текст', type: 'textarea' }
-      //  ],
-        bil: [
-            { name: 'title', label: 'Название' },
-            { name: 'language', label: 'Язык', type: 'select', options: ['es','en'] },
-            { name: 'content', label: 'Текст', type: 'textarea' }
-        ],
-        prose: [
-            { name: 'title', label: 'Заголовок' },
-            { name: 'description', label: 'Описание' },
-            { name: 'fullText', label: 'Полный текст', type: 'textarea' },
-            { name: 'date', label: 'Дата' }
-        ],
-        humor: [
-            { name: 'title', label: 'Заголовок' },
-            { name: 'content', label: 'Текст', type: 'textarea' }
-        ],
-        blog: [
-            { name: 'title', label: 'Заголовок' },
-            { name: 'date', label: 'Дата' },
-            { name: 'content', label: 'Текст', type: 'textarea' }
-        ]
-    };
 
     document.getElementById('loginBtn').onclick = () => {
         const pwd = document.getElementById('pwd').value;
@@ -110,44 +127,39 @@
         TOKEN = token;
         document.getElementById('loginPanel').classList.add('hidden');
         document.getElementById('adminPanel').classList.remove('hidden');
-        loadData();
+        loadPosts();
     };
 
-    async function loadData() {
+    async function loadPosts() {
         const container = document.getElementById('list');
         container.innerHTML = '⏳ Загрузка...';
-        const file = FILES[currentSection];
         try {
-            const res = await fetch(`https://api.github.com/repos/${REPO}/contents/${file}`, {
+            const res = await fetch(`https://api.github.com/repos/${REPO}/contents/${FILE}`, {
                 headers: { Authorization: `token ${TOKEN}` }
             });
-            if (!res.ok) throw new Error(`Файл ${file} не найден`);
+            if (!res.ok) throw new Error('blog.json не найден');
             const data = await res.json();
             const content = atob(data.content);
-            currentData = JSON.parse(content);
-            if (!Array.isArray(currentData)) currentData = [];
+            posts = JSON.parse(content);
+            if (!Array.isArray(posts)) posts = [];
             renderList();
         } catch(e) {
-            container.innerHTML = `<div class="error">❌ ${e.message}</div>`;
+            container.innerHTML = `<div class="error">❌ Ошибка: ${e.message}</div>`;
         }
     }
 
     function renderList() {
         const container = document.getElementById('list');
-        if (!currentData.length) {
-            container.innerHTML = '<p>📭 Нет записей</p>';
+        if (!posts.length) {
+            container.innerHTML = '<p>📭 Нет записей. Нажмите «➕ Новая запись».</p>';
             return;
         }
-        let html = '<table><thead><tr><th>Название</th><th>Кратко</th><th>Действия</th></tr></thead><tbody>';
-        currentData.forEach((item, idx) => {
-            const name = item.title || item.id || `Запись ${idx+1}`;
-            let preview = '';
-            if (item.content) preview = item.content.slice(0, 80) + (item.content.length > 80 ? '…' : '');
-            else if (item.fullText) preview = item.fullText.slice(0, 80) + (item.fullText.length > 80 ? '…' : '');
-            else if (item.description) preview = item.description.slice(0, 80);
+        posts.sort((a,b) => b.id - a.id);
+        let html = '<table><thead><tr><th>Заголовок</th><th>Дата</th><th>Действия</th></tr></thead><tbody>';
+        posts.forEach((post, idx) => {
             html += `<tr>
-                        <td><strong>${escapeHtml(name)}</strong></td>
-                        <td>${escapeHtml(preview)}</td>
+                        <td><strong>${escapeHtml(post.title)}</strong></td>
+                        <td>${escapeHtml(post.date)}</td>
                         <td>
                             <button class="editBtn" data-idx="${idx}">✏️ Ред.</button>
                             <button class="delBtn" data-idx="${idx}">🗑️ Удалить</button>
@@ -157,141 +169,87 @@
         html += '</tbody></table>';
         container.innerHTML = html;
         document.querySelectorAll('.editBtn').forEach(btn => {
-            btn.onclick = () => editItem(parseInt(btn.dataset.idx));
+            btn.onclick = () => editPost(parseInt(btn.dataset.idx));
         });
         document.querySelectorAll('.delBtn').forEach(btn => {
-            btn.onclick = () => deleteItem(parseInt(btn.dataset.idx));
+            btn.onclick = () => deletePost(parseInt(btn.dataset.idx));
         });
     }
 
-    function editItem(idx) {
+    function editPost(idx) {
         editIndex = idx;
-        const item = currentData[idx];
-        const fields = FIELDS[currentSection];
-        const container = document.getElementById('editFields');
-        container.innerHTML = '';
-        for (let f of fields) {
-            const label = document.createElement('label');
-            label.textContent = f.label;
-            container.appendChild(label);
-            if (f.type === 'select') {
-                const select = document.createElement('select');
-                select.id = f.name;
-                for (let opt of f.options) {
-                    const option = document.createElement('option');
-                    option.value = opt;
-                    option.textContent = opt.toUpperCase();
-                    if (item[f.name] === opt) option.selected = true;
-                    select.appendChild(option);
-                }
-                container.appendChild(select);
-            } else if (f.type === 'textarea') {
-                const ta = document.createElement('textarea');
-                ta.id = f.name;
-                ta.rows = 8;
-                ta.value = item[f.name] || '';
-                container.appendChild(ta);
-            } else {
-                const input = document.createElement('input');
-                input.type = 'text';
-                input.id = f.name;
-                input.value = item[f.name] || '';
-                container.appendChild(input);
-            }
-        }
+        const post = posts[idx];
+        document.getElementById('title').value = post.title || '';
+        document.getElementById('date').value = post.date || '';
+        document.getElementById('content').value = post.content || '';
         document.getElementById('editPanel').classList.remove('hidden');
-        document.getElementById('editTitle').innerText = '✏️ Редактировать';
+        document.getElementById('editTitle').innerText = '✏️ Редактировать запись';
         document.getElementById('editMsg').innerHTML = '';
     }
 
     function addNew() {
         editIndex = null;
-        const fields = FIELDS[currentSection];
-        const container = document.getElementById('editFields');
-        container.innerHTML = '';
-        for (let f of fields) {
-            const label = document.createElement('label');
-            label.textContent = f.label;
-            container.appendChild(label);
-            if (f.type === 'select') {
-                const select = document.createElement('select');
-                select.id = f.name;
-                for (let opt of f.options) {
-                    const option = document.createElement('option');
-                    option.value = opt;
-                    option.textContent = opt.toUpperCase();
-                    select.appendChild(option);
-                }
-                container.appendChild(select);
-            } else if (f.type === 'textarea') {
-                const ta = document.createElement('textarea');
-                ta.id = f.name;
-                ta.rows = 8;
-                container.appendChild(ta);
-            } else {
-                const input = document.createElement('input');
-                input.type = 'text';
-                input.id = f.name;
-                container.appendChild(input);
-            }
-        }
+        document.getElementById('title').value = '';
+        document.getElementById('date').value = '';
+        document.getElementById('content').value = '';
         document.getElementById('editPanel').classList.remove('hidden');
         document.getElementById('editTitle').innerText = '➕ Новая запись';
         document.getElementById('editMsg').innerHTML = '';
     }
 
-    async function saveItem() {
-        const fields = FIELDS[currentSection];
-        const newItem = {};
-        for (let f of fields) {
-            const el = document.getElementById(f.name);
-            if (el) newItem[f.name] = el.value.trim();
+    async function savePost() {
+        const title = document.getElementById('title').value.trim();
+        const date = document.getElementById('date').value.trim();
+        const content = document.getElementById('content').value.trim();
+        if (!title || !date || !content) {
+            document.getElementById('editMsg').innerHTML = '<div class="error">❌ Заполните все поля</div>';
+            return;
         }
+        const newPost = { title, date, content };
         if (editIndex !== null) {
-            currentData[editIndex] = { ...currentData[editIndex], ...newItem };
+            newPost.id = posts[editIndex].id;
+            posts[editIndex] = newPost;
         } else {
-            if (currentSection === 'blog' || currentSection === 'prose') {
-                newItem.id = Date.now();
-            }
-            currentData.push(newItem);
+            newPost.id = Date.now();
+            posts.push(newPost);
         }
         await saveToGithub();
     }
 
-    async function deleteItem(idx) {
+    async function deletePost(idx) {
         if (!confirm('Удалить запись?')) return;
-        currentData.splice(idx, 1);
+        posts.splice(idx, 1);
         await saveToGithub();
     }
 
     async function saveToGithub() {
-        const msgDiv = document.getElementById('editMsg');
-        const file = FILES[currentSection];
         try {
-            const url = `https://api.github.com/repos/${REPO}/contents/${file}`;
+            const url = `https://api.github.com/repos/${REPO}/contents/${FILE}`;
             const res = await fetch(url, { headers: { Authorization: `token ${TOKEN}` } });
             const fileData = await res.json();
-            const newBase64 = btoa(unescape(encodeURIComponent(JSON.stringify(currentData, null, 2))));
+            const newBase64 = btoa(unescape(encodeURIComponent(JSON.stringify(posts, null, 2))));
             await fetch(url, {
                 method: 'PUT',
-                headers: { Authorization: `token ${TOKEN}`, 'Content-Type': 'application/json' },
-                body: JSON.stringify({ message: 'CMS update', content: newBase64, sha: fileData.sha })
+                headers: {
+                    Authorization: `token ${TOKEN}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    message: 'Обновление блога',
+                    content: newBase64,
+                    sha: fileData.sha
+                })
             });
             document.getElementById('editPanel').classList.add('hidden');
-            await loadData();
+            await loadPosts();
         } catch(e) {
-            msgDiv.innerHTML = `<div class="error">❌ Ошибка сохранения: ${e.message}</div>`;
+            document.getElementById('editMsg').innerHTML = `<div class="error">❌ Ошибка: ${e.message}</div>`;
         }
     }
 
-    document.getElementById('section').onchange = () => {
-        currentSection = document.getElementById('section').value;
-        loadData();
-    };
-    document.getElementById('refresh').onclick = () => loadData();
     document.getElementById('addNew').onclick = addNew;
-    document.getElementById('save').onclick = saveItem;
-    document.getElementById('cancel').onclick = () => document.getElementById('editPanel').classList.add('hidden');
+    document.getElementById('saveBtn').onclick = savePost;
+    document.getElementById('cancelBtn').onclick = () => document.getElementById('editPanel').classList.add('hidden');
 
     function escapeHtml(str) {
         if (!str) return '';
@@ -299,4 +257,4 @@
     }
 </script>
 </body>
-    </html>
+</html>
