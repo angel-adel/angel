@@ -33,7 +33,6 @@
 <div class="card hidden" id="adminPanel">
     <div class="flex">
         <select id="section">
-            <option value="ru">📖 Русские стихи</option>
             <option value="bil">🌐 Иностранные стихи</option>
             <option value="prose">📓 Проза</option>
             <option value="humor">😄 Юмор</option>
@@ -63,7 +62,7 @@
     let editIndex = null;
 
     const FILES = {
-        ru: 'russian_poems_only.json',
+        //ru: 'russian_poems_only.json',
         bil: 'poems-bilingual.json',
         prose: 'prose.json',
         humor: 'humor.json',
@@ -71,10 +70,10 @@
     };
 
     const FIELDS = {
-        ru: [
-            { name: 'title', label: 'Название' },
-            { name: 'content', label: 'Текст', type: 'textarea' }
-        ],
+    //    ru: [
+        //    { name: 'title', label: 'Название' },
+           // { name: 'content', label: 'Текст', type: 'textarea' }
+      //  ],
         bil: [
             { name: 'title', label: 'Название' },
             { name: 'language', label: 'Язык', type: 'select', options: ['es','en'] },
