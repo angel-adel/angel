@@ -75,7 +75,7 @@
             const container = document.getElementById('blogContainer');
             try {
                 const response = await fetch('blog.json?_=' + Date.now());
-                if (!response.ok) throw new Error('Файл blog.json не найден');
+                if (!response.ok) throw new Error('blog.json не найден');
                 const posts = await response.json();
                 
                 if (!posts.length) {
@@ -83,7 +83,7 @@
                     return;
                 }
                 
-                // Сортируем от новых к старым
+                // Новые записи — сверху
                 posts.sort((a, b) => b.id - a.id);
                 
                 container.innerHTML = posts.map(post => `
