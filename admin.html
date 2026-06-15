@@ -2,10 +2,10 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Ádel CMS — Управление контентом</title>
+    <title>Ádel CMS — Админка</title>
     <style>
         body { font-family: system-ui; background: #f5f2f0; padding: 2rem 1rem; }
-        .card { background: white; border-radius: 24px; padding: 2rem; margin-bottom: 2rem; max-width: 1200px; margin-left: auto; margin-right: auto; }
+        .card { background: white; border-radius: 24px; padding: 2rem; margin-bottom: 2rem; max-width: 1200px; margin: 0 auto 2rem auto; }
         .hidden { display: none; }
         label { font-weight: bold; display: block; margin-top: 1rem; }
         input, select, textarea { width: 100%; padding: 8px; margin-top: 4px; border-radius: 40px; border: 1px solid #ccc; font-family: inherit; }
@@ -17,7 +17,6 @@
         th, td { text-align: left; padding: 8px 4px; border-bottom: 1px solid #eee; vertical-align: top; }
         .error { background: #ffe0e0; color: #a00; padding: 10px; border-radius: 20px; margin-top: 1rem; }
         .ok { background: #e0f5e0; color: #070; padding: 10px; border-radius: 20px; margin-top: 1rem; }
-        .preview-text { white-space: pre-wrap; max-height: 100px; overflow: hidden; }
     </style>
 </head>
 <body>
@@ -140,16 +139,15 @@
             container.innerHTML = '<p>📭 Нет записей</p>';
             return;
         }
-        let html = '去<table> <thead><tr><th>Название</th><th>Кратко</th><th>Действия</th> </tr> </thead> <tbody>';
+        let html = '<table><thead><tr><th>Название</th><th>Кратко</th><th>Действия</th></tr></thead><tbody>';
         currentData.forEach((item, idx) => {
             const name = item.title || item.id || `Запись ${idx+1}`;
             let preview = '';
-            if (currentSection === 'blog' && item.content) preview = item.content.slice(0, 80) + (item.content.length > 80 ? '…' : '');
-            else if (item.content) preview = item.content.slice(0, 80) + (item.content.length > 80 ? '…' : '');
+            if (item.content) preview = item.content.slice(0, 80) + (item.content.length > 80 ? '…' : '');
             else if (item.fullText) preview = item.fullText.slice(0, 80) + (item.fullText.length > 80 ? '…' : '');
-            else if (item.description) preview = item.description;
+            else if (item.description) preview = item.description.slice(0, 80);
             html += `<tr>
-                        <td style="font-weight: bold;">${escapeHtml(name)}</td>
+                        <td><strong>${escapeHtml(name)}</strong></td>
                         <td>${escapeHtml(preview)}</td>
                         <td>
                             <button class="editBtn" data-idx="${idx}">✏️ Ред.</button>
@@ -283,7 +281,7 @@
             document.getElementById('editPanel').classList.add('hidden');
             await loadData();
         } catch(e) {
-            msgDiv.innerHTML = `<div class="error">❌ ${e.message}</div>`;
+            msgDiv.innerHTML = `<div class="error">❌ Ошибка сохранения: ${e.message}</div>`;
         }
     }
 
@@ -302,4 +300,4 @@
     }
 </script>
 </body>
-</html>
+    </html>
