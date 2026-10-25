@@ -91,25 +91,20 @@
     </footer>
 
     <div id="toast" class="toast">✅ Скопировано</div>
-
-    <script src="menu.js"></script>
-    <!-- Подключаем Supabase (через CDN, чтобы не настраивать сборку) -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<!-- Твой скрипт меню (бургер) — не трогаем -->
 <script src="menu.js"></script>
 
 <script>
-    // ⚠️ ВСТАВЬ СВОИ ДАННЫЕ ИЗ SUPABASE (Project Settings -> API)
+    // ⚠️ Убедись, что тут твои реальные данные
     const SUPABASE_URL = 'https://qoqflgpkbzvdtleidtjw.supabase.co';
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFvcWZsZ3BrYnp2ZHRsZWlkdGp3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI5NDgxNDMsImV4cCI6MjEwODUyNDE0M30.jbTvyk0CCyFa3efzS3pzJwa7hjMrr5KRyNtttW2DzZQ';
 
-    // Инициализируем клиент
-    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
     async function loadJokes() {
         const container = document.getElementById('jokesContainer');
+        
         try {
-            // Запрашиваем только юмор из базы
+            const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+            
             const { data: jokes, error } = await supabase
                 .from('works')
                 .select('id, title, content')
@@ -117,10 +112,13 @@
                 .eq('type', 'humor')
                 .order('created_at', { ascending: false });
 
-            if (error) throw error;
+            if (error) {
+                container.innerHTML = `<p>❌ Ошибка базы: ${error.message}</p>`;
+                return;
+            }
             
-            if (!jokes || !jokes.length) {
-                container.innerHTML = '<p>😔 Пока нет шуток. Скоро появятся.</p>';
+            if (!jokes || jokes.length === 0) {
+                container.innerHTML = '<p>😔 Пока нет шуток.</p>';
                 return;
             }
             
@@ -135,15 +133,13 @@
             document.querySelectorAll('.copy-btn').forEach(btn => {
                 btn.addEventListener('click', (e) => {
                     e.stopPropagation();
-                    const text = btn.getAttribute('data-joke');
-                    navigator.clipboard.writeText(text);
+                    navigator.clipboard.writeText(btn.getAttribute('data-joke'));
                     showToast();
                 });
             });
             
         } catch (error) {
-            console.error('Ошибка загрузки шуток:', error);
-            container.innerHTML = '<p>❌ Не удалось загрузить шутки. Попробуйте позже.</p>';
+            container.innerHTML = `<p>❌ Ошибка: ${error.message}</p>`;
         }
     }
     
@@ -155,16 +151,13 @@
     
     function escapeHtml(str) {
         if (!str) return '';
-        return str.replace(/[&<>]/g, function(m) {
-            if (m === '&') return '&amp;';
-            if (m === '<') return '&lt;';
-            if (m === '>') return '&gt;';
-            return m;
-        });
+        return str.replace(/[&<>]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[m]));
     }
     
-    // Запускаем загрузку
     loadJokes();
 </script>
+
+    
+
 </body>
   </html>
