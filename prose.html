@@ -181,23 +181,47 @@
 
     <script src="menu.js"></script>
     <script src="bug-report.js"></script>
+    <!-- Подключаем Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
     <script>
         // Загрузка и отображение прозы
         async function loadProse() {
             const container = document.getElementById('proseContainer');
             
+            // ⚠️ ВСТАВЬ СВОИ ДАННЫЕ ИЗ SUPABASE
+            const SUPABASE_URL = 'https://qoqflgpkbzvdtleidtjw.supabase.co'; 
+            const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFvcWZsZ3BrYnp2ZHRsZWlkdGp3Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc5Mjk0ODE0MywiZXhwIjoyMTA4NTI0MTQzfQ.5q4asB-_LFhDnzikW_tWM37RzVq85YQGAEeP4ZMF0dU';
+            
             try {
-                const response = await fetch('prose.json?_=' + Date.now());
-                if (!response.ok) throw new Error('Файл prose.json не найден');
+                const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
                 
-                const proseList = await response.json();
+                const { data: proseData, error } = await supabase
+                    .from('works')
+                    .select('id, title, full_text, description, image_url, created_at')
+                    .eq('published', true)
+                    .eq('type', 'prose')
+                    .order('created_at', { ascending: false });
+
+                if (error) {
+                    container.innerHTML = `<p>❌ Ошибка базы: ${error.message}</p>`;
+                    return;
+                }
                 
-                if (!proseList || proseList.length === 0) {
+                if (!proseData || proseData.length === 0) {
                     container.innerHTML = '<p>Пока нет рассказов. Адель пишет тихо, но скоро появятся.</p>';
                     return;
                 }
                 
-                proseList.sort((a, b) => new Date(b.date) - new Date(a.date));
+                // Преобразуем данные из базы в привычный для твоей вёрстки формат
+                const proseList = proseData.map(item => ({
+                    id: item.id,
+                    title: item.title,
+                    date: item.created_at, // используем дату создания
+                    description: item.description || '',
+                    image: item.image_url || '',
+                    fullText: item.full_text || ''
+                }));
                 
                 container.innerHTML = proseList.map(prose => `
                     <div class="prose-card" data-id="${prose.id}">
@@ -213,6 +237,7 @@
                 
                 document.querySelectorAll('.prose-card').forEach(card => {
                     card.addEventListener('click', () => {
+                        // Теперь id — это большие числа из базы, поэтому parseFloat/parseInt сработает
                         const id = parseInt(card.dataset.id);
                         const prose = proseList.find(p => p.id === id);
                         if (prose) openModal(prose);
@@ -221,10 +246,11 @@
                 
             } catch (error) {
                 console.error('Ошибка загрузки прозы:', error);
-                container.innerHTML = '<p>❌ Не удалось загрузить рассказы. Попробуйте позже.</p>';
+                container.innerHTML = `<p>❌ Ошибка: ${error.message}</p>`;
             }
         }
         
+        // --- ФУНКЦИИ РЕНДЕРА ОСТАЮТСЯ БЕЗ ИЗМЕНЕНИЙ ---
         function openModal(prose) {
             const modal = document.getElementById('modal');
             const title = document.getElementById('modalTitle');
