@@ -369,7 +369,8 @@
                     if (imageUrl) dbData.image_url = imageUrl;
                 }
 
-                if (!editId) {
+                                // Генерируем slug только для works, для блога он не нужен
+                if (!editId && currentType !== 'blog') {
                     const slug = title.toLowerCase().replace(/[^a-zа-яё0-9]/g, '-').replace(/-+/g, '-');
                     dbData.slug = slug + '-' + Date.now().toString().slice(-4);
                 }
