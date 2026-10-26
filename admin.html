@@ -206,54 +206,7 @@
             }
         };
 
-        // --- СПИСОК ПОСЛЕДНИХ (С КНОПКАМИ РЕД. И УДАЛИТЬ) ---
-        async function loadRecent() {
-            const container = document.getElementById('recentList');
-            container.innerHTML = 'Загрузка...';
-            
-            const tableName = currentType === 'blog' ? 'blog' : 'works';
-            
-            let query = db.from(tableName).select('id, title, type, language').order('created_at', { ascending: false }).limit(20);
-            if (currentType !== 'blog') {
-                query = query.eq('type', currentType);
-            }
-
-            const { data, error } = await query;
-
-            if (error) {
-                container.innerHTML = '❌ Ошибка: ' + error.message;
-                return;
-            }
-
-            if (!data || data.length === 0) {
-                container.innerHTML = 'Нет записей. Добавьте первую!';
-                return;
-            }
-
-            let html = '<table><thead><tr><th>Название</th><th>Язык</th><th>Действие</th></tr></thead><tbody>';
-            data.forEach(item => {
-                const langText = item.language ? item.language : '—';
-                html += `<tr>
-                            <td>${item.title}</td>
-                            <td>${langText}</td>
-                            <td>
-                                <button class="btn-edit" data-id="${item.id}">✏️ Ред.</button>
-                                <button class="btn-danger" data-id="${item.id}">🗑️</button>
-                            </td>
-                         </tr>`;
-            });
-            html += '</tbody></table>';
-            container.innerHTML = html;
-
-            // Навешиваем обработчики на кнопки
-            document.querySelectorAll('.btn-edit').forEach(btn => {
-                btn.onclick = () => editItem(parseInt(btn.dataset.id));
-            });
-            document.querySelectorAll('.btn-danger').forEach(btn => {
-                btn.onclick = () => deleteItem(parseInt(btn.dataset.id));
-            });
-        }
-
+        async function loadRecent()
         // --- УДАЛЕНИЕ ---
         window.deleteItem = async (id) => {
             if (!confirm('Вы уверены, что хотите удалить эту запись?')) return;
