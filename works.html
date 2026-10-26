@@ -187,8 +187,15 @@
         <a href="contacts.html">Контакты</a>
     </footer>
 
+        <!-- 1. Подключаем скрипт меню -->
     <script src="menu.js"></script>
+    
+    <!-- 2. Подключаем библиотеку Supabase (ОБЯЗАТЕЛЬНО) -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <!-- 3. Твой основной скрипт -->
     <script>
+        // --- ОБЪЯВЛЕНИЕ ПЕРЕМЕННЫХ (ДОБАВЛЕНО) ---
         let allWorks = [];
         let activeLang = 'all';
         let searchTerm = '';
@@ -196,42 +203,43 @@
         async function loadWorks() {
             const container = document.getElementById('worksContainer');
             
+            // ⚠️ ВСТАВЬ СВОИ ДАННЫЕ ИЗ SUPABASE
+            const SUPABASE_URL = 'https://qoqflgpkbzvdtleidtjw.supabase.co'; 
+            const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFvcWZsZ3BrYnp2ZHRsZWlkdGp3Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc5Mjk0ODE0MywiZXhwIjoyMTA4NTI0MTQzfQ.5q4asB-_LFhDnzikW_tWM37RzVq85YQGAEeP4ZMF0dU
+';
+            
             try {
-                const [ruRes, biRes] = await Promise.all([
-                    fetch('russian_poems_only.json?_=' + Date.now()),
-                    fetch('poems-bilingual.json?_=' + Date.now())
-                ]);
+                const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
                 
-                const ruPoems = ruRes.ok ? await ruRes.json() : [];
-                const biPoems = biRes.ok ? await biRes.json() : [];
-                
-                // Русские стихи
-                const ruWorks = ruPoems.map(poem => ({
-                    title: poem.title,
-                    content: poem.content,
-                    lang: 'ru',
-                    firstLine: poem.content ? poem.content.split('\n')[0] : ''
-                }));
-                
-                // Испанские/английские стихи
-                const biWorks = biPoems.map(poem => ({
-                    title: poem.title,
-                    content: poem.content,
-                    lang: poem.language || 'es',
-                    firstLine: poem.content ? poem.content.split('\n')[0] : ''
-                }));
-                
-                allWorks = [...ruWorks, ...biWorks];
-                
-                if (allWorks.length === 0) {
-                    container.innerHTML = '<p>📭 Произведения пока не добавлены.</p>';
+                const { data: poems, error } = await supabase
+                    .from('works')
+                    .select('title, content, language')
+                    .eq('published', true)
+                    .eq('type', 'poem')
+                    .order('created_at', { ascending: false });
+
+                if (error) {
+                    container.innerHTML = `<p>❌ Ошибка базы: ${error.message}</p>`;
                     return;
                 }
                 
+                if (!poems || poems.length === 0) {
+                    container.innerHTML = '<p>📭 Произведения пока не добавлены.</p>';
+                    return;
+                }
+
+                allWorks = poems.map(poem => ({
+                    title: poem.title,
+                    content: poem.content,
+                    lang: poem.language || 'ru',
+                    firstLine: poem.content ? poem.content.split('\n')[0] : ''
+                }));
+                
                 applyFilters();
+                
             } catch (error) {
                 console.error('Ошибка загрузки:', error);
-                container.innerHTML = '<p>❌ Не удалось загрузить произведения. Попробуйте позже.</p>';
+                container.innerHTML = `<p>❌ Ошибка: ${error.message}</p>`;
             }
         }
 
@@ -279,7 +287,6 @@
             const text = document.getElementById('modalText');
             
             title.textContent = work.title;
-            // Сохраняем переносы строк
             text.innerHTML = escapeHtml(work.content).replace(/\n/g, '<br>');
             
             modal.classList.add('active');
