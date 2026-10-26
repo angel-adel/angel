@@ -198,18 +198,25 @@
             }
         };
 
-        // --- СПИСОК ПОСЛЕДНИХ ---
+                // --- СПИСОК ПОСЛЕДНИХ ---
         async function loadRecent() {
             const container = document.getElementById('recentList');
             container.innerHTML = 'Загрузка...';
             
             const tableName = currentType === 'blog' ? 'blog' : 'works';
             
-            let query = db.from(tableName).select('id, title, type, language').order('created_at', { ascending: false }).limit(10);
-            
-            // Для блога нет поля type, для works есть
-            if (currentType !== 'blog') {
-                query = query.eq('type', currentType);
+            let query;
+            if (currentType === 'blog') {
+                query = db.from('blog')
+                    .select('id, title')
+                    .order('created_at', { ascending: false })
+                    .limit(10);
+            } else {
+                query = db.from('works')
+                    .select('id, title, type, language')
+                    .eq('type', currentType)
+                    .order('created_at', { ascending: false })
+                    .limit(10);
             }
 
             const { data, error } = await query;
@@ -226,9 +233,10 @@
 
             let html = '<table><thead><tr><th>Название</th><th>Язык</th><th>Действие</th></tr></thead><tbody>';
             data.forEach(item => {
+                const langText = item.language ? item.language : '—';
                 html += `<tr>
                             <td>${item.title}</td>
-                            <td>${item.language || '—'}</td>
+                            <td>${langText}</td>
                             <td><button class="btn-danger" onclick="deleteItem(${item.id})">🗑️</button></td>
                          </tr>`;
             });
