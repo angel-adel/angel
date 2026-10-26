@@ -2,259 +2,305 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Админка — Блог Ádel</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Админка — Ádel</title>
     <style>
-        body {
-            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
-            background: #f5f2f0;
-            margin: 0;
-            padding: 1rem;
-        }
-        .card {
-            background: white;
-            border-radius: 24px;
-            padding: 1.5rem;
-            margin-bottom: 1.5rem;
-            max-width: 1000px;
-            margin-left: auto;
-            margin-right: auto;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-        }
-        .hidden { display: none; }
-        label {
-            font-weight: 600;
-            display: block;
-            margin-top: 1rem;
-        }
-        input, textarea {
-            width: 100%;
-            padding: 10px;
-            margin-top: 5px;
-            border-radius: 30px;
-            border: 1px solid #ccc;
-            font-family: inherit;
-        }
-        textarea {
-            border-radius: 20px;
-            font-family: monospace;
-        }
-        button {
-            background: #7c3a8c;
-            color: white;
-            border: none;
-            padding: 8px 20px;
-            border-radius: 40px;
-            cursor: pointer;
-            margin-top: 1rem;
-        }
-        .btn-outline {
-            background: transparent;
-            color: #7c3a8c;
-            border: 1px solid #7c3a8c;
-        }
-        .flex {
-            display: flex;
-            gap: 1rem;
-            flex-wrap: wrap;
-            justify-content: space-between;
-            align-items: center;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-        th, td {
-            text-align: left;
-            padding: 8px 4px;
-            border-bottom: 1px solid #eee;
-        }
-        .error { background: #ffe0e0; color: #a00; padding: 10px; border-radius: 20px; margin-top: 1rem; }
-        .ok { background: #e0f5e0; color: #070; padding: 10px; border-radius: 20px; margin-top: 1rem; }
+        body { font-family: system-ui, sans-serif; background: #f5f2f0; margin: 0; padding: 1rem; color: #333; }
+        .card { background: white; border-radius: 16px; padding: 1.5rem; margin-bottom: 1.5rem; max-width: 800px; margin-left: auto; margin-right: auto; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+        .hidden { display: none !important; }
+        label { font-weight: 600; display: block; margin-top: 1rem; font-size: 0.9rem; }
+        input, textarea, select { width: 100%; padding: 10px; margin-top: 5px; border-radius: 8px; border: 1px solid #ccc; font-family: inherit; box-sizing: border-box; }
+        textarea { resize: vertical; min-height: 150px; }
+        button { background: #7c3a8c; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; margin-top: 1rem; font-weight: 600; transition: 0.2s; }
+        button:hover { background: #5a2a67; }
+        .btn-outline { background: transparent; color: #7c3a8c; border: 2px solid #7c3a8c; }
+        .btn-outline:hover { background: #7c3a8c; color: white; }
+        .btn-danger { background: #dc3545; margin: 0; padding: 5px 10px; font-size: 0.8rem; }
+        .btn-danger:hover { background: #bd2130; }
+        .tabs { display: flex; gap: 10px; margin-bottom: 1.5rem; border-bottom: 2px solid #eee; padding-bottom: 10px; }
+        .tab { cursor: pointer; padding: 5px 15px; border-radius: 20px; font-weight: 600; color: #666; }
+        .tab.active { background: #7c3a8c; color: white; }
+        .msg { padding: 10px; border-radius: 8px; margin-top: 1rem; display: none; }
+        .msg.error { background: #ffe0e0; color: #a00; display: block; }
+        .msg.ok { background: #e0f5e0; color: #070; display: block; }
+        .preview-img { max-width: 100%; max-height: 200px; border-radius: 8px; margin-top: 10px; display: none; }
+        
+        /* Стили для таблицы */
+        table { width: 100%; border-collapse: collapse; margin-top: 1rem; font-size: 0.9rem; }
+        th, td { text-align: left; padding: 10px 5px; border-bottom: 1px solid #eee; }
+        th { color: #666; font-weight: 600; }
+        .list-card { margin-top: 2rem; border-top: 2px dashed #eee; padding-top: 1rem; }
     </style>
 </head>
 <body>
-<div class="card" id="loginPanel">
-    <h2>🔐 Вход в админку блога</h2>
-    <label>Пароль</label>
-    <input type="password" id="pwd">
-    <label>GitHub токен</label>
-    <input type="password" id="token">
-    <button id="loginBtn">Войти</button>
-    <div id="loginMsg"></div>
-</div>
 
-<div class="card hidden" id="adminPanel">
-    <div class="flex">
-        <h2>📝 Управление блогом</h2>
-        <button id="addNew" class="btn-outline">➕ Новая запись</button>
+    <!-- ЭКРАН ВХОДА -->
+    <div class="card" id="loginScreen">
+        <h2>🔐 Вход в админку</h2>
+        <label>Email</label>
+        <input type="email" id="email" placeholder="angel.adel2026@yandex.ru">
+        <label>Пароль</label>
+        <input type="password" id="password" placeholder="********">
+        <button id="loginBtn">Войти</button>
+        <div id="loginMsg" class="msg"></div>
     </div>
-    <div id="list"></div>
-</div>
 
-<div class="card hidden" id="editPanel">
-    <h3 id="editTitle">Редактировать запись</h3>
-    <label>Заголовок</label>
-    <input type="text" id="title">
-    <label>Дата (например: 15 июня 2026)</label>
-    <input type="text" id="date">
-    <label>Текст записи</label>
-    <textarea id="content" rows="8"></textarea>
-    <div class="flex">
-        <button id="saveBtn">💾 Сохранить</button>
-        <button id="cancelBtn" class="btn-outline">Отмена</button>
+    <!-- ЭКРАН АДМИНКИ -->
+    <div class="card hidden" id="adminScreen">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <h2>📝 Управление контентом</h2>
+            <button class="btn-outline" id="logoutBtn" style="margin-top: 0;">Выйти</button>
+        </div>
+
+        <div class="tabs">
+            <div class="tab active" data-type="poem">Стихи</div>
+            <div class="tab" data-type="prose">Проза</div>
+            <div class="tab" data-type="humor">Юмор</div>
+        </div>
+
+        <!-- Форма добавления -->
+        <form id="addForm">
+            <h3 id="formTitle">Добавить стих</h3>
+            <label>Заголовок</label>
+            <input type="text" id="title" required>
+            
+            <label>Текст произведения</label>
+            <textarea id="content" required></textarea>
+
+            <div id="proseFields" class="hidden">
+                <label>Краткое описание (для превью)</label>
+                <input type="text" id="description">
+                
+                <label>Картинка (необязательно)</label>
+                <input type="file" id="imageFile" accept="image/*">
+                <img id="imagePreview" class="preview-img">
+            </div>
+
+            <label>Язык (только для стихов)</label>
+            <select id="language">
+                <option value="ru">Русский</option>
+                <option value="es">Испанский</option>
+                <option value="en">Английский</option>
+            </select>
+
+            <button type="submit" id="saveBtn">💾 Опубликовать</button>
+            <div id="adminMsg" class="msg"></div>
+        </form>
+
+        <!-- Список последних записей -->
+        <div class="list-card">
+            <h3>📋 Последние добавленные</h3>
+            <div id="recentList">Загрузка...</div>
+        </div>
     </div>
-    <div id="editMsg"></div>
-</div>
 
-<script>
-    const REPO = 'angel-adel/angel';
-    const FILE = 'blog.json';
-    let TOKEN = null;
-    let posts = [];
-    let editIndex = null;
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        // ⚠️ ВСТАВЬ СВОИ ДАННЫЕ
+        const SUPABASE_URL = 'https://qoqflgpkbzvdtleidtjw.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFvcWZsZ3BrYnp2ZHRsZWlkdGp3Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc5Mjk0ODE0MywiZXhwIjoyMTA4NTI0MTQzfQ.5q4asB-_LFhDnzikW_tWM37RzVq85YQGAEeP4ZMF0dU';
 
-    document.getElementById('loginBtn').onclick = () => {
-        const pwd = document.getElementById('pwd').value;
-        const token = document.getElementById('token').value.trim();
-        if (pwd !== 'adel2026admin') {
-            document.getElementById('loginMsg').innerHTML = '<div class="error">❌ Неверный пароль</div>';
-            return;
-        }
-        if (!token || (!token.startsWith('github_pat_') && !token.startsWith('ghp_'))) {
-            document.getElementById('loginMsg').innerHTML = '<div class="error">❌ Неверный токен</div>';
-            return;
-        }
-        TOKEN = token;
-        document.getElementById('loginPanel').classList.add('hidden');
-        document.getElementById('adminPanel').classList.remove('hidden');
-        loadPosts();
-    };
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        let currentType = 'poem';
 
-    async function loadPosts() {
-        const container = document.getElementById('list');
-        container.innerHTML = '⏳ Загрузка...';
-        try {
-            const res = await fetch(`https://api.github.com/repos/${REPO}/contents/${FILE}`, {
-                headers: { Authorization: `token ${TOKEN}` }
+        // --- ВХОД ---
+        document.getElementById('loginBtn').onclick = async () => {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const msg = document.getElementById('loginMsg');
+            
+            msg.className = 'msg'; msg.style.display = 'none';
+
+            const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+
+            if (error) {
+                msg.textContent = '❌ ' + error.message;
+                msg.className = 'msg error';
+            } else {
+                document.getElementById('loginScreen').classList.add('hidden');
+                document.getElementById('adminScreen').classList.remove('hidden');
+                loadRecent();
+            }
+        };
+
+        supabase.auth.onAuthStateChange((event, session) => {
+            if (session) {
+                document.getElementById('loginScreen').classList.add('hidden');
+                document.getElementById('adminScreen').classList.remove('hidden');
+                loadRecent();
+            } else {
+                document.getElementById('loginScreen').classList.remove('hidden');
+                document.getElementById('adminScreen').classList.add('hidden');
+            }
+        });
+
+        document.getElementById('logoutBtn').onclick = () => supabase.auth.signOut();
+
+        // --- ВКЛАДКИ ---
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.onclick = () => {
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                currentType = tab.dataset.type;
+                
+                const proseFields = document.getElementById('proseFields');
+                const langSelect = document.getElementById('language');
+                const formTitle = document.getElementById('formTitle');
+                
+                if (currentType === 'prose') {
+                    proseFields.classList.remove('hidden');
+                    langSelect.parentElement.style.display = 'none';
+                    formTitle.innerText = 'Добавить рассказ';
+                } else if (currentType === 'humor') {
+                    proseFields.classList.add('hidden');
+                    langSelect.parentElement.style.display = 'none';
+                    formTitle.innerText = 'Добавить шутку';
+                } else {
+                    proseFields.classList.add('hidden');
+                    langSelect.parentElement.style.display = 'block';
+                    formTitle.innerText = 'Добавить стих';
+                }
+                loadRecent(); // Обновляем список при переключении
+            };
+        });
+
+        // --- ПРЕВЬЮ КАРТИНКИ ---
+        document.getElementById('imageFile').onchange = (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (ev) => {
+                    const img = document.getElementById('imagePreview');
+                    img.src = ev.target.result;
+                    img.style.display = 'block';
+                };
+                reader.readAsDataURL(file);
+            }
+        };
+
+        // --- ЗАГРУЗКА СПИСКА ---
+        async function loadRecent() {
+            const container = document.getElementById('recentList');
+            container.innerHTML = 'Загрузка...';
+            
+            const { data, error } = await supabase
+                .from('works')
+                .select('id, title, type, language')
+                .eq('type', currentType)
+                .order('created_at', { ascending: false })
+                .limit(10);
+
+            if (error) {
+                container.innerHTML = '❌ Ошибка: ' + error.message;
+                return;
+            }
+
+            if (!data || data.length === 0) {
+                container.innerHTML = 'Нет записей. Добавьте первую!';
+                return;
+            }
+
+            let html = '<table><thead><tr><th>Название</th><th>Язык</th><th>Действие</th></tr></thead><tbody>';
+            data.forEach(item => {
+                html += `<tr>
+                            <td>${item.title}</td>
+                            <td>${item.language}</td>
+                            <td><button class="btn-danger" onclick="deleteWork(${item.id})">🗑️</button></td>
+                         </tr>`;
             });
-            if (!res.ok) throw new Error('blog.json не найден');
-            const data = await res.json();
-            const content = atob(data.content);
-            posts = JSON.parse(content);
-            if (!Array.isArray(posts)) posts = [];
-            renderList();
-        } catch(e) {
-            container.innerHTML = `<div class="error">❌ Ошибка: ${e.message}</div>`;
+            html += '</tbody></table>';
+            container.innerHTML = html;
         }
-    }
 
-    function renderList() {
-        const container = document.getElementById('list');
-        if (!posts.length) {
-            container.innerHTML = '<p>📭 Нет записей. Нажмите «➕ Новая запись».</p>';
-            return;
-        }
-        posts.sort((a,b) => b.id - a.id);
-        let html = '<table><thead><tr><th>Заголовок</th><th>Дата</th><th>Действия</th></tr></thead><tbody>';
-        posts.forEach((post, idx) => {
-            html += `<tr>
-                        <td><strong>${escapeHtml(post.title)}</strong></td>
-                        <td>${escapeHtml(post.date)}</td>
-                        <td>
-                            <button class="editBtn" data-idx="${idx}">✏️ Ред.</button>
-                            <button class="delBtn" data-idx="${idx}">🗑️ Удалить</button>
-                        </td>
-                     </tr>`;
-        });
-        html += '</tbody></table>';
-        container.innerHTML = html;
-        document.querySelectorAll('.editBtn').forEach(btn => {
-            btn.onclick = () => editPost(parseInt(btn.dataset.idx));
-        });
-        document.querySelectorAll('.delBtn').forEach(btn => {
-            btn.onclick = () => deletePost(parseInt(btn.dataset.idx));
-        });
-    }
+        // --- УДАЛЕНИЕ ---
+        window.deleteWork = async (id) => {
+            if (!confirm('Вы уверены, что хотите удалить эту запись?')) return;
+            
+            const { error } = await supabase.from('works').delete().eq('id', id);
+            if (error) {
+                alert('❌ Ошибка удаления: ' + error.message);
+            } else {
+                loadRecent(); // Обновляем список
+            }
+        };
 
-    function editPost(idx) {
-        editIndex = idx;
-        const post = posts[idx];
-        document.getElementById('title').value = post.title || '';
-        document.getElementById('date').value = post.date || '';
-        document.getElementById('content').value = post.content || '';
-        document.getElementById('editPanel').classList.remove('hidden');
-        document.getElementById('editTitle').innerText = '✏️ Редактировать запись';
-        document.getElementById('editMsg').innerHTML = '';
-    }
+        // --- СОХРАНЕНИЕ НОВОГО ---
+        document.getElementById('addForm').onsubmit = async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('saveBtn');
+            const msg = document.getElementById('adminMsg');
+            
+            btn.disabled = true;
+            btn.textContent = 'Сохранение...';
+            msg.className = 'msg'; msg.style.display = 'none';
 
-    function addNew() {
-        editIndex = null;
-        document.getElementById('title').value = '';
-        document.getElementById('date').value = '';
-        document.getElementById('content').value = '';
-        document.getElementById('editPanel').classList.remove('hidden');
-        document.getElementById('editTitle').innerText = '➕ Новая запись';
-        document.getElementById('editMsg').innerHTML = '';
-    }
+            const title = document.getElementById('title').value.trim();
+            const content = document.getElementById('content').value.trim();
+            const language = document.getElementById('language').value;
+            const description = document.getElementById('description').value.trim();
+            const fileInput = document.getElementById('imageFile');
+            
+            let imageUrl = null;
 
-    async function savePost() {
-        const title = document.getElementById('title').value.trim();
-        const date = document.getElementById('date').value.trim();
-        const content = document.getElementById('content').value.trim();
-        if (!title || !date || !content) {
-            document.getElementById('editMsg').innerHTML = '<div class="error">❌ Заполните все поля</div>';
-            return;
-        }
-        const newPost = { title, date, content };
-        if (editIndex !== null) {
-            newPost.id = posts[editIndex].id;
-            posts[editIndex] = newPost;
-        } else {
-            newPost.id = Date.now();
-            posts.push(newPost);
-        }
-        await saveToGithub();
-    }
+            try {
+                if (currentType === 'prose' && fileInput.files.length > 0) {
+                    const file = fileInput.files[0];
+                    const base64 = await new Promise((resolve, reject) => {
+                        const reader = new FileReader();
+                        reader.onload = (ev) => resolve(ev.target.result.split(',')[1]);
+                        reader.onerror = reject;
+                        reader.readAsDataURL(file);
+                    });
 
-    async function deletePost(idx) {
-        if (!confirm('Удалить запись?')) return;
-        posts.splice(idx, 1);
-        await saveToGithub();
-    }
+                    const fileName = `${Date.now()}-${file.name.replace(/[^a-zA-Z0-9.]/g, '_')}`;
+                    
+                    const { data, error } = await supabase.functions.invoke('upload-to-github', {
+                        body: {
+                            path: `Gallery/${fileName}`,
+                            content_base64: base64,
+                            message: `image: ${title}`
+                        }
+                    });
 
-    async function saveToGithub() {
-        try {
-            const url = `https://api.github.com/repos/${REPO}/contents/${FILE}`;
-            const res = await fetch(url, { headers: { Authorization: `token ${TOKEN}` } });
-            const fileData = await res.json();
-            const newBase64 = btoa(unescape(encodeURIComponent(JSON.stringify(posts, null, 2))));
-            await fetch(url, {
-                method: 'PUT',
-                headers: {
-                    Authorization: `token ${TOKEN}`,
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    message: 'Обновление блога',
-                    content: newBase64,
-                    sha: fileData.sha
-                })
-            });
-            document.getElementById('editPanel').classList.add('hidden');
-            await loadPosts();
-        } catch(e) {
-            document.getElementById('editMsg').innerHTML = `<div class="error">❌ Ошибка: ${e.message}</div>`;
-        }
-    }
+                    if (error) throw new Error("Ошибка загрузки картинки: " + error.message);
+                    if (data && data.error) throw new Error("Ошибка GitHub: " + data.error);
+                    
+                    imageUrl = data.url;
+                }
 
-    document.getElementById('addNew').onclick = addNew;
-    document.getElementById('saveBtn').onclick = savePost;
-    document.getElementById('cancelBtn').onclick = () => document.getElementById('editPanel').classList.add('hidden');
+                const newWork = {
+                    title: title,
+                    content: currentType === 'prose' ? (description || 'Проза') : content,
+                    full_text: currentType === 'prose' ? content : null,
+                    description: currentType === 'prose' ? description : null,
+                    image_url: imageUrl,
+                    type: currentType,
+                    language: currentType === 'prose' ? 'ru' : (currentType === 'humor' ? 'ru' : language),
+                    published: true
+                };
 
-    function escapeHtml(str) {
-        if (!str) return '';
-        return str.replace(/[&<>]/g, (m) => m === '&' ? '&amp;' : (m === '<' ? '&lt;' : '&gt;'));
-    }
-</script>
+                const slug = title.toLowerCase().replace(/[^a-zа-яё0-9]/g, '-').replace(/-+/g, '-');
+                newWork.slug = slug + '-' + Date.now().toString().slice(-4);
+
+                const { error: dbError } = await supabase.from('works').insert(newWork);
+
+                if (dbError) throw new Error("Ошибка базы: " + dbError.message);
+
+                msg.textContent = '✅ Успешно опубликовано!';
+                msg.className = 'msg ok';
+                
+                document.getElementById('addForm').reset();
+                document.getElementById('imagePreview').style.display = 'none';
+                loadRecent(); // Обновляем список
+
+            } catch (err) {
+                msg.textContent = '❌ ' + err.message;
+                msg.className = 'msg error';
+            } finally {
+                btn.disabled = false;
+                btn.textContent = '💾 Опубликовать';
+            }
+        };
+    </script>
 </body>
 </html>
