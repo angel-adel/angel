@@ -17,6 +17,8 @@
         .btn-outline:hover { background: #7c3a8c; color: white; }
         .btn-danger { background: #dc3545; margin: 0; padding: 5px 10px; font-size: 0.8rem; }
         .btn-danger:hover { background: #bd2130; }
+        .btn-edit { background: #0d6efd; margin: 0; padding: 5px 10px; font-size: 0.8rem; }
+        .btn-edit:hover { background: #0b5ed7; }
         .tabs { display: flex; gap: 10px; margin-bottom: 1.5rem; border-bottom: 2px solid #eee; padding-bottom: 10px; flex-wrap: wrap; }
         .tab { cursor: pointer; padding: 5px 15px; border-radius: 20px; font-weight: 600; color: #666; }
         .tab.active { background: #7c3a8c; color: white; }
@@ -50,17 +52,16 @@
             <button class="btn-outline" id="logoutBtn" style="margin-top: 0;">Выйти</button>
         </div>
 
-        <!-- Вкладки -->
         <div class="tabs">
             <div class="tab active" data-type="poem">Стихи</div>
             <div class="tab" data-type="prose">Проза</div>
             <div class="tab" data-type="humor">Юмор</div>
-            <div class="tab" data-type="blog">Блог</div> <!-- НОВАЯ ВКЛАДКА -->
+            <div class="tab" data-type="blog">Блог</div>
         </div>
 
-        <!-- Форма -->
         <form id="addForm">
             <h3 id="formTitle">Добавить стих</h3>
+            <input type="hidden" id="editId" value=""> <!-- Скрытое поле для ID при редактировании -->
             
             <label>Заголовок</label>
             <input type="text" id="title" required>
@@ -68,20 +69,17 @@
             <label id="contentLabel">Текст произведения</label>
             <textarea id="content" required></textarea>
 
-            <!-- Блок для прозы -->
             <div id="proseFields" class="hidden">
                 <label>Краткое описание (для превью)</label>
                 <input type="text" id="description">
             </div>
 
-            <!-- Блок картинки (для прозы и блога) -->
             <div id="imageField" class="hidden">
                 <label>Картинка (необязательно)</label>
                 <input type="file" id="imageFile" accept="image/*">
                 <img id="imagePreview" class="preview-img">
             </div>
 
-            <!-- Язык (только для стихов) -->
             <div id="langField">
                 <label>Язык</label>
                 <select id="language">
@@ -92,10 +90,10 @@
             </div>
 
             <button type="submit" id="saveBtn">💾 Опубликовать</button>
+            <button type="button" id="cancelBtn" class="btn-outline hidden" style="margin-left: 10px;">Отмена</button>
             <div id="adminMsg" class="msg"></div>
         </form>
 
-        <!-- Список последних записей -->
         <div class="list-card">
             <h3>📋 Последние добавленные</h3>
             <div id="recentList">Загрузка...</div>
@@ -106,7 +104,7 @@
     <script>
         // ⚠️ ВСТАВЬ СВОЙ ANON КЛЮЧ
         const SUPABASE_URL = 'https://qoqflgpkbzvdtleidtjw.supabase.co';
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFvcWZsZ3BrYnp2ZHRsZWlkdGp3Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc5Mjk0ODE0MywiZXhwIjoyMTA4NTI0MTQzfQ.5q4asB-_LFhDnzikW_tWM37RzVq85YQGAEeP4ZMF0dU'; 
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFvcWZsZ3BrYnp2ZHRsZWlkdGp3Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc5Mjk0ODE0MywiZXhwIjoyMTA4NTI0MTQzfQ.5q4asB-_LFhDnzikW_tWM37RzVq85YQGAEeP4ZMF0dU';
         
         const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
         let currentType = 'poem';
@@ -144,7 +142,7 @@
 
         document.getElementById('logoutBtn').onclick = () => db.auth.signOut();
 
-        // --- ВКЛАДКИ ---
+        // --- ПЕРЕКЛЮЧЕНИЕ ВКЛАДОК ---
         document.querySelectorAll('.tab').forEach(tab => {
             tab.onclick = () => {
                 document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
@@ -156,8 +154,18 @@
                 const imageField = document.getElementById('imageField');
                 const formTitle = document.getElementById('formTitle');
                 const contentLabel = document.getElementById('contentLabel');
-                
-                // Сбрасываем видимость
+                const cancelBtn = document.getElementById('cancelBtn');
+                const saveBtn = document.getElementById('saveBtn');
+                const editId = document.getElementById('editId');
+
+                // Сброс формы при переключении вкладок
+                document.getElementById('addForm').reset();
+                editId.value = '';
+                cancelBtn.classList.add('hidden');
+                saveBtn.textContent = '💾 Опубликовать';
+                document.getElementById('imagePreview').style.display = 'none';
+
+                // Настройка полей под вкладку
                 proseFields.classList.add('hidden');
                 langField.style.display = 'none';
                 imageField.classList.add('hidden');
@@ -198,25 +206,16 @@
             }
         };
 
-                // --- СПИСОК ПОСЛЕДНИХ ---
+        // --- СПИСОК ПОСЛЕДНИХ (С КНОПКАМИ РЕД. И УДАЛИТЬ) ---
         async function loadRecent() {
             const container = document.getElementById('recentList');
             container.innerHTML = 'Загрузка...';
             
             const tableName = currentType === 'blog' ? 'blog' : 'works';
             
-            let query;
-            if (currentType === 'blog') {
-                query = db.from('blog')
-                    .select('id, title')
-                    .order('created_at', { ascending: false })
-                    .limit(10);
-            } else {
-                query = db.from('works')
-                    .select('id, title, type, language')
-                    .eq('type', currentType)
-                    .order('created_at', { ascending: false })
-                    .limit(10);
+            let query = db.from(tableName).select('id, title, type, language').order('created_at', { ascending: false }).limit(20);
+            if (currentType !== 'blog') {
+                query = query.eq('type', currentType);
             }
 
             const { data, error } = await query;
@@ -237,11 +236,22 @@
                 html += `<tr>
                             <td>${item.title}</td>
                             <td>${langText}</td>
-                            <td><button class="btn-danger" onclick="deleteItem(${item.id})">🗑️</button></td>
+                            <td>
+                                <button class="btn-edit" data-id="${item.id}">✏️ Ред.</button>
+                                <button class="btn-danger" data-id="${item.id}">🗑️</button>
+                            </td>
                          </tr>`;
             });
             html += '</tbody></table>';
             container.innerHTML = html;
+
+            // Навешиваем обработчики на кнопки
+            document.querySelectorAll('.btn-edit').forEach(btn => {
+                btn.onclick = () => editItem(parseInt(btn.dataset.id));
+            });
+            document.querySelectorAll('.btn-danger').forEach(btn => {
+                btn.onclick = () => deleteItem(parseInt(btn.dataset.id));
+            });
         }
 
         // --- УДАЛЕНИЕ ---
@@ -258,11 +268,63 @@
             }
         };
 
-        // --- СОХРАНЕНИЕ ---
+        // --- РЕДАКТИРОВАНИЕ ---
+        window.editItem = async (id) => {
+            const tableName = currentType === 'blog' ? 'blog' : 'works';
+            
+            // Запрашиваем полную запись из базы
+            const { data: item, error } = await db.from(tableName).select('*').eq('id', id).single();
+            
+            if (error) {
+                alert('Ошибка загрузки: ' + error.message);
+                return;
+            }
+
+            // Заполняем форму
+            document.getElementById('formTitle').innerText = 'Редактировать запись';
+            document.getElementById('editId').value = item.id;
+            document.getElementById('title').value = item.title || '';
+            
+            // Для прозы берем full_text, для остальных content
+            document.getElementById('content').value = item.full_text || item.content || '';
+            document.getElementById('description').value = item.description || '';
+            
+            if (currentType === 'poem' && item.language) {
+                document.getElementById('language').value = item.language;
+            }
+
+            // Показываем картинку, если есть
+            const imgPreview = document.getElementById('imagePreview');
+            if (item.image_url) {
+                imgPreview.src = item.image_url;
+                imgPreview.style.display = 'block';
+            } else {
+                imgPreview.style.display = 'none';
+            }
+
+            // Меняем кнопки
+            document.getElementById('saveBtn').textContent = '💾 Обновить';
+            document.getElementById('cancelBtn').classList.remove('hidden');
+            
+            // Скроллим к форме
+            document.getElementById('addForm').scrollIntoView({ behavior: 'smooth' });
+        };
+
+        document.getElementById('cancelBtn').onclick = () => {
+            document.getElementById('addForm').reset();
+            document.getElementById('editId').value = '';
+            document.getElementById('imagePreview').style.display = 'none';
+            document.getElementById('formTitle').innerText = 'Добавить запись';
+            document.getElementById('saveBtn').textContent = '💾 Опубликовать';
+            document.getElementById('cancelBtn').classList.add('hidden');
+        };
+
+        // --- СОХРАНЕНИЕ (ИЛИ ОБНОВЛЕНИЕ) ---
         document.getElementById('addForm').onsubmit = async (e) => {
             e.preventDefault();
             const btn = document.getElementById('saveBtn');
             const msg = document.getElementById('adminMsg');
+            const editId = document.getElementById('editId').value;
             
             btn.disabled = true;
             btn.textContent = 'Сохранение...';
@@ -277,8 +339,8 @@
             let imageUrl = null;
 
             try {
-                // Загрузка картинки (для прозы или блога)
-                if ((currentType === 'prose' || currentType === 'blog') && fileInput.files.length > 0) {
+                // Загрузка новой картинки (если выбрана)
+                if (fileInput.files.length > 0) {
                     const file = fileInput.files[0];
                     const base64 = await new Promise((resolve, reject) => {
                         const reader = new FileReader();
@@ -289,61 +351,85 @@
 
                     const fileName = `${Date.now()}-${file.name.replace(/[^a-zA-Z0-9.]/g, '_')}`;
                     
-                    const { data, error } = await db.functions.invoke('upload-to-github', {
-                        body: {
+                    const response = await fetch(`${SUPABASE_URL}/functions/v1/upload-to-github`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+                            'apikey': SUPABASE_ANON_KEY
+                        },
+                        body: JSON.stringify({
                             path: `Gallery/${fileName}`,
                             content_base64: base64,
                             message: `image: ${title}`
-                        }
+                        })
                     });
 
-                    if (error) throw new Error("Ошибка загрузки картинки: " + error.message);
-                    if (data && data.error) throw new Error("Ошибка GitHub: " + data.error);
-                    
-                    imageUrl = data.url;
+                    const result = await response.json();
+                    if (!response.ok) throw new Error(result.error || 'Ошибка загрузки картинки');
+                    imageUrl = result.url;
                 }
 
-                // Сохраняем в нужную таблицу
+                // Формируем данные для сохранения
+                let dbData = {};
+
                 if (currentType === 'blog') {
-                    const { error: dbError } = await db.from('blog').insert({
+                    dbData = {
                         title: title,
                         content: content,
-                        image_url: imageUrl,
                         published: true
-                    });
-                    if (dbError) throw new Error("Ошибка базы: " + dbError.message);
+                    };
+                    if (imageUrl) dbData.image_url = imageUrl;
                 } else {
-                    const newWork = {
+                    dbData = {
                         title: title,
                         content: currentType === 'prose' ? (description || 'Проза') : content,
                         full_text: currentType === 'prose' ? content : null,
                         description: currentType === 'prose' ? description : null,
-                        image_url: imageUrl,
                         type: currentType,
                         language: currentType === 'prose' ? 'ru' : (currentType === 'humor' ? 'ru' : language),
                         published: true
                     };
-
-                    const slug = title.toLowerCase().replace(/[^a-zа-яё0-9]/g, '-').replace(/-+/g, '-');
-                    newWork.slug = slug + '-' + Date.now().toString().slice(-4);
-
-                    const { error: dbError } = await db.from('works').insert(newWork);
-                    if (dbError) throw new Error("Ошибка базы: " + dbError.message);
+                    if (imageUrl) dbData.image_url = imageUrl;
                 }
 
-                msg.textContent = '✅ Успешно опубликовано!';
+                // Генерируем slug только для новых записей
+                if (!editId) {
+                    const slug = title.toLowerCase().replace(/[^a-zа-яё0-9]/g, '-').replace(/-+/g, '-');
+                    dbData.slug = slug + '-' + Date.now().toString().slice(-4);
+                }
+
+                const tableName = currentType === 'blog' ? 'blog' : 'works';
+
+                if (editId) {
+                    // ОБНОВЛЕНИЕ
+                    const { error: dbError } = await db.from(tableName).update(dbData).eq('id', editId);
+                    if (dbError) throw new Error("Ошибка базы: " + dbError.message);
+                    msg.textContent = '✅ Запись успешно обновлена!';
+                } else {
+                    // СОЗДАНИЕ НОВОЙ
+                    const { error: dbError } = await db.from(tableName).insert(dbData);
+                    if (dbError) throw new Error("Ошибка базы: " + dbError.message);
+                    msg.textContent = '✅ Запись успешно опубликована!';
+                }
+
                 msg.className = 'msg ok';
                 
+                // Сброс формы
                 document.getElementById('addForm').reset();
+                document.getElementById('editId').value = '';
                 document.getElementById('imagePreview').style.display = 'none';
+                document.getElementById('formTitle').innerText = 'Добавить запись';
+                document.getElementById('cancelBtn').classList.add('hidden');
+                btn.textContent = '💾 Опубликовать';
+                
                 loadRecent();
 
             } catch (err) {
                 msg.textContent = '❌ ' + err.message;
                 msg.className = 'msg error';
-            } finally {
                 btn.disabled = false;
-                btn.textContent = '💾 Опубликовать';
+                btn.textContent = editId ? '💾 Обновить' : '💾 Опубликовать';
             }
         };
     </script>
