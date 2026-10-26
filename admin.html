@@ -132,7 +132,7 @@
 
         document.getElementById('logoutBtn').onclick = () => db.auth.signOut();
 
-        document.querySelectorAll('.tab').forEach(tab => {
+                document.querySelectorAll('.tab').forEach(tab => {
             tab.onclick = () => {
                 document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
                 tab.classList.add('active');
@@ -144,15 +144,15 @@
                 
                 if (currentType === 'prose') {
                     proseFields.classList.remove('hidden');
-                    langSelect.parentElement.style.display = 'none';
+                    langSelect.style.display = 'none'; // Скрываем ТОЛЬКО селект
                     formTitle.innerText = 'Добавить рассказ';
                 } else if (currentType === 'humor') {
                     proseFields.classList.add('hidden');
-                    langSelect.parentElement.style.display = 'none';
+                    langSelect.style.display = 'none'; // Скрываем ТОЛЬКО селект
                     formTitle.innerText = 'Добавить шутку';
                 } else {
                     proseFields.classList.add('hidden');
-                    langSelect.parentElement.style.display = 'block';
+                    langSelect.style.display = 'block'; // Показываем ТОЛЬКО селект
                     formTitle.innerText = 'Добавить стих';
                 }
                 loadRecent();
