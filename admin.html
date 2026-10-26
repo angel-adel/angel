@@ -89,13 +89,15 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script>  
+    <script>
+        // ⚠️ ВСТАВЬ СВОЙ ANON КЛЮЧ
         const SUPABASE_URL = 'https://qoqflgpkbzvdtleidtjw.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFvcWZsZ3BrYnp2ZHRsZWlkdGp3Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc5Mjk0ODE0MywiZXhwIjoyMTA4NTI0MTQzfQ.5q4asB-_LFhDnzikW_tWM37RzVq85YQGAEeP4ZMF0dU';
-        const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
         
+        const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
         let currentType = 'poem';
 
+        // --- ВХОД ---
         document.getElementById('loginBtn').onclick = async () => {
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
@@ -128,7 +130,8 @@
 
         document.getElementById('logoutBtn').onclick = () => db.auth.signOut();
 
-                document.querySelectorAll('.tab').forEach(tab => {
+        // --- ВКЛАДКИ ---
+        document.querySelectorAll('.tab').forEach(tab => {
             tab.onclick = () => {
                 document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
                 tab.classList.add('active');
@@ -140,21 +143,22 @@
                 
                 if (currentType === 'prose') {
                     proseFields.classList.remove('hidden');
-                    langSelect.style.display = 'none'; // Скрываем ТОЛЬКО селект
+                    langSelect.style.display = 'none';
                     formTitle.innerText = 'Добавить рассказ';
                 } else if (currentType === 'humor') {
                     proseFields.classList.add('hidden');
-                    langSelect.style.display = 'none'; // Скрываем ТОЛЬКО селект
+                    langSelect.style.display = 'none';
                     formTitle.innerText = 'Добавить шутку';
                 } else {
                     proseFields.classList.add('hidden');
-                    langSelect.style.display = 'block'; // Показываем ТОЛЬКО селект
+                    langSelect.style.display = 'block';
                     formTitle.innerText = 'Добавить стих';
                 }
                 loadRecent();
             };
         });
 
+        // --- ПРЕВЬЮ КАРТИНКИ ---
         document.getElementById('imageFile').onchange = (e) => {
             const file = e.target.files[0];
             if (file) {
@@ -168,6 +172,7 @@
             }
         };
 
+        // --- СПИСОК ПОСЛЕДНИХ ---
         async function loadRecent() {
             const container = document.getElementById('recentList');
             container.innerHTML = 'Загрузка...';
@@ -201,6 +206,7 @@
             container.innerHTML = html;
         }
 
+        // --- УДАЛЕНИЕ ---
         window.deleteWork = async (id) => {
             if (!confirm('Вы уверены, что хотите удалить эту запись?')) return;
             
@@ -212,6 +218,7 @@
             }
         };
 
+        // --- СОХРАНЕНИЕ ---
         document.getElementById('addForm').onsubmit = async (e) => {
             e.preventDefault();
             const btn = document.getElementById('saveBtn');
