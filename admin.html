@@ -297,7 +297,7 @@
             document.getElementById('cancelBtn').classList.add('hidden');
         };
 
-        // --- СОХРАНЕНИЕ ---
+               // --- СОХРАНЕНИЕ ---
         document.getElementById('addForm').onsubmit = async (e) => {
             e.preventDefault();
             const btn = document.getElementById('saveBtn');
@@ -317,6 +317,7 @@
             let imageUrl = null;
 
             try {
+                // Загрузка картинки (если выбрана)
                 if (fileInput.files.length > 0) {
                     const file = fileInput.files[0];
                     const base64 = await new Promise((resolve, reject) => {
@@ -347,6 +348,7 @@
                     imageUrl = result.url;
                 }
 
+                // Формируем данные для сохранения
                 let dbData = {};
                 const tableName = currentType === 'blog' ? 'blog' : 'works';
 
@@ -366,22 +368,27 @@
                     if (imageUrl) dbData.image_url = imageUrl;
                 }
 
+                // Генерируем slug только для новых записей
                 if (!editId) {
                     const slug = title.toLowerCase().replace(/[^a-zа-яё0-9]/g, '-').replace(/-+/g, '-');
                     dbData.slug = slug + '-' + Date.now().toString().slice(-4);
                 }
 
                 if (editId) {
+                    // ОБНОВЛЕНИЕ
                     const { error: dbError } = await db.from(tableName).update(dbData).eq('id', editId);
                     if (dbError) throw new Error("Ошибка базы: " + dbError.message);
                     msg.textContent = '✅ Запись обновлена!';
                 } else {
+                    // СОЗДАНИЕ НОВОЙ
                     const { error: dbError } = await db.from(tableName).insert(dbData);
                     if (dbError) throw new Error("Ошибка базы: " + dbError.message);
                     msg.textContent = '✅ Запись опубликована!';
                 }
 
                 msg.className = 'msg ok';
+                
+                // Сброс формы
                 document.getElementById('addForm').reset();
                 document.getElementById('editId').value = '';
                 document.getElementById('imagePreview').style.display = 'none';
@@ -392,6 +399,7 @@
                 loadRecent();
 
             } catch (err) {
+                // Обработка ошибок
                 msg.textContent = '❌ ' + err.message;
                 msg.className = 'msg error';
                 btn.disabled = false;
