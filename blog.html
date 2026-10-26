@@ -69,32 +69,54 @@
         <a href="contacts.html">Контакты</a>
     </footer>
 
-    <script src="menu.js"></script>
+        <script src="menu.js"></script>
+    <!-- Подключаем Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
     <script>
+        // ⚠️ ВСТАВЬ СВОИ ДАННЫЕ
+        const SUPABASE_URL = 'https://qoqflgpkbzvdtleidtjw.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFvcWZsZ3BrYnp2ZHRsZWlkdGp3Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc5Mjk0ODE0MywiZXhwIjoyMTA4NTI0MTQzfQ.5q4asB-_LFhDnzikW_tWM37RzVq85YQGAEeP4ZMF0dU';
+
         async function loadBlog() {
             const container = document.getElementById('blogContainer');
+            
             try {
-                const response = await fetch('blog.json?_=' + Date.now());
-                if (!response.ok) throw new Error('blog.json не найден');
-                const posts = await response.json();
+                const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
                 
-                if (!posts.length) {
+                const { data: posts, error } = await db
+                    .from('blog')
+                    .select('title, content, created_at, image_url')
+                    .eq('published', true)
+                    .order('created_at', { ascending: false }); // Новые сверху
+
+                if (error) {
+                    container.innerHTML = `<p>❌ Ошибка базы: ${error.message}</p>`;
+                    return;
+                }
+                
+                if (!posts || posts.length === 0) {
                     container.innerHTML = '<p>📭 Пока нет записей в блоге. Скоро появятся.</p>';
                     return;
                 }
                 
-                // Новые записи — сверху
-                posts.sort((a, b) => b.id - a.id);
-                
-                container.innerHTML = posts.map(post => `
-                    <div class="blog-post">
-                        <div class="blog-title">${escapeHtml(post.title)}</div>
-                        <div class="blog-date">📅 ${escapeHtml(post.date)}</div>
-                        <div class="blog-content">
-                            <p>${escapeHtml(post.content).replace(/\n/g, '<br>')}</p>
+                container.innerHTML = posts.map(post => {
+                    // Форматируем дату из created_at
+                    const date = new Date(post.created_at).toLocaleDateString('ru-RU', {
+                        day: 'numeric', month: 'long', year: 'numeric'
+                    });
+
+                    return `
+                        <div class="blog-post">
+                            ${post.image_url ? `<img src="${post.image_url}" style="width:100%; max-height:300px; object-fit:cover; border-radius:8px; margin-bottom:1rem;" alt="Иллюстрация">` : ''}
+                            <div class="blog-title">${escapeHtml(post.title)}</div>
+                            <div class="blog-date">📅 ${date}</div>
+                            <div class="blog-content">
+                                <p>${escapeHtml(post.content).replace(/\n/g, '<br>')}</p>
+                            </div>
                         </div>
-                    </div>
-                `).join('');
+                    `;
+                }).join('');
                 
             } catch (error) {
                 console.error('Ошибка загрузки блога:', error);
