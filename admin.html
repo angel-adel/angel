@@ -24,8 +24,6 @@
         .msg.error { background: #ffe0e0; color: #a00; display: block; }
         .msg.ok { background: #e0f5e0; color: #070; display: block; }
         .preview-img { max-width: 100%; max-height: 200px; border-radius: 8px; margin-top: 10px; display: none; }
-        
-        /* Стили для таблицы */
         table { width: 100%; border-collapse: collapse; margin-top: 1rem; font-size: 0.9rem; }
         th, td { text-align: left; padding: 10px 5px; border-bottom: 1px solid #eee; }
         th { color: #666; font-weight: 600; }
@@ -34,7 +32,6 @@
 </head>
 <body>
 
-    <!-- ЭКРАН ВХОДА -->
     <div class="card" id="loginScreen">
         <h2>🔐 Вход в админку</h2>
         <label>Email</label>
@@ -45,7 +42,6 @@
         <div id="loginMsg" class="msg"></div>
     </div>
 
-    <!-- ЭКРАН АДМИНКИ -->
     <div class="card hidden" id="adminScreen">
         <div style="display: flex; justify-content: space-between; align-items: center;">
             <h2>📝 Управление контентом</h2>
@@ -58,7 +54,6 @@
             <div class="tab" data-type="humor">Юмор</div>
         </div>
 
-        <!-- Форма добавления -->
         <form id="addForm">
             <h3 id="formTitle">Добавить стих</h3>
             <label>Заголовок</label>
@@ -87,7 +82,6 @@
             <div id="adminMsg" class="msg"></div>
         </form>
 
-        <!-- Список последних записей -->
         <div class="list-card">
             <h3>📋 Последние добавленные</h3>
             <div id="recentList">Загрузка...</div>
@@ -96,14 +90,12 @@
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
-        // ⚠️ ВСТАВЬ СВОИ ДАННЫЕ
         const SUPABASE_URL = 'https://qoqflgpkbzvdtleidtjw.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFvcWZsZ3BrYnp2ZHRsZWlkdGp3Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc5Mjk0ODE0MywiZXhwIjoyMTA4NTI0MTQzfQ.5q4asB-_LFhDnzikW_tWM37RzVq85YQGAEeP4ZMF0dU';
 
         const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
         let currentType = 'poem';
 
-        // --- ВХОД ---
         document.getElementById('loginBtn').onclick = async () => {
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
@@ -136,7 +128,6 @@
 
         document.getElementById('logoutBtn').onclick = () => supabase.auth.signOut();
 
-        // --- ВКЛАДКИ ---
         document.querySelectorAll('.tab').forEach(tab => {
             tab.onclick = () => {
                 document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
@@ -160,11 +151,10 @@
                     langSelect.parentElement.style.display = 'block';
                     formTitle.innerText = 'Добавить стих';
                 }
-                loadRecent(); // Обновляем список при переключении
+                loadRecent();
             };
         });
 
-        // --- ПРЕВЬЮ КАРТИНКИ ---
         document.getElementById('imageFile').onchange = (e) => {
             const file = e.target.files[0];
             if (file) {
@@ -178,7 +168,6 @@
             }
         };
 
-        // --- ЗАГРУЗКА СПИСКА ---
         async function loadRecent() {
             const container = document.getElementById('recentList');
             container.innerHTML = 'Загрузка...';
@@ -212,7 +201,6 @@
             container.innerHTML = html;
         }
 
-        // --- УДАЛЕНИЕ ---
         window.deleteWork = async (id) => {
             if (!confirm('Вы уверены, что хотите удалить эту запись?')) return;
             
@@ -220,11 +208,10 @@
             if (error) {
                 alert('❌ Ошибка удаления: ' + error.message);
             } else {
-                loadRecent(); // Обновляем список
+                loadRecent();
             }
         };
 
-        // --- СОХРАНЕНИЕ НОВОГО ---
         document.getElementById('addForm').onsubmit = async (e) => {
             e.preventDefault();
             const btn = document.getElementById('saveBtn');
@@ -291,7 +278,7 @@
                 
                 document.getElementById('addForm').reset();
                 document.getElementById('imagePreview').style.display = 'none';
-                loadRecent(); // Обновляем список
+                loadRecent();
 
             } catch (err) {
                 msg.textContent = '❌ ' + err.message;
