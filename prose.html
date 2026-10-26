@@ -237,7 +237,6 @@
                 
                 document.querySelectorAll('.prose-card').forEach(card => {
                     card.addEventListener('click', () => {
-                        // Теперь id — это большие числа из базы, поэтому parseFloat/parseInt сработает
                         const id = parseInt(card.dataset.id);
                         const prose = proseList.find(p => p.id === id);
                         if (prose) openModal(prose);
