@@ -34,6 +34,7 @@
 </head>
 <body>
 
+    <!-- ЭКРАН ВХОДА -->
     <div class="card" id="loginScreen">
         <h2>🔐 Вход в админку</h2>
         <label>Email</label>
@@ -44,6 +45,7 @@
         <div id="loginMsg" class="msg"></div>
     </div>
 
+    <!-- ЭКРАН АДМИНКИ -->
     <div class="card hidden" id="adminScreen">
         <div style="display: flex; justify-content: space-between; align-items: center;">
             <h2>📝 Управление контентом</h2>
@@ -98,16 +100,19 @@
         </div>
     </div>
 
+    <!-- ПОДКЛЮЧЕНИЕ БИБЛИОТЕК -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
     <script>
-        // ⚠️ ВСТАВЬ СВОЙ ANON КЛЮЧ
+        // ⚠️ ВСТАВЬ СВОЙ ANON КЛЮЧ ЗДЕСЬ
         const SUPABASE_URL = 'https://qoqflgpkbzvdtleidtjw.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFvcWZsZ3BrYnp2ZHRsZWlkdGp3Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc5Mjk0ODE0MywiZXhwIjoyMTA4NTI0MTQzfQ.5q4asB-_LFhDnzikW_tWM37RzVq85YQGAEeP4ZMF0dU';
         
+        // Инициализация клиента
         const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
         let currentType = 'poem';
 
-        // --- ВХОД ---
+        // --- ВХОД И АВТОРИЗАЦИЯ ---
         document.getElementById('loginBtn').onclick = async () => {
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
@@ -115,7 +120,6 @@
             msg.className = 'msg'; msg.style.display = 'none';
 
             const { data, error } = await db.auth.signInWithPassword({ email, password });
-
             if (error) {
                 msg.textContent = '❌ ' + error.message;
                 msg.className = 'msg error';
@@ -139,7 +143,7 @@
 
         document.getElementById('logoutBtn').onclick = () => db.auth.signOut();
 
-        // --- ВКЛАДКИ ---
+        // --- ПЕРЕКЛЮЧЕНИЕ ВКЛАДОК ---
         document.querySelectorAll('.tab').forEach(tab => {
             tab.onclick = () => {
                 document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
@@ -152,19 +156,16 @@
                 const formTitle = document.getElementById('formTitle');
                 const contentLabel = document.getElementById('contentLabel');
                 
-                // Сброс формы
                 document.getElementById('addForm').reset();
                 document.getElementById('editId').value = '';
                 document.getElementById('cancelBtn').classList.add('hidden');
                 document.getElementById('saveBtn').textContent = '💾 Опубликовать';
                 document.getElementById('imagePreview').style.display = 'none';
 
-                // Скрываем все условные поля
                 proseFields.classList.add('hidden');
                 langField.style.display = 'none';
                 imageField.classList.add('hidden');
 
-                // Настраиваем под вкладку
                 if (currentType === 'poem') {
                     formTitle.innerText = 'Добавить стих';
                     contentLabel.innerText = 'Текст произведения';
@@ -182,7 +183,6 @@
                     contentLabel.innerText = 'Текст записи';
                     imageField.classList.remove('hidden');
                 }
-                
                 loadRecent();
             };
         });
@@ -201,14 +201,14 @@
             }
         };
 
-        // --- СПИСОК (С КНОПКАМИ) ---
+        // --- СПИСОК ЗАПИСЕЙ ---
         async function loadRecent() {
             const container = document.getElementById('recentList');
             container.innerHTML = 'Загрузка...';
             
             const tableName = currentType === 'blog' ? 'blog' : 'works';
-            
             let query;
+
             if (currentType === 'blog') {
                 query = db.from('blog').select('id, title').order('created_at', { ascending: false }).limit(20);
             } else {
@@ -288,6 +288,7 @@
             document.getElementById('addForm').scrollIntoView({ behavior: 'smooth' });
         };
 
+        // --- ОТМЕНА РЕДАКТИРОВАНИЯ ---
         document.getElementById('cancelBtn').onclick = () => {
             document.getElementById('addForm').reset();
             document.getElementById('editId').value = '';
@@ -297,7 +298,7 @@
             document.getElementById('cancelBtn').classList.add('hidden');
         };
 
-               // --- СОХРАНЕНИЕ ---
+        // --- СОХРАНЕНИЕ / ОБНОВЛЕНИЕ ---
         document.getElementById('addForm').onsubmit = async (e) => {
             e.preventDefault();
             const btn = document.getElementById('saveBtn');
@@ -317,7 +318,7 @@
             let imageUrl = null;
 
             try {
-                // Загрузка картинки (если выбрана)
+                // 1. Загрузка картинки (если есть)
                 if (fileInput.files.length > 0) {
                     const file = fileInput.files[0];
                     const base64 = await new Promise((resolve, reject) => {
@@ -334,7 +335,7 @@
                         headers: {
                             'Content-Type': 'application/json',
                             'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
-                            'apikey': SUPABASE_ANON_KEY
+                            'apikey': SUPABASE_ANON_KEY // <--- ВАЖНО!
                         },
                         body: JSON.stringify({
                             path: `Gallery/${fileName}`,
@@ -348,7 +349,7 @@
                     imageUrl = result.url;
                 }
 
-                // Формируем данные для сохранения
+                // 2. Формирование данных для БД
                 let dbData = {};
                 const tableName = currentType === 'blog' ? 'blog' : 'works';
 
@@ -368,19 +369,17 @@
                     if (imageUrl) dbData.image_url = imageUrl;
                 }
 
-                // Генерируем slug только для новых записей
                 if (!editId) {
                     const slug = title.toLowerCase().replace(/[^a-zа-яё0-9]/g, '-').replace(/-+/g, '-');
                     dbData.slug = slug + '-' + Date.now().toString().slice(-4);
                 }
 
+                // 3. Сохранение в БД
                 if (editId) {
-                    // ОБНОВЛЕНИЕ
                     const { error: dbError } = await db.from(tableName).update(dbData).eq('id', editId);
                     if (dbError) throw new Error("Ошибка базы: " + dbError.message);
                     msg.textContent = '✅ Запись обновлена!';
                 } else {
-                    // СОЗДАНИЕ НОВОЙ
                     const { error: dbError } = await db.from(tableName).insert(dbData);
                     if (dbError) throw new Error("Ошибка базы: " + dbError.message);
                     msg.textContent = '✅ Запись опубликована!';
@@ -388,7 +387,7 @@
 
                 msg.className = 'msg ok';
                 
-                // Сброс формы
+                // Сброс
                 document.getElementById('addForm').reset();
                 document.getElementById('editId').value = '';
                 document.getElementById('imagePreview').style.display = 'none';
@@ -399,7 +398,6 @@
                 loadRecent();
 
             } catch (err) {
-                // Обработка ошибок
                 msg.textContent = '❌ ' + err.message;
                 msg.className = 'msg error';
                 btn.disabled = false;
