@@ -34,7 +34,6 @@
 </head>
 <body>
 
-    <!-- ЭКРАН ВХОДА -->
     <div class="card" id="loginScreen">
         <h2>🔐 Вход в админку</h2>
         <label>Email</label>
@@ -45,7 +44,6 @@
         <div id="loginMsg" class="msg"></div>
     </div>
 
-    <!-- ЭКРАН АДМИНКИ -->
     <div class="card hidden" id="adminScreen">
         <div style="display: flex; justify-content: space-between; align-items: center;">
             <h2>📝 Управление контентом</h2>
@@ -60,8 +58,8 @@
         </div>
 
         <form id="addForm">
-            <h3 id="formTitle">Добавить стих</h3>
-            <input type="hidden" id="editId" value=""> <!-- Скрытое поле для ID при редактировании -->
+            <h3 id="formTitle">Добавить запись</h3>
+            <input type="hidden" id="editId" value="">
             
             <label>Заголовок</label>
             <input type="text" id="title" required>
@@ -114,7 +112,6 @@
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
             const msg = document.getElementById('loginMsg');
-            
             msg.className = 'msg'; msg.style.display = 'none';
 
             const { data, error } = await db.auth.signInWithPassword({ email, password });
@@ -142,7 +139,7 @@
 
         document.getElementById('logoutBtn').onclick = () => db.auth.signOut();
 
-        // --- ПЕРЕКЛЮЧЕНИЕ ВКЛАДОК ---
+        // --- ВКЛАДКИ ---
         document.querySelectorAll('.tab').forEach(tab => {
             tab.onclick = () => {
                 document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
@@ -154,22 +151,20 @@
                 const imageField = document.getElementById('imageField');
                 const formTitle = document.getElementById('formTitle');
                 const contentLabel = document.getElementById('contentLabel');
-                const cancelBtn = document.getElementById('cancelBtn');
-                const saveBtn = document.getElementById('saveBtn');
-                const editId = document.getElementById('editId');
-
-                // Сброс формы при переключении вкладок
+                
+                // Сброс формы
                 document.getElementById('addForm').reset();
-                editId.value = '';
-                cancelBtn.classList.add('hidden');
-                saveBtn.textContent = '💾 Опубликовать';
+                document.getElementById('editId').value = '';
+                document.getElementById('cancelBtn').classList.add('hidden');
+                document.getElementById('saveBtn').textContent = '💾 Опубликовать';
                 document.getElementById('imagePreview').style.display = 'none';
 
-                // Настройка полей под вкладку
+                // Скрываем все условные поля
                 proseFields.classList.add('hidden');
                 langField.style.display = 'none';
                 imageField.classList.add('hidden');
 
+                // Настраиваем под вкладку
                 if (currentType === 'poem') {
                     formTitle.innerText = 'Добавить стих';
                     contentLabel.innerText = 'Текст произведения';
@@ -206,39 +201,73 @@
             }
         };
 
-        async function loadRecent()
-        // --- УДАЛЕНИЕ ---
-        window.deleteItem = async (id) => {
-            if (!confirm('Вы уверены, что хотите удалить эту запись?')) return;
+        // --- СПИСОК (С КНОПКАМИ) ---
+        async function loadRecent() {
+            const container = document.getElementById('recentList');
+            container.innerHTML = 'Загрузка...';
             
             const tableName = currentType === 'blog' ? 'blog' : 'works';
-            const { error } = await db.from(tableName).delete().eq('id', id);
             
-            if (error) {
-                alert('❌ Ошибка удаления: ' + error.message);
+            let query;
+            if (currentType === 'blog') {
+                query = db.from('blog').select('id, title').order('created_at', { ascending: false }).limit(20);
             } else {
-                loadRecent();
+                query = db.from('works').select('id, title, language').eq('type', currentType).order('created_at', { ascending: false }).limit(20);
             }
+
+            const { data, error } = await query;
+
+            if (error) {
+                container.innerHTML = '❌ Ошибка: ' + error.message;
+                return;
+            }
+
+            if (!data || data.length === 0) {
+                container.innerHTML = 'Нет записей. Добавьте первую!';
+                return;
+            }
+
+            let html = '<table><thead><tr><th>Название</th><th>Язык</th><th>Действие</th></tr></thead><tbody>';
+            data.forEach(item => {
+                const langText = item.language ? item.language : '—';
+                html += `<tr>
+                            <td>${item.title}</td>
+                            <td>${langText}</td>
+                            <td>
+                                <button class="btn-edit" data-id="${item.id}">✏️ Ред.</button>
+                                <button class="btn-danger" data-id="${item.id}">🗑️</button>
+                            </td>
+                         </tr>`;
+            });
+            html += '</tbody></table>';
+            container.innerHTML = html;
+
+            document.querySelectorAll('.btn-edit').forEach(btn => {
+                btn.onclick = () => editItem(parseInt(btn.dataset.id));
+            });
+            document.querySelectorAll('.btn-danger').forEach(btn => {
+                btn.onclick = () => deleteItem(parseInt(btn.dataset.id));
+            });
+        }
+
+        // --- УДАЛЕНИЕ ---
+        window.deleteItem = async (id) => {
+            if (!confirm('Удалить запись?')) return;
+            const tableName = currentType === 'blog' ? 'blog' : 'works';
+            const { error } = await db.from(tableName).delete().eq('id', id);
+            if (error) alert('❌ Ошибка: ' + error.message); else loadRecent();
         };
 
         // --- РЕДАКТИРОВАНИЕ ---
         window.editItem = async (id) => {
             const tableName = currentType === 'blog' ? 'blog' : 'works';
-            
-            // Запрашиваем полную запись из базы
             const { data: item, error } = await db.from(tableName).select('*').eq('id', id).single();
             
-            if (error) {
-                alert('Ошибка загрузки: ' + error.message);
-                return;
-            }
+            if (error) { alert('Ошибка: ' + error.message); return; }
 
-            // Заполняем форму
             document.getElementById('formTitle').innerText = 'Редактировать запись';
             document.getElementById('editId').value = item.id;
             document.getElementById('title').value = item.title || '';
-            
-            // Для прозы берем full_text, для остальных content
             document.getElementById('content').value = item.full_text || item.content || '';
             document.getElementById('description').value = item.description || '';
             
@@ -246,7 +275,6 @@
                 document.getElementById('language').value = item.language;
             }
 
-            // Показываем картинку, если есть
             const imgPreview = document.getElementById('imagePreview');
             if (item.image_url) {
                 imgPreview.src = item.image_url;
@@ -255,11 +283,8 @@
                 imgPreview.style.display = 'none';
             }
 
-            // Меняем кнопки
             document.getElementById('saveBtn').textContent = '💾 Обновить';
             document.getElementById('cancelBtn').classList.remove('hidden');
-            
-            // Скроллим к форме
             document.getElementById('addForm').scrollIntoView({ behavior: 'smooth' });
         };
 
@@ -272,7 +297,7 @@
             document.getElementById('cancelBtn').classList.add('hidden');
         };
 
-        // --- СОХРАНЕНИЕ (ИЛИ ОБНОВЛЕНИЕ) ---
+        // --- СОХРАНЕНИЕ ---
         document.getElementById('addForm').onsubmit = async (e) => {
             e.preventDefault();
             const btn = document.getElementById('saveBtn');
@@ -292,7 +317,6 @@
             let imageUrl = null;
 
             try {
-                // Загрузка новой картинки (если выбрана)
                 if (fileInput.files.length > 0) {
                     const file = fileInput.files[0];
                     const base64 = await new Promise((resolve, reject) => {
@@ -323,15 +347,11 @@
                     imageUrl = result.url;
                 }
 
-                // Формируем данные для сохранения
                 let dbData = {};
+                const tableName = currentType === 'blog' ? 'blog' : 'works';
 
                 if (currentType === 'blog') {
-                    dbData = {
-                        title: title,
-                        content: content,
-                        published: true
-                    };
+                    dbData = { title: title, content: content, published: true };
                     if (imageUrl) dbData.image_url = imageUrl;
                 } else {
                     dbData = {
@@ -346,29 +366,22 @@
                     if (imageUrl) dbData.image_url = imageUrl;
                 }
 
-                // Генерируем slug только для новых записей
                 if (!editId) {
                     const slug = title.toLowerCase().replace(/[^a-zа-яё0-9]/g, '-').replace(/-+/g, '-');
                     dbData.slug = slug + '-' + Date.now().toString().slice(-4);
                 }
 
-                const tableName = currentType === 'blog' ? 'blog' : 'works';
-
                 if (editId) {
-                    // ОБНОВЛЕНИЕ
                     const { error: dbError } = await db.from(tableName).update(dbData).eq('id', editId);
                     if (dbError) throw new Error("Ошибка базы: " + dbError.message);
-                    msg.textContent = '✅ Запись успешно обновлена!';
+                    msg.textContent = '✅ Запись обновлена!';
                 } else {
-                    // СОЗДАНИЕ НОВОЙ
                     const { error: dbError } = await db.from(tableName).insert(dbData);
                     if (dbError) throw new Error("Ошибка базы: " + dbError.message);
-                    msg.textContent = '✅ Запись успешно опубликована!';
+                    msg.textContent = '✅ Запись опубликована!';
                 }
 
                 msg.className = 'msg ok';
-                
-                // Сброс формы
                 document.getElementById('addForm').reset();
                 document.getElementById('editId').value = '';
                 document.getElementById('imagePreview').style.display = 'none';
