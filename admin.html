@@ -1,4 +1,4 @@
-<!DOCTYPE html> 
+<!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
@@ -93,7 +93,9 @@
         const SUPABASE_URL = 'https://qoqflgpkbzvdtleidtjw.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFvcWZsZ3BrYnp2ZHRsZWlkdGp3Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc5Mjk0ODE0MywiZXhwIjoyMTA4NTI0MTQzfQ.5q4asB-_LFhDnzikW_tWM37RzVq85YQGAEeP4ZMF0dU';
 
+        // Переименовали в db, чтобы избежать конфликта имен!
         const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        
         let currentType = 'poem';
 
         document.getElementById('loginBtn').onclick = async () => {
@@ -103,7 +105,7 @@
             
             msg.className = 'msg'; msg.style.display = 'none';
 
-            const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+            const { data, error } = await db.auth.signInWithPassword({ email, password });
 
             if (error) {
                 msg.textContent = '❌ ' + error.message;
@@ -115,7 +117,7 @@
             }
         };
 
-        supabase.auth.onAuthStateChange((event, session) => {
+        db.auth.onAuthStateChange((event, session) => {
             if (session) {
                 document.getElementById('loginScreen').classList.add('hidden');
                 document.getElementById('adminScreen').classList.remove('hidden');
@@ -126,7 +128,7 @@
             }
         });
 
-        document.getElementById('logoutBtn').onclick = () => supabase.auth.signOut();
+        document.getElementById('logoutBtn').onclick = () => db.auth.signOut();
 
         document.querySelectorAll('.tab').forEach(tab => {
             tab.onclick = () => {
@@ -172,7 +174,7 @@
             const container = document.getElementById('recentList');
             container.innerHTML = 'Загрузка...';
             
-            const { data, error } = await supabase
+            const { data, error } = await db
                 .from('works')
                 .select('id, title, type, language')
                 .eq('type', currentType)
@@ -204,7 +206,7 @@
         window.deleteWork = async (id) => {
             if (!confirm('Вы уверены, что хотите удалить эту запись?')) return;
             
-            const { error } = await supabase.from('works').delete().eq('id', id);
+            const { error } = await db.from('works').delete().eq('id', id);
             if (error) {
                 alert('❌ Ошибка удаления: ' + error.message);
             } else {
@@ -241,7 +243,7 @@
 
                     const fileName = `${Date.now()}-${file.name.replace(/[^a-zA-Z0-9.]/g, '_')}`;
                     
-                    const { data, error } = await supabase.functions.invoke('upload-to-github', {
+                    const { data, error } = await db.functions.invoke('upload-to-github', {
                         body: {
                             path: `Gallery/${fileName}`,
                             content_base64: base64,
@@ -269,7 +271,7 @@
                 const slug = title.toLowerCase().replace(/[^a-zа-яё0-9]/g, '-').replace(/-+/g, '-');
                 newWork.slug = slug + '-' + Date.now().toString().slice(-4);
 
-                const { error: dbError } = await supabase.from('works').insert(newWork);
+                const { error: dbError } = await db.from('works').insert(newWork);
 
                 if (dbError) throw new Error("Ошибка базы: " + dbError.message);
 
