@@ -265,7 +265,7 @@
             document.querySelectorAll('.btn-danger').forEach(btn => btn.onclick = () => deleteItem(parseInt(btn.dataset.id)));
         }
 
-        // --- СПИСОК ЗАКАЗОВ ---
+               // --- СПИСОК ЗАКАЗОВ ---
         async function loadOrders() {
             const container = document.getElementById('ordersList');
             container.innerHTML = 'Загрузка...';
@@ -282,7 +282,6 @@
                 if (item.status === 'in_progress') { badgeClass = 'badge-progress'; statusText = 'В работе'; }
                 if (item.status === 'completed') { badgeClass = 'badge-completed'; statusText = 'Выполнен'; }
 
-                // Форматируем дату
                 const date = new Date(item.created_at).toLocaleDateString('ru-RU');
 
                 html += `<tr>
@@ -291,56 +290,65 @@
                             <td style="max-width: 300px;">${item.message.replace(/\n/g, '<br>')}</td>
                             <td><span class="badge ${badgeClass}">${statusText}</span><br><small>${date}</small></td>
                             <td>
-                                ${item.status === 'new' ? `<button class="btn-edit" onclick="startOrder(${item.id})">▶ В работу</button>` : ''}
-                                ${item.status === 'in_progress' ? `<button class="btn-success" onclick="completeOrder(${item.id}, '${item.email}', '${item.name}')">✅ Выполнен</button>` : ''}
-                                <button class="btn-danger" onclick="deleteOrder(${item.id})">🗑️</button>
+                                ${item.status === 'new' ? `<button class="btn-edit start-btn" data-id="${item.id}">▶ В работу</button>` : ''}
+                                ${item.status === 'in_progress' ? `<button class="btn-success complete-btn" data-id="${item.id}" data-email="${item.email}" data-name="${item.name}">✅ Выполнен</button>` : ''}
+                                <button class="btn-danger delete-btn" data-id="${item.id}">🗑️</button>
                             </td>
                          </tr>`;
             });
             html += '</tbody></table>';
             container.innerHTML = html;
+
+            // Навешиваем обработчики на кнопки (как в контенте)
+            document.querySelectorAll('.start-btn').forEach(btn => {
+                btn.onclick = () => startOrder(parseInt(btn.dataset.id));
+            });
+            document.querySelectorAll('.complete-btn').forEach(btn => {
+                btn.onclick = () => completeOrder(parseInt(btn.dataset.id), btn.dataset.email, btn.dataset.name);
+            });
+            document.querySelectorAll('.delete-btn').forEach(btn => {
+                btn.onclick = () => deleteOrder(parseInt(btn.dataset.id));
+            });
         }
 
-        window.startOrder = async (id) => {
+        // Функции (без window., они и так будут доступны)
+        async function startOrder(id) {
             await db.from('orders').update({ status: 'in_progress' }).eq('id', id);
             loadOrders();
-        };
+        }
 
-               window.completeOrder = async (id, contact, name) => {
-            // 1. Меняем статус
+        async function completeOrder(id, contact, name) {
             await db.from('orders').update({ status: 'completed' }).eq('id', id);
             
-            // 2. Проверяем, email это или телефон
             if (contact.includes('@')) {
-                // Это email — отправляем письмо
                 try {
                     const response = await fetch(`${SUPABASE_URL}/functions/v1/send-email`, {
                         method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
-                            'apikey': SUPABASE_ANON_KEY
-                        },
-                        body: JSON.stringify({
-                            to: contact,
-                            subject: 'Ваш заказ выполнен! — Ádel',
-                            text: `Здравствуйте, ${name}!\n\nВаш заказ на стихотворение выполнен. Спасибо за обращение!\n\nС уважением, Ádel.`
-                        })
+                        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${SUPABASE_ANON_KEY}`, 'apikey': SUPABASE_ANON_KEY },
+                        body: JSON.stringify({ to: contact, subject: 'Ваш заказ выполнен! — Ádel', text: `Здравствуйте, ${name}!\n\nВаш заказ на стихотворение выполнен. Спасибо за обращение!\n\nС уважением, Ádel.` })
                     });
-                    
                     if (!response.ok) throw new Error('Ошибка отправки письма');
                     alert('✅ Заказ выполнен, письмо отправлено клиенту!');
                 } catch (err) {
                     alert('Заказ выполнен, но письмо не ушло: ' + err.message);
                 }
             } else {
-                // Это телефон — просто уведомляем тебя
                 alert(`✅ Заказ выполнен!\n\nКлиент указал телефон: ${contact}.\nПисьмо не отправлено, так как это не email. Свяжитесь с ним вручную.`);
             }
-            
             loadOrders();
-        };
+        }
 
+        async function deleteOrder(id) {
+            if (!confirm('Удалить заказ?')) return;
+            
+            const { error } = await db.from('orders').delete().eq('id', id);
+            
+            if (error) {
+                alert('❌ Ошибка удаления: ' + error.message);
+            } else {
+                loadOrders();
+            }
+        }
         // --- УДАЛЕНИЕ КОНТЕНТА ---
         window.deleteItem = async (id) => {
             if (!confirm('Удалить запись?')) return;
