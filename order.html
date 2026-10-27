@@ -137,8 +137,15 @@
     <div id="toast" class="toast">✅ Заказ отправлен! Я свяжусь с вами.</div>
 
     <script src="menu.js"></script>
+        <script src="menu.js"></script>
+    <!-- Подключаем Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
     <script>
-        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbziPZDnn8bRtxH9IjBj8DodtIB3A5fRrJgeBPGJidH5_K9UkZB-75FHE5_vWFlmbQZ64g/exec';
+        // ⚠️ ВСТАВЬ СВОЙ ANON КЛЮЧ
+        const SUPABASE_URL = 'https://qoqflgpkbzvdtleidtjw.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFvcWZsZ3BrYnp2ZHRsZWlkdGp3Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc5Mjk0ODE0MywiZXhwIjoyMTA4NTI0MTQzfQ.5q4asB-_LFhDnzikW_tWM37RzVq85YQGAEeP4ZMF0dU';
+        const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
         const form = document.getElementById('orderForm');
         const formBlock = document.getElementById('formBlock');
@@ -150,30 +157,35 @@
             submitBtn.disabled = true;
             submitBtn.textContent = 'Отправка...';
 
-            const payload = {
-                name: document.getElementById('name').value,
-                phone: document.getElementById('phone').value,
-                type: document.getElementById('type').value,
-                theme: document.getElementById('theme').value,
-                details: document.getElementById('details').value
-            };
+            const name = document.getElementById('name').value.trim();
+            const contact = document.getElementById('phone').value.trim();
+            const type = document.getElementById('type').value;
+            const theme = document.getElementById('theme').value.trim();
+            const details = document.getElementById('details').value.trim();
+
+            // Формируем красивое сообщение для базы
+            const message = `Тип: ${type}\nТема: ${theme}\nПожелания: ${details}`;
 
             try {
-                await fetch(SCRIPT_URL, {
-                    method: 'POST',
-                    mode: 'no-cors',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
+                // Отправляем в базу
+                const { error } = await db.from('orders').insert({
+                    name: name,
+                    email: contact, // Используем поле email для телефона/почты
+                    message: message,
+                    status: 'new'
                 });
+
+                if (error) throw error;
 
                 // Скрываем форму, показываем благодарность
                 formBlock.classList.add('hidden');
                 thankyouBlock.classList.remove('hidden');
                 showToast();
 
-                // Очищаем форму (на случай, если читатель захочет вернуться)
+                // Очищаем форму
                 form.reset();
             } catch (err) {
+                console.error('Ошибка отправки:', err);
                 alert('❌ Ошибка отправки. Попробуйте позже.');
                 submitBtn.disabled = false;
                 submitBtn.textContent = '📜 Отправить заказ';
