@@ -36,6 +36,8 @@
         .badge-new { background: #0d6efd; }
         .badge-progress { background: #ffc107; color: #000; }
         .badge-completed { background: #198754; }
+        .badge-approved { background: #198754; }
+        .badge-pending { background: #ffc107; color: #000; }
     </style>
 </head>
 <body>
@@ -61,10 +63,11 @@
             <div class="tab" data-type="prose">Проза</div>
             <div class="tab" data-type="humor">Юмор</div>
             <div class="tab" data-type="blog">Блог</div>
-            <div class="tab" data-type="orders">Заказы</div> <!-- Новая вкладка -->
+            <div class="tab" data-type="orders">Заказы</div>
+            <div class="tab" data-type="guestbook">Гостевая</div> <!-- Новая вкладка -->
         </div>
 
-        <!-- ФОРМА ДЛЯ КОНТЕНТА (Скрывается на вкладке Заказы) -->
+        <!-- ФОРМА ДЛЯ КОНТЕНТА (Скрывается на вкладках Заказы и Гостевая) -->
         <form id="addForm">
             <h3 id="formTitle">Добавить запись</h3>
             <input type="hidden" id="editId" value="">
@@ -100,16 +103,22 @@
             <div id="adminMsg" class="msg"></div>
         </form>
 
-        <!-- СПИСОК ЗАПИСЕЙ (Для контента) -->
+        <!-- СПИСОК КОНТЕНТА -->
         <div class="list-card" id="contentListCard">
             <h3>📋 Последние добавленные</h3>
             <div id="recentList">Загрузка...</div>
         </div>
 
-        <!-- СПИСОК ЗАКАЗОВ (Только для вкладки Заказы) -->
+        <!-- СПИСОК ЗАКАЗОВ -->
         <div class="list-card hidden" id="ordersListCard">
             <h3>📦 Заказы</h3>
             <div id="ordersList">Загрузка...</div>
+        </div>
+
+        <!-- СПИСОК ГОСТЕВОЙ -->
+        <div class="list-card hidden" id="guestbookListCard">
+            <h3>💬 Гостевая книга</h3>
+            <div id="guestbookList">Загрузка...</div>
         </div>
     </div>
 
@@ -161,6 +170,7 @@
                 const addForm = document.getElementById('addForm');
                 const contentListCard = document.getElementById('contentListCard');
                 const ordersListCard = document.getElementById('ordersListCard');
+                const guestbookListCard = document.getElementById('guestbookListCard');
 
                 // Сброс формы
                 addForm.reset();
@@ -169,17 +179,21 @@
                 document.getElementById('saveBtn').textContent = '💾 Опубликовать';
                 document.getElementById('imagePreview').style.display = 'none';
 
+                // Прячем всё
+                addForm.classList.add('hidden');
+                contentListCard.classList.add('hidden');
+                ordersListCard.classList.add('hidden');
+                guestbookListCard.classList.add('hidden');
+
                 if (currentType === 'orders') {
-                    // Прячем форму, показываем заказы
-                    addForm.classList.add('hidden');
-                    contentListCard.classList.add('hidden');
                     ordersListCard.classList.remove('hidden');
                     loadOrders();
+                } else if (currentType === 'guestbook') {
+                    guestbookListCard.classList.remove('hidden');
+                    loadGuestbook();
                 } else {
-                    // Показываем форму, прячем заказы
                     addForm.classList.remove('hidden');
                     contentListCard.classList.remove('hidden');
-                    ordersListCard.classList.add('hidden');
                     
                     // Настройка полей под вкладку
                     const proseFields = document.getElementById('proseFields');
@@ -265,7 +279,7 @@
             document.querySelectorAll('.btn-danger').forEach(btn => btn.onclick = () => deleteItem(parseInt(btn.dataset.id)));
         }
 
-               // --- СПИСОК ЗАКАЗОВ ---
+        // --- СПИСОК ЗАКАЗОВ ---
         async function loadOrders() {
             const container = document.getElementById('ordersList');
             container.innerHTML = 'Загрузка...';
@@ -299,19 +313,45 @@
             html += '</tbody></table>';
             container.innerHTML = html;
 
-            // Навешиваем обработчики на кнопки (как в контенте)
-            document.querySelectorAll('.start-btn').forEach(btn => {
-                btn.onclick = () => startOrder(parseInt(btn.dataset.id));
-            });
-            document.querySelectorAll('.complete-btn').forEach(btn => {
-                btn.onclick = () => completeOrder(parseInt(btn.dataset.id), btn.dataset.email, btn.dataset.name);
-            });
-            document.querySelectorAll('.delete-btn').forEach(btn => {
-                btn.onclick = () => deleteOrder(parseInt(btn.dataset.id));
-            });
+            document.querySelectorAll('.start-btn').forEach(btn => btn.onclick = () => startOrder(parseInt(btn.dataset.id)));
+            document.querySelectorAll('.complete-btn').forEach(btn => btn.onclick = () => completeOrder(parseInt(btn.dataset.id), btn.dataset.email, btn.dataset.name));
+            document.querySelectorAll('.delete-btn').forEach(btn => btn.onclick = () => deleteOrder(parseInt(btn.dataset.id)));
         }
 
-        // Функции (без window., они и так будут доступны)
+        // --- СПИСОК ГОСТЕВОЙ ---
+        async function loadGuestbook() {
+            const container = document.getElementById('guestbookList');
+            container.innerHTML = 'Загрузка...';
+
+            const { data, error } = await db.from('guestbook').select('*').order('created_at', { ascending: false });
+
+            if (error) { container.innerHTML = '❌ Ошибка: ' + error.message; return; }
+            if (!data || data.length === 0) { container.innerHTML = 'Отзывов пока нет.'; return; }
+
+            let html = '<table><thead><tr><th>Имя</th><th>Сообщение</th><th>Статус</th><th>Действие</th></tr></thead><tbody>';
+            data.forEach(item => {
+                const statusText = item.is_approved ? 'Одобрено' : 'На модерации';
+                const badgeClass = item.is_approved ? 'badge-approved' : 'badge-pending';
+                const date = new Date(item.created_at).toLocaleDateString('ru-RU');
+
+                html += `<tr>
+                            <td>${item.name}</td>
+                            <td style="max-width: 300px;">${item.message}</td>
+                            <td><span class="badge ${badgeClass}">${statusText}</span><br><small>${date}</small></td>
+                            <td>
+                                ${!item.is_approved ? `<button class="btn-success approve-btn" data-id="${item.id}">✅ Одобрить</button>` : ''}
+                                <button class="btn-danger delete-btn" data-id="${item.id}">🗑️</button>
+                            </td>
+                         </tr>`;
+            });
+            html += '</tbody></table>';
+            container.innerHTML = html;
+
+            document.querySelectorAll('.approve-btn').forEach(btn => btn.onclick = () => approveGuestbook(parseInt(btn.dataset.id)));
+            document.querySelectorAll('.delete-btn').forEach(btn => btn.onclick = () => deleteGuestbook(parseInt(btn.dataset.id)));
+        }
+
+        // --- ДЕЙСТВИЯ С ЗАКАЗАМИ ---
         async function startOrder(id) {
             await db.from('orders').update({ status: 'in_progress' }).eq('id', id);
             loadOrders();
@@ -340,25 +380,32 @@
 
         async function deleteOrder(id) {
             if (!confirm('Удалить заказ?')) return;
-            
             const { error } = await db.from('orders').delete().eq('id', id);
-            
-            if (error) {
-                alert('❌ Ошибка удаления: ' + error.message);
-            } else {
-                loadOrders();
-            }
+            if (error) alert('❌ Ошибка: ' + error.message); else loadOrders();
         }
+
+        // --- ДЕЙСТВИЯ С ГОСТЕВОЙ ---
+        async function approveGuestbook(id) {
+            const { error } = await db.from('guestbook').update({ is_approved: true }).eq('id', id);
+            if (error) alert('❌ Ошибка: ' + error.message); else loadGuestbook();
+        }
+
+        async function deleteGuestbook(id) {
+            if (!confirm('Удалить отзыв?')) return;
+            const { error } = await db.from('guestbook').delete().eq('id', id);
+            if (error) alert('❌ Ошибка: ' + error.message); else loadGuestbook();
+        }
+
         // --- УДАЛЕНИЕ КОНТЕНТА ---
-        window.deleteItem = async (id) => {
+        async function deleteItem(id) {
             if (!confirm('Удалить запись?')) return;
             const tableName = currentType === 'blog' ? 'blog' : 'works';
             const { error } = await db.from(tableName).delete().eq('id', id);
             if (error) alert('❌ Ошибка: ' + error.message); else loadRecent();
-        };
+        }
 
         // --- РЕДАКТИРОВАНИЕ КОНТЕНТА ---
-        window.editItem = async (id) => {
+        async function editItem(id) {
             const tableName = currentType === 'blog' ? 'blog' : 'works';
             const { data: item, error } = await db.from(tableName).select('*').eq('id', id).single();
             if (error) { alert('Ошибка: ' + error.message); return; }
@@ -379,7 +426,7 @@
             document.getElementById('saveBtn').textContent = '💾 Обновить';
             document.getElementById('cancelBtn').classList.remove('hidden');
             document.getElementById('addForm').scrollIntoView({ behavior: 'smooth' });
-        };
+        }
 
         document.getElementById('cancelBtn').onclick = () => {
             document.getElementById('addForm').reset();
@@ -393,7 +440,7 @@
         // --- СОХРАНЕНИЕ КОНТЕНТА ---
         document.getElementById('addForm').onsubmit = async (e) => {
             e.preventDefault();
-            if (currentType === 'orders') return; // Защита
+            if (currentType === 'orders' || currentType === 'guestbook') return;
 
             const btn = document.getElementById('saveBtn');
             const msg = document.getElementById('adminMsg');
