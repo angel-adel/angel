@@ -145,59 +145,94 @@
     <div id="toast" class="toast">✅ Спасибо! Ваш отзыв отправлен на модерацию.</div>
 
     <script src="menu.js"></script>
+    <script src="menu.js"></script>
+    <!-- Подключаем Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
     <script>
-        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyEHn9qc0Wenj1VZ_ixqUX07t8hHIUntOQuXUCkQeKDC4C0tjo5GlVRYb6IurWpnohfYw/exec';
+        // ⚠️ ВСТАВЬ СВОЙ ANON КЛЮЧ
+        const SUPABASE_URL = 'https://qoqflgpkbzvdtleidtjw.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFvcWZsZ3BrYnp2ZHRsZWlkdGp3Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc5Mjk0ODE0MywiZXhwIjoyMTA4NTI0MTQzfQ.5q4asB-_LFhDnzikW_tWM37RzVq85YQGAEeP4ZMF0dU';
+        const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
+        // --- ЗАГРУЗКА ОТЗЫВОВ ---
         async function loadReviews() {
             const container = document.getElementById('reviewsContainer');
+            
             try {
-                const response = await fetch(`${SCRIPT_URL}?t=${Date.now()}`);
-                const data = await response.json();
-                const approved = data.filter(row => row.approved === true || row.approved === 'TRUE');
-                if (!approved.length) {
+                // Запрашиваем только одобренные отзывы (is_approved = true)
+                const { data: reviews, error } = await db
+                    .from('guestbook')
+                    .select('*')
+                    .eq('is_approved', true)
+                    .eq('published', true)
+                    .order('created_at', { ascending: false });
+
+                if (error) throw error;
+
+                if (!reviews || reviews.length === 0) {
                     container.innerHTML = '<div class="empty">✨ Пока нет одобренных отзывов. Будьте первым!</div>';
                     return;
                 }
-                container.innerHTML = approved.map(row => `
-                    <div class="review-card">
-                        <div><span class="review-name">${escapeHtml(row.name)}</span>
-                        <span class="review-date">${escapeHtml(row.date)}</span></div>
-                        <div class="review-theme">${escapeHtml(row.type)}${row.theme ? ` / ${escapeHtml(row.theme)}` : ''}</div>
-                        <div class="review-message">${escapeHtml(row.message)}</div>
-                    </div>
-                `).join('');
+
+                container.innerHTML = reviews.map(row => {
+                    // Форматируем дату
+                    const date = new Date(row.created_at).toLocaleDateString('ru-RU', {
+                        day: 'numeric', month: 'long', year: 'numeric'
+                    });
+
+                    return `
+                        <div class="review-card">
+                            <div>
+                                <span class="review-name">${escapeHtml(row.name)}</span>
+                                <span class="review-date">${date}</span>
+                            </div>
+                            <div class="review-theme">
+                                ${escapeHtml(row.type || 'Отзыв')}${row.theme ? ` / ${escapeHtml(row.theme)}` : ''}
+                            </div>
+                            <div class="review-message">${escapeHtml(row.message)}</div>
+                        </div>
+                    `;
+                }).join('');
+
             } catch(e) {
-                console.error(e);
+                console.error('Ошибка загрузки отзывов:', e);
                 container.innerHTML = '<div class="empty">⚠️ Не удалось загрузить отзывы. Попробуйте позже.</div>';
             }
         }
 
+        // --- ОТПРАВКА ОТЗЫВА ---
         document.getElementById('guestForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const submitBtn = e.target.querySelector('button');
             submitBtn.disabled = true;
             submitBtn.textContent = 'Отправка...';
 
-            const payload = {
-                name: document.getElementById('name').value,
-                type: document.getElementById('type').value,
-                theme: document.getElementById('theme').value,
-                message: document.getElementById('message').value,
-                approved: false,
-                date: new Date().toISOString()
-            };
+            const name = document.getElementById('name').value.trim();
+            const type = document.getElementById('type').value;
+            const theme = document.getElementById('theme').value.trim();
+            const message = document.getElementById('message').value.trim();
 
             try {
-                await fetch(SCRIPT_URL, {
-                    method: 'POST',
-                    mode: 'no-cors',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
+                // Вставляем в базу (is_approved по умолчанию false, поэтому на сайте не появится)
+                const { error } = await db.from('guestbook').insert({
+                    name: name,
+                    type: type,
+                    theme: theme || null,
+                    message: message,
+                    is_approved: false, // Ждет модерации
+                    published: true
                 });
+
+                if (error) throw error;
+
                 document.getElementById('guestForm').reset();
                 showToast();
-                setTimeout(() => loadReviews(), 1500);
+                // Перезагружаем список (хотя новый отзыв не появится, пока не одобрят)
+                setTimeout(() => loadReviews(), 1000);
+
             } catch (err) {
+                console.error('Ошибка отправки:', err);
                 alert('❌ Ошибка отправки. Попробуйте позже.');
             } finally {
                 submitBtn.disabled = false;
@@ -212,7 +247,8 @@
         }
 
         function escapeHtml(str) {
-            if (!str) return '';
+            if (str === null || str === undefined) return '';
+            if (typeof str !== 'string') str = String(str);
             return str.replace(/[&<>]/g, function(m) {
                 if (m === '&') return '&amp;';
                 if (m === '<') return '&lt;';
@@ -221,6 +257,7 @@
             });
         }
 
+        // Запускаем
         loadReviews();
     </script>
 </body>
