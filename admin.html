@@ -42,6 +42,7 @@
 </head>
 <body>
 
+    <!-- ЭКРАН ВХОДА -->
     <div class="card" id="loginScreen">
         <h2>🔐 Вход в админку</h2>
         <label>Email</label>
@@ -52,22 +53,24 @@
         <div id="loginMsg" class="msg"></div>
     </div>
 
+    <!-- ЭКРАН АДМИНКИ -->
     <div class="card hidden" id="adminScreen">
         <div style="display: flex; justify-content: space-between; align-items: center;">
             <h2>📝 Управление</h2>
             <button class="btn-outline" id="logoutBtn" style="margin-top: 0;">Выйти</button>
         </div>
 
+        <!-- ВКЛАДКИ -->
         <div class="tabs">
             <div class="tab active" data-type="poem">Стихи</div>
             <div class="tab" data-type="prose">Проза</div>
             <div class="tab" data-type="humor">Юмор</div>
             <div class="tab" data-type="blog">Блог</div>
             <div class="tab" data-type="orders">Заказы</div>
-            <div class="tab" data-type="guestbook">Гостевая</div> <!-- Новая вкладка -->
+            <div class="tab" data-type="guestbook">Гостевая</div>
         </div>
 
-        <!-- ФОРМА ДЛЯ КОНТЕНТА (Скрывается на вкладках Заказы и Гостевая) -->
+        <!-- ФОРМА ДОБАВЛЕНИЯ/РЕДАКТИРОВАНИЯ -->
         <form id="addForm">
             <h3 id="formTitle">Добавить запись</h3>
             <input type="hidden" id="editId" value="">
@@ -122,14 +125,18 @@
         </div>
     </div>
 
+    <!-- ПОДКЛЮЧЕНИЕ SUPABASE -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
     <script>
+        // ⚠️ ВСТАВЬ СВОЙ ANON КЛЮЧ
         const SUPABASE_URL = 'https://qoqflgpkbzvdtleidtjw.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFvcWZsZ3BrYnp2ZHRsZWlkdGp3Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc5Mjk0ODE0MywiZXhwIjoyMTA4NTI0MTQzfQ.5q4asB-_LFhDnzikW_tWM37RzVq85YQGAEeP4ZMF0dU';
+        
         const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
         let currentType = 'poem';
 
-        // --- ВХОД ---
+        // --- АВТОРИЗАЦИЯ ---
         document.getElementById('loginBtn').onclick = async () => {
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
@@ -160,7 +167,7 @@
 
         document.getElementById('logoutBtn').onclick = () => db.auth.signOut();
 
-        // --- ВКЛАДКИ ---
+        // --- ПЕРЕКЛЮЧЕНИЕ ВКЛАДОК ---
         document.querySelectorAll('.tab').forEach(tab => {
             tab.onclick = () => {
                 document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
@@ -172,6 +179,12 @@
                 const ordersListCard = document.getElementById('ordersListCard');
                 const guestbookListCard = document.getElementById('guestbookListCard');
 
+                // Скрываем всё
+                addForm.classList.add('hidden');
+                contentListCard.classList.add('hidden');
+                ordersListCard.classList.add('hidden');
+                guestbookListCard.classList.add('hidden');
+
                 // Сброс формы
                 addForm.reset();
                 document.getElementById('editId').value = '';
@@ -179,12 +192,7 @@
                 document.getElementById('saveBtn').textContent = '💾 Опубликовать';
                 document.getElementById('imagePreview').style.display = 'none';
 
-                // Прячем всё
-                addForm.classList.add('hidden');
-                contentListCard.classList.add('hidden');
-                ordersListCard.classList.add('hidden');
-                guestbookListCard.classList.add('hidden');
-
+                // Включаем нужное
                 if (currentType === 'orders') {
                     ordersListCard.classList.remove('hidden');
                     loadOrders();
@@ -195,7 +203,6 @@
                     addForm.classList.remove('hidden');
                     contentListCard.classList.remove('hidden');
                     
-                    // Настройка полей под вкладку
                     const proseFields = document.getElementById('proseFields');
                     const langField = document.getElementById('langField');
                     const imageField = document.getElementById('imageField');
@@ -242,7 +249,7 @@
             }
         };
 
-        // --- СПИСОК КОНТЕНТА ---
+        // --- ЗАГРУЗКА КОНТЕНТА ---
         async function loadRecent() {
             const container = document.getElementById('recentList');
             container.innerHTML = 'Загрузка...';
@@ -275,11 +282,15 @@
             html += '</tbody></table>';
             container.innerHTML = html;
 
-            document.querySelectorAll('.btn-edit').forEach(btn => btn.onclick = () => editItem(parseInt(btn.dataset.id)));
-            document.querySelectorAll('.btn-danger').forEach(btn => btn.onclick = () => deleteItem(parseInt(btn.dataset.id)));
+            document.querySelectorAll('.btn-edit').forEach(btn => {
+                btn.onclick = () => editItem(parseInt(btn.dataset.id));
+            });
+            document.querySelectorAll('.btn-danger').forEach(btn => {
+                btn.onclick = () => deleteItem(parseInt(btn.dataset.id));
+            });
         }
 
-        // --- СПИСОК ЗАКАЗОВ ---
+        // --- ЗАГРУЗКА ЗАКАЗОВ ---
         async function loadOrders() {
             const container = document.getElementById('ordersList');
             container.innerHTML = 'Загрузка...';
@@ -313,19 +324,23 @@
             html += '</tbody></table>';
             container.innerHTML = html;
 
-            document.querySelectorAll('.start-btn').forEach(btn => btn.onclick = () => startOrder(parseInt(btn.dataset.id)));
-            document.querySelectorAll('.complete-btn').forEach(btn => btn.onclick = () => completeOrder(parseInt(btn.dataset.id), btn.dataset.email, btn.dataset.name));
-            document.querySelectorAll('.delete-btn').forEach(btn => btn.onclick = () => deleteOrder(parseInt(btn.dataset.id)));
+            document.querySelectorAll('.start-btn').forEach(btn => {
+                btn.onclick = () => startOrder(parseInt(btn.dataset.id));
+            });
+            document.querySelectorAll('.complete-btn').forEach(btn => {
+                btn.onclick = () => completeOrder(parseInt(btn.dataset.id), btn.dataset.email, btn.dataset.name);
+            });
+            document.querySelectorAll('.delete-btn').forEach(btn => {
+                btn.onclick = () => deleteOrder(parseInt(btn.dataset.id));
+            });
         }
 
-        // --- СПИСОК ГОСТЕВОЙ ---
-                async function loadGuestbook() {
+        // --- ЗАГРУЗКА ГОСТЕВОЙ ---
+        async function loadGuestbook() {
             const container = document.getElementById('guestbookList');
             container.innerHTML = 'Загрузка...';
 
             const { data, error } = await db.from('guestbook').select('*').order('created_at', { ascending: false });
-
-            console.log("Данные из базы:", data); // <--- ВЫВОДИМ В КОНСОЛЬ
 
             if (error) { container.innerHTML = '❌ Ошибка: ' + error.message; return; }
             if (!data || data.length === 0) { container.innerHTML = 'Отзывов пока нет.'; return; }
@@ -349,8 +364,12 @@
             html += '</tbody></table>';
             container.innerHTML = html;
 
-            document.querySelectorAll('.approve-btn').forEach(btn => btn.onclick = () => approveGuestbook(parseInt(btn.dataset.id)));
-            document.querySelectorAll('.delete-btn').forEach(btn => btn.onclick = () => deleteGuestbook(parseInt(btn.dataset.id)));
+            document.querySelectorAll('.approve-btn').forEach(btn => {
+                btn.onclick = () => approveGuestbook(parseInt(btn.dataset.id));
+            });
+            document.querySelectorAll('.delete-btn').forEach(btn => {
+                btn.onclick = () => deleteGuestbook(parseInt(btn.dataset.id));
+            });
         }
 
         // --- ДЕЙСТВИЯ С ЗАКАЗАМИ ---
@@ -359,12 +378,11 @@
             loadOrders();
         }
 
-                        async function completeOrder(id, contact, name) {
+        async function completeOrder(id, contact, name) {
             await db.from('orders').update({ status: 'completed' }).eq('id', id);
             
             if (contact.includes('@')) {
                 try {
-                    // Создаем красивый HTML-шаблон от лица Адель
                     const htmlBody = `
                         <div style="font-family: 'Georgia', serif; max-width: 600px; margin: 0 auto; background-color: #f9f9f9; border-radius: 12px; overflow: hidden; border: 1px solid #e0e0e0;">
                             <div style="background: linear-gradient(135deg, #7c3a8c, #a855f7); padding: 30px; text-align: center; color: white;">
@@ -372,11 +390,8 @@
                             </div>
                             <div style="padding: 30px; background-color: white; color: #333;">
                                 <p style="font-size: 16px; margin-top: 0;">Здравствуйте, <strong>${name}</strong>!</p>
-                                
                                 <p style="font-size: 16px; line-height: 1.6;">Спешу сообщить, что я закончила работу над вашим заказом. Вложила в эти строки частичку души и очень надеюсь, что они отзовутся теплом в вашем сердце.</p>
-                                
                                 <p style="font-size: 16px; line-height: 1.6;">Вы можете ответить на это письмо, чтобы получить готовый текст, или мы свяжемся с вами удобным для вас способом.</p>
-                                
                                 <br>
                                 <p style="font-size: 16px; margin-bottom: 0;">С теплом и вдохновением,<br><strong style="color: #7c3a8c; font-size: 18px;">Ádel</strong> 💜</p>
                             </div>
@@ -388,17 +403,8 @@
 
                     const response = await fetch(`${SUPABASE_URL}/functions/v1/send-email`, {
                         method: 'POST',
-                        headers: { 
-                            'Content-Type': 'application/json', 
-                            'Authorization': `Bearer ${SUPABASE_ANON_KEY}`, 
-                            'apikey': SUPABASE_ANON_KEY 
-                        },
-                        body: JSON.stringify({ 
-                            to: contact, 
-                            subject: 'Ваш заказ готов! — Ádel', 
-                            text: htmlBody,
-                            isHtml: true
-                        })
+                        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${SUPABASE_ANON_KEY}`, 'apikey': SUPABASE_ANON_KEY },
+                        body: JSON.stringify({ to: contact, subject: 'Ваш заказ готов! — Ádel', text: htmlBody, isHtml: true })
                     });
                     if (!response.ok) throw new Error('Ошибка отправки письма');
                     alert('✅ Заказ выполнен, красивое письмо отправлено клиенту!');
@@ -406,21 +412,21 @@
                     alert('Заказ выполнен, но письмо не ушло: ' + err.message);
                 }
             } else {
-                alert(`✅ Заказ выполнен!\n\nКлиент указал телефон: ${contact}.\nПисьмо не отправлено, так как это не email. Свяжитесь с ним вручную.`);
+                alert(`✅ Заказ выполнен!\n\nКлиент указал телефон: ${contact}.\nПисьмо не отправлено. Свяжитесь вручную.`);
             }
             loadOrders();
         }
 
+        async function deleteOrder(id) {
+            if (!confirm('Удалить заказ?')) return;
+            const { error } = await db.from('orders').delete().eq('id', id);
+            if (error) alert('❌ Ошибка: ' + error.message); else loadOrders();
+        }
+
         // --- ДЕЙСТВИЯ С ГОСТЕВОЙ ---
         async function approveGuestbook(id) {
-            try {
-                const { error } = await db.from('guestbook').update({ is_approved: true }).eq('id', id);
-                if (error) throw error;
-                loadGuestbook();
-            } catch (err) {
-                alert('❌ Ошибка: ' + err.message);
-                console.error(err);
-            }
+            const { error } = await db.from('guestbook').update({ is_approved: true }).eq('id', id);
+            if (error) alert('❌ Ошибка: ' + error.message); else loadGuestbook();
         }
 
         async function deleteGuestbook(id) {
@@ -429,7 +435,7 @@
             if (error) alert('❌ Ошибка: ' + error.message); else loadGuestbook();
         }
 
-        // --- УДАЛЕНИЕ КОНТЕНТА ---
+        // --- ДЕЙСТВИЯ С КОНТЕНТОМ ---
         async function deleteItem(id) {
             if (!confirm('Удалить запись?')) return;
             const tableName = currentType === 'blog' ? 'blog' : 'works';
@@ -437,7 +443,6 @@
             if (error) alert('❌ Ошибка: ' + error.message); else loadRecent();
         }
 
-        // --- РЕДАКТИРОВАНИЕ КОНТЕНТА ---
         async function editItem(id) {
             const tableName = currentType === 'blog' ? 'blog' : 'works';
             const { data: item, error } = await db.from(tableName).select('*').eq('id', id).single();
