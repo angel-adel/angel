@@ -6,7 +6,7 @@
     <title>Админка — Ádel</title>
     <style>
         body { font-family: system-ui, sans-serif; background: #f5f2f0; margin: 0; padding: 1rem; color: #333; }
-        .card { background: white; border-radius: 16px; padding: 1.5rem; margin-bottom: 1.5rem; max-width: 800px; margin-left: auto; margin-right: auto; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+        .card { background: white; border-radius: 16px; padding: 1.5rem; margin-bottom: 1.5rem; max-width: 900px; margin-left: auto; margin-right: auto; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
         .hidden { display: none !important; }
         label { font-weight: 600; display: block; margin-top: 1rem; font-size: 0.9rem; }
         input, textarea, select { width: 100%; padding: 10px; margin-top: 5px; border-radius: 8px; border: 1px solid #ccc; font-family: inherit; box-sizing: border-box; }
@@ -19,6 +19,8 @@
         .btn-danger:hover { background: #bd2130; }
         .btn-edit { background: #0d6efd; margin: 0; padding: 5px 10px; font-size: 0.8rem; }
         .btn-edit:hover { background: #0b5ed7; }
+        .btn-success { background: #198754; margin: 0; padding: 5px 10px; font-size: 0.8rem; }
+        .btn-success:hover { background: #157347; }
         .tabs { display: flex; gap: 10px; margin-bottom: 1.5rem; border-bottom: 2px solid #eee; padding-bottom: 10px; flex-wrap: wrap; }
         .tab { cursor: pointer; padding: 5px 15px; border-radius: 20px; font-weight: 600; color: #666; }
         .tab.active { background: #7c3a8c; color: white; }
@@ -30,11 +32,14 @@
         th, td { text-align: left; padding: 10px 5px; border-bottom: 1px solid #eee; }
         th { color: #666; font-weight: 600; }
         .list-card { margin-top: 2rem; border-top: 2px dashed #eee; padding-top: 1rem; }
+        .badge { padding: 3px 8px; border-radius: 12px; font-size: 0.8rem; color: white; }
+        .badge-new { background: #0d6efd; }
+        .badge-progress { background: #ffc107; color: #000; }
+        .badge-completed { background: #198754; }
     </style>
 </head>
 <body>
 
-    <!-- ЭКРАН ВХОДА -->
     <div class="card" id="loginScreen">
         <h2>🔐 Вход в админку</h2>
         <label>Email</label>
@@ -45,10 +50,9 @@
         <div id="loginMsg" class="msg"></div>
     </div>
 
-    <!-- ЭКРАН АДМИНКИ -->
     <div class="card hidden" id="adminScreen">
         <div style="display: flex; justify-content: space-between; align-items: center;">
-            <h2>📝 Управление контентом</h2>
+            <h2>📝 Управление</h2>
             <button class="btn-outline" id="logoutBtn" style="margin-top: 0;">Выйти</button>
         </div>
 
@@ -57,8 +61,10 @@
             <div class="tab" data-type="prose">Проза</div>
             <div class="tab" data-type="humor">Юмор</div>
             <div class="tab" data-type="blog">Блог</div>
+            <div class="tab" data-type="orders">Заказы</div> <!-- Новая вкладка -->
         </div>
 
+        <!-- ФОРМА ДЛЯ КОНТЕНТА (Скрывается на вкладке Заказы) -->
         <form id="addForm">
             <h3 id="formTitle">Добавить запись</h3>
             <input type="hidden" id="editId" value="">
@@ -94,25 +100,27 @@
             <div id="adminMsg" class="msg"></div>
         </form>
 
-        <div class="list-card">
+        <!-- СПИСОК ЗАПИСЕЙ (Для контента) -->
+        <div class="list-card" id="contentListCard">
             <h3>📋 Последние добавленные</h3>
             <div id="recentList">Загрузка...</div>
         </div>
+
+        <!-- СПИСОК ЗАКАЗОВ (Только для вкладки Заказы) -->
+        <div class="list-card hidden" id="ordersListCard">
+            <h3>📦 Заказы</h3>
+            <div id="ordersList">Загрузка...</div>
+        </div>
     </div>
 
-    <!-- ПОДКЛЮЧЕНИЕ БИБЛИОТЕК -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
     <script>
-        // ⚠️ ВСТАВЬ СВОЙ ANON КЛЮЧ ЗДЕСЬ
         const SUPABASE_URL = 'https://qoqflgpkbzvdtleidtjw.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFvcWZsZ3BrYnp2ZHRsZWlkdGp3Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc5Mjk0ODE0MywiZXhwIjoyMTA4NTI0MTQzfQ.5q4asB-_LFhDnzikW_tWM37RzVq85YQGAEeP4ZMF0dU';
-        
-        // Инициализация клиента
         const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
         let currentType = 'poem';
 
-        // --- ВХОД И АВТОРИЗАЦИЯ ---
+        // --- ВХОД ---
         document.getElementById('loginBtn').onclick = async () => {
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
@@ -143,47 +151,66 @@
 
         document.getElementById('logoutBtn').onclick = () => db.auth.signOut();
 
-        // --- ПЕРЕКЛЮЧЕНИЕ ВКЛАДОК ---
+        // --- ВКЛАДКИ ---
         document.querySelectorAll('.tab').forEach(tab => {
             tab.onclick = () => {
                 document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
                 tab.classList.add('active');
                 currentType = tab.dataset.type;
                 
-                const proseFields = document.getElementById('proseFields');
-                const langField = document.getElementById('langField');
-                const imageField = document.getElementById('imageField');
-                const formTitle = document.getElementById('formTitle');
-                const contentLabel = document.getElementById('contentLabel');
-                
-                document.getElementById('addForm').reset();
+                const addForm = document.getElementById('addForm');
+                const contentListCard = document.getElementById('contentListCard');
+                const ordersListCard = document.getElementById('ordersListCard');
+
+                // Сброс формы
+                addForm.reset();
                 document.getElementById('editId').value = '';
                 document.getElementById('cancelBtn').classList.add('hidden');
                 document.getElementById('saveBtn').textContent = '💾 Опубликовать';
                 document.getElementById('imagePreview').style.display = 'none';
 
-                proseFields.classList.add('hidden');
-                langField.style.display = 'none';
-                imageField.classList.add('hidden');
+                if (currentType === 'orders') {
+                    // Прячем форму, показываем заказы
+                    addForm.classList.add('hidden');
+                    contentListCard.classList.add('hidden');
+                    ordersListCard.classList.remove('hidden');
+                    loadOrders();
+                } else {
+                    // Показываем форму, прячем заказы
+                    addForm.classList.remove('hidden');
+                    contentListCard.classList.remove('hidden');
+                    ordersListCard.classList.add('hidden');
+                    
+                    // Настройка полей под вкладку
+                    const proseFields = document.getElementById('proseFields');
+                    const langField = document.getElementById('langField');
+                    const imageField = document.getElementById('imageField');
+                    const formTitle = document.getElementById('formTitle');
+                    const contentLabel = document.getElementById('contentLabel');
 
-                if (currentType === 'poem') {
-                    formTitle.innerText = 'Добавить стих';
-                    contentLabel.innerText = 'Текст произведения';
-                    langField.style.display = 'block';
-                } else if (currentType === 'prose') {
-                    formTitle.innerText = 'Добавить рассказ';
-                    contentLabel.innerText = 'Полный текст';
-                    proseFields.classList.remove('hidden');
-                    imageField.classList.remove('hidden');
-                } else if (currentType === 'humor') {
-                    formTitle.innerText = 'Добавить шутку';
-                    contentLabel.innerText = 'Текст шутки';
-                } else if (currentType === 'blog') {
-                    formTitle.innerText = 'Добавить запись в блог';
-                    contentLabel.innerText = 'Текст записи';
-                    imageField.classList.remove('hidden');
+                    proseFields.classList.add('hidden');
+                    langField.style.display = 'none';
+                    imageField.classList.add('hidden');
+
+                    if (currentType === 'poem') {
+                        formTitle.innerText = 'Добавить стих';
+                        contentLabel.innerText = 'Текст произведения';
+                        langField.style.display = 'block';
+                    } else if (currentType === 'prose') {
+                        formTitle.innerText = 'Добавить рассказ';
+                        contentLabel.innerText = 'Полный текст';
+                        proseFields.classList.remove('hidden');
+                        imageField.classList.remove('hidden');
+                    } else if (currentType === 'humor') {
+                        formTitle.innerText = 'Добавить шутку';
+                        contentLabel.innerText = 'Текст шутки';
+                    } else if (currentType === 'blog') {
+                        formTitle.innerText = 'Добавить запись в блог';
+                        contentLabel.innerText = 'Текст записи';
+                        imageField.classList.remove('hidden');
+                    }
+                    loadRecent();
                 }
-                loadRecent();
             };
         });
 
@@ -201,14 +228,13 @@
             }
         };
 
-        // --- СПИСОК ЗАПИСЕЙ ---
+        // --- СПИСОК КОНТЕНТА ---
         async function loadRecent() {
             const container = document.getElementById('recentList');
             container.innerHTML = 'Загрузка...';
             
             const tableName = currentType === 'blog' ? 'blog' : 'works';
             let query;
-
             if (currentType === 'blog') {
                 query = db.from('blog').select('id, title').order('created_at', { ascending: false }).limit(20);
             } else {
@@ -217,15 +243,8 @@
 
             const { data, error } = await query;
 
-            if (error) {
-                container.innerHTML = '❌ Ошибка: ' + error.message;
-                return;
-            }
-
-            if (!data || data.length === 0) {
-                container.innerHTML = 'Нет записей. Добавьте первую!';
-                return;
-            }
+            if (error) { container.innerHTML = '❌ Ошибка: ' + error.message; return; }
+            if (!data || data.length === 0) { container.innerHTML = 'Нет записей.'; return; }
 
             let html = '<table><thead><tr><th>Название</th><th>Язык</th><th>Действие</th></tr></thead><tbody>';
             data.forEach(item => {
@@ -242,15 +261,87 @@
             html += '</tbody></table>';
             container.innerHTML = html;
 
-            document.querySelectorAll('.btn-edit').forEach(btn => {
-                btn.onclick = () => editItem(parseInt(btn.dataset.id));
-            });
-            document.querySelectorAll('.btn-danger').forEach(btn => {
-                btn.onclick = () => deleteItem(parseInt(btn.dataset.id));
-            });
+            document.querySelectorAll('.btn-edit').forEach(btn => btn.onclick = () => editItem(parseInt(btn.dataset.id)));
+            document.querySelectorAll('.btn-danger').forEach(btn => btn.onclick = () => deleteItem(parseInt(btn.dataset.id)));
         }
 
-        // --- УДАЛЕНИЕ ---
+        // --- СПИСОК ЗАКАЗОВ ---
+        async function loadOrders() {
+            const container = document.getElementById('ordersList');
+            container.innerHTML = 'Загрузка...';
+
+            const { data, error } = await db.from('orders').select('*').order('created_at', { ascending: false });
+
+            if (error) { container.innerHTML = '❌ Ошибка: ' + error.message; return; }
+            if (!data || data.length === 0) { container.innerHTML = 'Заказов пока нет.'; return; }
+
+            let html = '<table><thead><tr><th>Имя</th><th>Контакт</th><th>Сообщение</th><th>Статус</th><th>Действие</th></tr></thead><tbody>';
+            data.forEach(item => {
+                let badgeClass = 'badge-new';
+                let statusText = 'Новый';
+                if (item.status === 'in_progress') { badgeClass = 'badge-progress'; statusText = 'В работе'; }
+                if (item.status === 'completed') { badgeClass = 'badge-completed'; statusText = 'Выполнен'; }
+
+                // Форматируем дату
+                const date = new Date(item.created_at).toLocaleDateString('ru-RU');
+
+                html += `<tr>
+                            <td>${item.name}</td>
+                            <td>${item.email}</td>
+                            <td style="max-width: 300px;">${item.message.replace(/\n/g, '<br>')}</td>
+                            <td><span class="badge ${badgeClass}">${statusText}</span><br><small>${date}</small></td>
+                            <td>
+                                ${item.status === 'new' ? `<button class="btn-edit" onclick="startOrder(${item.id})">▶ В работу</button>` : ''}
+                                ${item.status === 'in_progress' ? `<button class="btn-success" onclick="completeOrder(${item.id}, '${item.email}', '${item.name}')">✅ Выполнен</button>` : ''}
+                                <button class="btn-danger" onclick="deleteOrder(${item.id})">🗑️</button>
+                            </td>
+                         </tr>`;
+            });
+            html += '</tbody></table>';
+            container.innerHTML = html;
+        }
+
+        window.startOrder = async (id) => {
+            await db.from('orders').update({ status: 'in_progress' }).eq('id', id);
+            loadOrders();
+        };
+
+        window.completeOrder = async (id, email, name) => {
+            // 1. Меняем статус
+            await db.from('orders').update({ status: 'completed' }).eq('id', id);
+            
+            // 2. Отправляем письмо
+            try {
+                const response = await fetch(`${SUPABASE_URL}/functions/v1/send-email`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+                        'apikey': SUPABASE_ANON_KEY
+                    },
+                    body: JSON.stringify({
+                        to: email, // Отправляем на контакт, указанный в заказе
+                        subject: 'Ваш заказ выполнен! — Ádel',
+                        text: `Здравствуйте, ${name}!\n\nВаш заказ на стихотворение выполнен. Спасибо за обращение!\n\nС уважением, Ádel.`
+                    })
+                });
+                
+                if (!response.ok) throw new Error('Ошибка отправки письма');
+                alert('✅ Заказ выполнен, письмо отправлено клиенту!');
+            } catch (err) {
+                alert('Заказ выполнен, но письмо не ушло: ' + err.message);
+            }
+            
+            loadOrders();
+        };
+
+        window.deleteOrder = async (id) => {
+            if (!confirm('Удалить заказ?')) return;
+            await db.from('orders').delete().eq('id', id);
+            loadOrders();
+        };
+
+        // --- УДАЛЕНИЕ КОНТЕНТА ---
         window.deleteItem = async (id) => {
             if (!confirm('Удалить запись?')) return;
             const tableName = currentType === 'blog' ? 'blog' : 'works';
@@ -258,11 +349,10 @@
             if (error) alert('❌ Ошибка: ' + error.message); else loadRecent();
         };
 
-        // --- РЕДАКТИРОВАНИЕ ---
+        // --- РЕДАКТИРОВАНИЕ КОНТЕНТА ---
         window.editItem = async (id) => {
             const tableName = currentType === 'blog' ? 'blog' : 'works';
             const { data: item, error } = await db.from(tableName).select('*').eq('id', id).single();
-            
             if (error) { alert('Ошибка: ' + error.message); return; }
 
             document.getElementById('formTitle').innerText = 'Редактировать запись';
@@ -276,19 +366,13 @@
             }
 
             const imgPreview = document.getElementById('imagePreview');
-            if (item.image_url) {
-                imgPreview.src = item.image_url;
-                imgPreview.style.display = 'block';
-            } else {
-                imgPreview.style.display = 'none';
-            }
+            if (item.image_url) { imgPreview.src = item.image_url; imgPreview.style.display = 'block'; } else { imgPreview.style.display = 'none'; }
 
             document.getElementById('saveBtn').textContent = '💾 Обновить';
             document.getElementById('cancelBtn').classList.remove('hidden');
             document.getElementById('addForm').scrollIntoView({ behavior: 'smooth' });
         };
 
-        // --- ОТМЕНА РЕДАКТИРОВАНИЯ ---
         document.getElementById('cancelBtn').onclick = () => {
             document.getElementById('addForm').reset();
             document.getElementById('editId').value = '';
@@ -298,9 +382,11 @@
             document.getElementById('cancelBtn').classList.add('hidden');
         };
 
-        // --- СОХРАНЕНИЕ / ОБНОВЛЕНИЕ ---
+        // --- СОХРАНЕНИЕ КОНТЕНТА ---
         document.getElementById('addForm').onsubmit = async (e) => {
             e.preventDefault();
+            if (currentType === 'orders') return; // Защита
+
             const btn = document.getElementById('saveBtn');
             const msg = document.getElementById('adminMsg');
             const editId = document.getElementById('editId').value;
@@ -318,7 +404,6 @@
             let imageUrl = null;
 
             try {
-                // 1. Загрузка картинки (если есть)
                 if (fileInput.files.length > 0) {
                     const file = fileInput.files[0];
                     const base64 = await new Promise((resolve, reject) => {
@@ -329,19 +414,10 @@
                     });
 
                     const fileName = `${Date.now()}-${file.name.replace(/[^a-zA-Z0-9.]/g, '_')}`;
-                    
                     const response = await fetch(`${SUPABASE_URL}/functions/v1/upload-to-github`, {
                         method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
-                            'apikey': SUPABASE_ANON_KEY // <--- ВАЖНО!
-                        },
-                        body: JSON.stringify({
-                            path: `Gallery/${fileName}`,
-                            content_base64: base64,
-                            message: `image: ${title}`
-                        })
+                        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${SUPABASE_ANON_KEY}`, 'apikey': SUPABASE_ANON_KEY },
+                        body: JSON.stringify({ path: `Gallery/${fileName}`, content_base64: base64, message: `image: ${title}` })
                     });
 
                     const result = await response.json();
@@ -349,7 +425,6 @@
                     imageUrl = result.url;
                 }
 
-                // 2. Формирование данных для БД
                 let dbData = {};
                 const tableName = currentType === 'blog' ? 'blog' : 'works';
 
@@ -358,44 +433,35 @@
                     if (imageUrl) dbData.image_url = imageUrl;
                 } else {
                     dbData = {
-                        title: title,
-                        content: currentType === 'prose' ? (description || 'Проза') : content,
-                        full_text: currentType === 'prose' ? content : null,
-                        description: currentType === 'prose' ? description : null,
-                        type: currentType,
-                        language: currentType === 'prose' ? 'ru' : (currentType === 'humor' ? 'ru' : language),
-                        published: true
+                        title: title, content: currentType === 'prose' ? (description || 'Проза') : content,
+                        full_text: currentType === 'prose' ? content : null, description: currentType === 'prose' ? description : null,
+                        type: currentType, language: currentType === 'prose' ? 'ru' : (currentType === 'humor' ? 'ru' : language), published: true
                     };
                     if (imageUrl) dbData.image_url = imageUrl;
                 }
 
-                                // Генерируем slug только для works, для блога он не нужен
                 if (!editId && currentType !== 'blog') {
                     const slug = title.toLowerCase().replace(/[^a-zа-яё0-9]/g, '-').replace(/-+/g, '-');
                     dbData.slug = slug + '-' + Date.now().toString().slice(-4);
                 }
 
-                // 3. Сохранение в БД
                 if (editId) {
                     const { error: dbError } = await db.from(tableName).update(dbData).eq('id', editId);
                     if (dbError) throw new Error("Ошибка базы: " + dbError.message);
-                    msg.textContent = '✅ Запись обновлена!';
+                    msg.textContent = '✅ Обновлено!';
                 } else {
                     const { error: dbError } = await db.from(tableName).insert(dbData);
                     if (dbError) throw new Error("Ошибка базы: " + dbError.message);
-                    msg.textContent = '✅ Запись опубликована!';
+                    msg.textContent = '✅ Опубликовано!';
                 }
 
                 msg.className = 'msg ok';
-                
-                // Сброс
                 document.getElementById('addForm').reset();
                 document.getElementById('editId').value = '';
                 document.getElementById('imagePreview').style.display = 'none';
                 document.getElementById('formTitle').innerText = 'Добавить запись';
                 document.getElementById('cancelBtn').classList.add('hidden');
                 btn.textContent = '💾 Опубликовать';
-                
                 loadRecent();
 
             } catch (err) {
