@@ -306,38 +306,38 @@
             loadOrders();
         };
 
-        window.completeOrder = async (id, email, name) => {
+               window.completeOrder = async (id, contact, name) => {
             // 1. Меняем статус
             await db.from('orders').update({ status: 'completed' }).eq('id', id);
             
-            // 2. Отправляем письмо
-            try {
-                const response = await fetch(`${SUPABASE_URL}/functions/v1/send-email`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
-                        'apikey': SUPABASE_ANON_KEY
-                    },
-                    body: JSON.stringify({
-                        to: email, // Отправляем на контакт, указанный в заказе
-                        subject: 'Ваш заказ выполнен! — Ádel',
-                        text: `Здравствуйте, ${name}!\n\nВаш заказ на стихотворение выполнен. Спасибо за обращение!\n\nС уважением, Ádel.`
-                    })
-                });
-                
-                if (!response.ok) throw new Error('Ошибка отправки письма');
-                alert('✅ Заказ выполнен, письмо отправлено клиенту!');
-            } catch (err) {
-                alert('Заказ выполнен, но письмо не ушло: ' + err.message);
+            // 2. Проверяем, email это или телефон
+            if (contact.includes('@')) {
+                // Это email — отправляем письмо
+                try {
+                    const response = await fetch(`${SUPABASE_URL}/functions/v1/send-email`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+                            'apikey': SUPABASE_ANON_KEY
+                        },
+                        body: JSON.stringify({
+                            to: contact,
+                            subject: 'Ваш заказ выполнен! — Ádel',
+                            text: `Здравствуйте, ${name}!\n\nВаш заказ на стихотворение выполнен. Спасибо за обращение!\n\nС уважением, Ádel.`
+                        })
+                    });
+                    
+                    if (!response.ok) throw new Error('Ошибка отправки письма');
+                    alert('✅ Заказ выполнен, письмо отправлено клиенту!');
+                } catch (err) {
+                    alert('Заказ выполнен, но письмо не ушло: ' + err.message);
+                }
+            } else {
+                // Это телефон — просто уведомляем тебя
+                alert(`✅ Заказ выполнен!\n\nКлиент указал телефон: ${contact}.\nПисьмо не отправлено, так как это не email. Свяжитесь с ним вручную.`);
             }
             
-            loadOrders();
-        };
-
-        window.deleteOrder = async (id) => {
-            if (!confirm('Удалить заказ?')) return;
-            await db.from('orders').delete().eq('id', id);
             loadOrders();
         };
 
