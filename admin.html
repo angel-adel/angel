@@ -385,9 +385,15 @@
         }
 
         // --- ДЕЙСТВИЯ С ГОСТЕВОЙ ---
-        async function approveGuestbook(id) {
-            const { error } = await db.from('guestbook').update({ is_approved: true }).eq('id', id);
-            if (error) alert('❌ Ошибка: ' + error.message); else loadGuestbook();
+                async function approveGuestbook(id) {
+            try {
+                const { error } = await db.from('guestbook').update({ is_approved: true }).eq('id', id);
+                if (error) throw error;
+                loadGuestbook();
+            } catch (err) {
+                alert('❌ Ошибка: ' + err.message);
+                console.error(err);
+            }
         }
 
         async function deleteGuestbook(id) {
