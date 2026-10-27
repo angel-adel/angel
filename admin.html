@@ -319,11 +319,13 @@
         }
 
         // --- СПИСОК ГОСТЕВОЙ ---
-        async function loadGuestbook() {
+                async function loadGuestbook() {
             const container = document.getElementById('guestbookList');
             container.innerHTML = 'Загрузка...';
 
             const { data, error } = await db.from('guestbook').select('*').order('created_at', { ascending: false });
+
+            console.log("Данные из базы:", data); // <--- ВЫВОДИМ В КОНСОЛЬ
 
             if (error) { container.innerHTML = '❌ Ошибка: ' + error.message; return; }
             if (!data || data.length === 0) { container.innerHTML = 'Отзывов пока нет.'; return; }
@@ -349,6 +351,7 @@
 
             document.querySelectorAll('.approve-btn').forEach(btn => btn.onclick = () => approveGuestbook(parseInt(btn.dataset.id)));
             document.querySelectorAll('.delete-btn').forEach(btn => btn.onclick = () => deleteGuestbook(parseInt(btn.dataset.id)));
+        }
         }
 
         // --- ДЕЙСТВИЯ С ЗАКАЗАМИ ---
