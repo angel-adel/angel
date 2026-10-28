@@ -226,3 +226,17 @@ footer a:hover {
         padding: 1.2rem;
     }
     }
+
+/* ТЁМНАЯ ТЕМА */
+[data-theme="dark"] {
+    --bg-primary: #130a1e;        /* Глубокий фиолетово-чёрный фон */
+    --bg-card: #1c112b;           /* Фон карточек */
+    --bg-card-hover: #261638;
+    --accent: #a855f7;            /* Яркий фиолетовый акцент */
+    --accent-light: #c084fc;
+    --accent-dark: #7c3a8c;
+    --text-primary: #f3e8ff;      /* Светлый текст */
+    --text-secondary: #b8a3d0;
+    --text-muted: #8b75a8;
+    --border: #2d1b4e;            /* Тёмные границы */
+}
