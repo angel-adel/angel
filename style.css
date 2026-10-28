@@ -352,3 +352,13 @@ footer a:hover {
     background-color: #a855f7 !important;
     color: #fff !important;
 }
+
+[data-theme="dark"] .contact-card {
+    background-color: #1c112b !important;
+    color: #f3e8ff !important;
+    border-color: #2d1b4e !important;
+}
+[data-theme="dark"] .contact-link {
+    background-color: #a855f7 !important;
+    color: #fff !important;
+}
