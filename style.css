@@ -362,3 +362,69 @@ footer a:hover {
     background-color: #a855f7 !important;
     color: #fff !important;
 }
+
+/* ==========================================
+   АДАПТИВНОЕ МЕНЮ (Бургер)
+   ========================================== */
+
+/* По умолчанию (на ПК) бургер скрыт, меню горизонтальное */
+.burger {
+    display: none;
+    flex-direction: column;
+    cursor: pointer;
+}
+
+.burger .line1, .burger .line2, .burger .line3 {
+    width: 25px;
+    height: 3px;
+    background-color: var(--text-primary);
+    margin: 3px 0;
+    transition: 0.3s;
+}
+
+.nav-links {
+    display: flex;
+    gap: 1rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+/* Когда экран меньше 768px (смартфоны) */
+@media (max-width: 768px) {
+    .burger {
+        display: flex; /* Показываем бургер */
+    }
+
+    .nav-links {
+        position: absolute;
+        top: 60px; /* Подгонь под высоту шапки */
+        right: 0;
+        width: 100%;
+        background-color: var(--bg-card);
+        flex-direction: column;
+        align-items: center;
+        gap: 0;
+        padding: 1rem 0;
+        border-bottom: 1px solid var(--border);
+        /* Скрываем меню по умолчанию */
+        display: none; 
+    }
+
+    /* Когда меню активно (ты нажал на бургер) */
+    .nav-links.active {
+        display: flex;
+    }
+
+    .nav-links li {
+        padding: 10px 0;
+        width: 100%;
+        text-align: center;
+        border-bottom: 1px solid var(--border);
+    }
+    
+    .nav-links a {
+        display: block;
+        width: 100%;
+    }
+}
