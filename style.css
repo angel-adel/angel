@@ -262,3 +262,71 @@ footer a:hover {
     --text-muted: #8b75a8;
     --border: #2d1b4e;            /* Тёмные границы */
 }
+
+/* ==========================================
+   ТЁМНАЯ ТЕМА (Принудительное перекрашивание)
+   ========================================== */
+
+/* Фон всего сайта */
+[data-theme="dark"] body {
+    background-color: var(--bg-primary) !important;
+    color: var(--text-primary) !important;
+}
+
+/* Карточки, формы, блоки */
+[data-theme="dark"] .card, 
+[data-theme="dark"] .work-card, 
+[data-theme="dark"] .prose-card, 
+[data-theme="dark"] .joke-card,
+[data-theme="dark"] .blog-post,
+[data-theme="dark"] .form-card,
+[data-theme="dark"] .review-card,
+[data-theme="dark"] .order-form,
+[data-theme="dark"] .thankyou-block,
+[data-theme="dark"] .modal-content {
+    background-color: var(--bg-card) !important;
+    color: var(--text-primary) !important;
+    border-color: var(--border) !important;
+}
+
+/* Инпуты и текстовые поля */
+[data-theme="dark"] input, 
+[data-theme="dark"] textarea, 
+[data-theme="dark"] select {
+    background-color: var(--bg-primary) !important;
+    color: var(--text-primary) !important;
+    border-color: var(--border) !important;
+}
+
+/* Шапка сайта (навбар) */
+[data-theme="dark"] .navbar {
+    background-color: var(--bg-card) !important;
+    border-bottom: 1px solid var(--border) !important;
+}
+
+/* Выпадающее меню (бургер) */
+[data-theme="dark"] .nav-links {
+    background-color: var(--bg-card) !important;
+}
+
+[data-theme="dark"] .nav-links a {
+    color: var(--text-primary) !important;
+    border-bottom: 1px solid var(--border) !important;
+}
+
+/* Подвал */
+[data-theme="dark"] footer {
+    color: var(--text-muted) !important;
+    border-top: 1px solid var(--border) !important;
+}
+
+/* Заголовки */
+[data-theme="dark"] h1, 
+[data-theme="dark"] h2, 
+[data-theme="dark"] h3,
+[data-theme="dark"] .work-title,
+[data-theme="dark"] .prose-title,
+[data-theme="dark"] .joke-title,
+[data-theme="dark"] .blog-title {
+    color: var(--accent-light) !important;
+}
