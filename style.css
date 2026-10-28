@@ -428,3 +428,30 @@ footer a:hover {
         width: 100%;
     }
 }
+
+/* Принудительно показываем бургер на мобильных */
+@media (max-width: 768px) {
+    .burger {
+        display: flex !important;
+        flex-direction: column !important;
+        justify-content: space-around !important;
+        width: 30px !important;
+        height: 25px !important;
+        background: transparent !important;
+        border: none !important;
+        cursor: pointer !important;
+        z-index: 9999 !important;
+    }
+
+    /* Делаем линии видимыми и контрастными */
+    .burger .line1, 
+    .burger .line2, 
+    .burger .line3 {
+        width: 30px !important;
+        height: 3px !important;
+        background-color: var(--text-primary) !important; /* Цвет текста (в темной теме - светлый) */
+        border-radius: 10px !important;
+        transition: all 0.3s linear !important;
+        position: relative !important;
+    }
+}
