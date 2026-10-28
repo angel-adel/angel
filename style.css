@@ -330,3 +330,83 @@ footer a:hover {
 [data-theme="dark"] .blog-title {
     color: var(--accent-light) !important;
 }
+
+/* ==========================================
+   ТЁМНАЯ ТЕМА (Абсолютная)
+   ========================================== */
+[data-theme="dark"] {
+    --bg-primary: #130a1e;
+    --bg-card: #1c112b;
+    --text-primary: #f3e8ff;
+    --text-muted: #8b75a8;
+    --accent: #a855f7;
+    --accent-light: #c084fc;
+    --border: #2d1b4e;
+}
+
+/* Красим вообще всё */
+[data-theme="dark"] body,
+[data-theme="dark"] main,
+[data-theme="dark"] header,
+[data-theme="dark"] footer,
+[data-theme="dark"] section,
+[data-theme="dark"] article {
+    background-color: #130a1e !important;
+    color: #f3e8ff !important;
+}
+
+/* Карточки, формы, белые блоки */
+[data-theme="dark"] .card,
+[data-theme="dark"] .work-card,
+[data-theme="dark"] .prose-card,
+[data-theme="dark"] .joke-card,
+[data-theme="dark"] .blog-post,
+[data-theme="dark"] .form-card,
+[data-theme="dark"] .review-card,
+[data-theme="dark"] .order-form,
+[data-theme="dark"] .thankyou-block,
+[data-theme="dark"] .modal-content,
+[data-theme="dark"] div[style*="white"],
+[data-theme="dark"] div[style*="f5f2f0"] {
+    background-color: #1c112b !important;
+    color: #f3e8ff !important;
+    border-color: #2d1b4e !important;
+}
+
+/* Текст, чтобы не сливался */
+[data-theme="dark"] h1, 
+[data-theme="dark"] h2, 
+[data-theme="dark"] h3,
+[data-theme="dark"] p,
+[data-theme="dark"] span:not(.badge),
+[data-theme="dark"] a:not(.btn),
+[data-theme="dark"] label,
+[data-theme="dark"] th,
+[data-theme="dark"] td {
+    color: #f3e8ff !important;
+}
+
+/* Инпуты */
+[data-theme="dark"] input,
+[data-theme="dark"] textarea,
+[data-theme="dark"] select {
+    background-color: #130a1e !important;
+    color: #f3e8ff !important;
+    border: 1px solid #2d1b4e !important;
+}
+
+/* Навбар */
+[data-theme="dark"] .navbar {
+    background-color: #1c112b !important;
+    border-bottom: 1px solid #2d1b4e !important;
+}
+
+/* Кнопки контура */
+[data-theme="dark"] .btn-outline {
+    color: #c084fc !important;
+    border-color: #c084fc !important;
+}
+[data-theme="dark"] .btn-outline:hover {
+    background: #c084fc !important;
+    color: #130a1e !important;
+}
