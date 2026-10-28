@@ -264,75 +264,7 @@ footer a:hover {
 }
 
 /* ==========================================
-   ТЁМНАЯ ТЕМА (Принудительное перекрашивание)
-   ========================================== */
-
-/* Фон всего сайта */
-[data-theme="dark"] body {
-    background-color: var(--bg-primary) !important;
-    color: var(--text-primary) !important;
-}
-
-/* Карточки, формы, блоки */
-[data-theme="dark"] .card, 
-[data-theme="dark"] .work-card, 
-[data-theme="dark"] .prose-card, 
-[data-theme="dark"] .joke-card,
-[data-theme="dark"] .blog-post,
-[data-theme="dark"] .form-card,
-[data-theme="dark"] .review-card,
-[data-theme="dark"] .order-form,
-[data-theme="dark"] .thankyou-block,
-[data-theme="dark"] .modal-content {
-    background-color: var(--bg-card) !important;
-    color: var(--text-primary) !important;
-    border-color: var(--border) !important;
-}
-
-/* Инпуты и текстовые поля */
-[data-theme="dark"] input, 
-[data-theme="dark"] textarea, 
-[data-theme="dark"] select {
-    background-color: var(--bg-primary) !important;
-    color: var(--text-primary) !important;
-    border-color: var(--border) !important;
-}
-
-/* Шапка сайта (навбар) */
-[data-theme="dark"] .navbar {
-    background-color: var(--bg-card) !important;
-    border-bottom: 1px solid var(--border) !important;
-}
-
-/* Выпадающее меню (бургер) */
-[data-theme="dark"] .nav-links {
-    background-color: var(--bg-card) !important;
-}
-
-[data-theme="dark"] .nav-links a {
-    color: var(--text-primary) !important;
-    border-bottom: 1px solid var(--border) !important;
-}
-
-/* Подвал */
-[data-theme="dark"] footer {
-    color: var(--text-muted) !important;
-    border-top: 1px solid var(--border) !important;
-}
-
-/* Заголовки */
-[data-theme="dark"] h1, 
-[data-theme="dark"] h2, 
-[data-theme="dark"] h3,
-[data-theme="dark"] .work-title,
-[data-theme="dark"] .prose-title,
-[data-theme="dark"] .joke-title,
-[data-theme="dark"] .blog-title {
-    color: var(--accent-light) !important;
-}
-
-/* ==========================================
-   ТЁМНАЯ ТЕМА (Абсолютная)
+   ТЁМНАЯ ТЕМА (Тотальный перехват)
    ========================================== */
 [data-theme="dark"] {
     --bg-primary: #130a1e;
@@ -344,18 +276,25 @@ footer a:hover {
     --border: #2d1b4e;
 }
 
-/* Красим вообще всё */
-[data-theme="dark"] body,
-[data-theme="dark"] main,
-[data-theme="dark"] header,
-[data-theme="dark"] footer,
-[data-theme="dark"] section,
-[data-theme="dark"] article {
+[data-theme="dark"] body {
     background-color: #130a1e !important;
     color: #f3e8ff !important;
 }
 
-/* Карточки, формы, белые блоки */
+/* Убиваем белые фоны везде, кроме кнопок и бейджей */
+[data-theme="dark"] div, 
+[data-theme="dark"] article, 
+[data-theme="dark"] section, 
+[data-theme="dark"] main,
+[data-theme="dark"] header,
+[data-theme="dark"] footer,
+[data-theme="dark"] form,
+[data-theme="dark"] .card-content {
+    background-color: transparent !important; /* Сбрасываем белый фон на прозрачный */
+    color: #f3e8ff !important;
+}
+
+/* А карточкам даем темный фон */
 [data-theme="dark"] .card,
 [data-theme="dark"] .work-card,
 [data-theme="dark"] .prose-card,
@@ -366,11 +305,10 @@ footer a:hover {
 [data-theme="dark"] .order-form,
 [data-theme="dark"] .thankyou-block,
 [data-theme="dark"] .modal-content,
-[data-theme="dark"] div[style*="white"],
-[data-theme="dark"] div[style*="f5f2f0"] {
+[data-theme="dark"] .uw-menu,
+[data-theme="dark"] .uw-bug-box {
     background-color: #1c112b !important;
-    color: #f3e8ff !important;
-    border-color: #2d1b4e !important;
+    border: 1px solid #2d1b4e !important;
 }
 
 /* Текст, чтобы не сливался */
@@ -378,11 +316,10 @@ footer a:hover {
 [data-theme="dark"] h2, 
 [data-theme="dark"] h3,
 [data-theme="dark"] p,
-[data-theme="dark"] span:not(.badge),
-[data-theme="dark"] a:not(.btn),
+[data-theme="dark"] span,
+[data-theme="dark"] a,
 [data-theme="dark"] label,
-[data-theme="dark"] th,
-[data-theme="dark"] td {
+[data-theme="dark"] li {
     color: #f3e8ff !important;
 }
 
@@ -395,18 +332,23 @@ footer a:hover {
     border: 1px solid #2d1b4e !important;
 }
 
-/* Навбар */
+/* Шапка */
 [data-theme="dark"] .navbar {
     background-color: #1c112b !important;
     border-bottom: 1px solid #2d1b4e !important;
 }
 
-/* Кнопки контура */
+/* Кнопки-контуры не трогаем, они должны быть фиолетовыми */
 [data-theme="dark"] .btn-outline {
     color: #c084fc !important;
     border-color: #c084fc !important;
+    background-color: transparent !important;
 }
-[data-theme="dark"] .btn-outline:hover {
-    background: #c084fc !important;
-    color: #130a1e !important;
+
+/* Бейджи оставляем цветными */
+[data-theme="dark"] .badge, 
+[data-theme="dark"] .feature-badge,
+[data-theme="dark"] .review-theme {
+    background-color: #a855f7 !important;
+    color: #fff !important;
 }
