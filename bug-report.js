@@ -28,6 +28,7 @@
         htmlEl.setAttribute('data-theme', newTheme);
         localStorage.setItem('theme', newTheme);
 
+        // Принудительно перекрашиваем body
         if (newTheme === 'dark') {
             bodyEl.style.backgroundColor = '#130a1e';
             bodyEl.style.color = '#f3e8ff';
