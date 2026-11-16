@@ -1,19 +1,17 @@
 // vk-widget.js
 document.addEventListener("DOMContentLoaded", function() {
-    // 1. Проверяем, загрузилась ли библиотека ВК
     if (typeof VK === 'undefined') {
-        console.error("Библиотека VK OpenAPI не загрузилась. Проверь подключение в <head>.");
+        console.error("Библиотека VK OpenAPI не загрузилась.");
         return;
     }
 
-    // 2. Инициализируем API (обязательно для современных версий ВК)
+    // 1. Инициализируем API с РЕАЛЬНЫМ ID приложения
     VK.init({
-        apiId: 0, // Оставляем 0, если работаем только с виджетами
-        onlyWidgets: true // Говорим ВК, что нам нужны только виджеты, а не полный доступ
+        apiId: vk1.a.dUN1Q4AEdbYRlRiINItJj4ilRW892C2OXV04nxN3oFUoknHHgF7U5Bl5i1Y1HdVaE-dCBXsRfck2u7XeKx1ku5oXTG42roIU3cchDvTYAnSOwTCpECo9g8x8E6nguI6jJmzgQwFbUpocJcJJF3_RCJJXSgbZ5gXxYz9uiuMEJAlxBuY2DoIzhWEBSkXUVW05e_m_9eaFkgHleOSrqQig-g, // <--- ЗАМЕНИ НА СВОЙ ID ИЗ ШАГА ВЫШЕ
+        onlyWidgets: false // Разрешаем полный доступ (включая статистику)
     });
 
-    // 3. Инициализируем виджет
-    // (Код внутри функции-колбэка VK.init не обязателен, но так безопаснее)
+    // 2. Создаем виджет
     try {
         const vkWidget = VK.Widgets.CommunityMessages("vk_community_messages", 235899061, {
             welcomeScreen: 1,
@@ -27,7 +25,7 @@ document.addEventListener("DOMContentLoaded", function() {
             }
         });
 
-        // 4. Обработка твоей кастомной кнопки (если она есть)
+        // Обработка кастомной кнопки
         const customBtn = document.getElementById("open-vk-chat");
         if (customBtn) {
             customBtn.addEventListener("click", function(e) {
