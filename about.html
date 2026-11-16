@@ -8,6 +8,9 @@
     <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
     <link rel="stylesheet" href="style.css">
     <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+    
+    <!-- 1. Подключаем библиотеку ВК в head -->
+    <script src="https://vk.ru/js/api/openapi.js?169" type="text/javascript"></script>
 </head>
 <body>
     <header>
@@ -81,18 +84,6 @@
         <small>Файл отправьте на adel.angel2026@gmail.com</small>
     </div>
 
-    <div id="vk_community_messages"></div>
-<script type="text/javascript">
-  VK.Widgets.CommunityMessages("vk_community_messages", 235899061, {
-    welcomeScreen: 1,
-    expanded: 0,
-    widgetPosition: "right",
-    tooltipButtonText: "Напишите нам!",
-    disableNewMessagesSound: 0,
-    disableTitleChange: 0
-  });
-</script>
-
     <footer>
         <p>2026. Адель. Angel de la poesía. ✨</p>
         <a href="index.html">Главная</a> |
@@ -101,6 +92,23 @@
 
     <script src="menu.js"></script>
     <script src="bug-report.js"></script>
-    <script src="https://vk.ru/js/api/openapi.js?169" type="text/javascript"></script>
+
+    <!-- 2. Контейнер и вызов виджета ВК (в самом конце, после библиотеки) -->
+    <div id="vk_community_messages"></div>
+    <script type="text/javascript">
+      // Проверка, загрузилась ли библиотека
+      if (typeof VK !== 'undefined') {
+        VK.Widgets.CommunityMessages("vk_community_messages", 235899061, {
+          welcomeScreen: 1,
+          expanded: 0,
+          widgetPosition: "right",
+          tooltipButtonText: "Напишите нам!",
+          disableNewMessagesSound: 0,
+          disableTitleChange: 0
+        });
+      } else {
+        console.error("Библиотека VK OpenAPI не загрузилась.");
+      }
+    </script>
 </body>
 </html>
