@@ -93,22 +93,9 @@
     <script src="menu.js"></script>
     <script src="bug-report.js"></script>
 
-    <!-- 2. Контейнер и вызов виджета ВК (в самом конце, после библиотеки) -->
-    <div id="vk_community_messages"></div>
-    <script type="text/javascript">
-      // Проверка, загрузилась ли библиотека
-      if (typeof VK !== 'undefined') {
-        VK.Widgets.CommunityMessages("vk_community_messages", 235899061, {
-          welcomeScreen: 1,
-          expanded: 0,
-          widgetPosition: "right",
-          tooltipButtonText: "Напишите нам!",
-          disableNewMessagesSound: 0,
-          disableTitleChange: 0
-        });
-      } else {
-        console.error("Библиотека VK OpenAPI не загрузилась.");
-      }
-    </script>
+ <!-- Контейнер для ВК (невидимый, нужен для работы) -->
+<div id="vk_community_messages"></div>
+<!-- Твой новый скрипт виджета -->
+<script src="vk-widget.js"></script>
 </body>
 </html>
