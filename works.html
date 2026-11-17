@@ -108,10 +108,10 @@
     <script src="menu.js"></script>
     <script src="bug-report.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
         // ==========================================
-        // 1. ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ И ИНИЦИАЛИЗАЦИЯ БД
+        // 1. ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ (ОБЪЯВЛЯЕМ ТОЛЬКО ЗДЕСЬ!)
         // ==========================================
         let allWorks = [];
         let activeLang = 'all';
@@ -122,16 +122,17 @@
         const SUPABASE_URL = 'https://qoqflgpkbzvdtleidtjw.supabase.co'; 
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFvcWZsZ3BrYnp2ZHRsZWlkdGp3Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc5Mjk0ODE0MywiZXhwIjoyMTA4NTI0MTQzfQ.5q4asB-_LFhDnzikW_tWM37RzVq85YQGAEeP4ZMF0dU';
         
-        // Создаем клиент один раз глобально, чтобы все функции могли его использовать
-        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        // Создаем клиент ОДИН РАЗ и называем его 'db', чтобы избежать конфликтов имен
+        const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
         // ==========================================
-        // 2. ОСНОВНЫЕ ФУНКЦИИ
+        // 2. ФУНКЦИИ РАБОТЫ С ДАННЫМИ
         // ==========================================
         async function loadWorks() {
             const container = document.getElementById('worksContainer');
             try {
-                const { data: poems, error } = await supabase
+                // Используем 'db', а не 'supabase'
+                const { data: poems, error } = await db
                     .from('works')
                     .select('id, slug, title, content, language')
                     .eq('published', true)
@@ -164,6 +165,46 @@
             }
         }
 
+        async function renderCollectionsGrid() {
+            const container = document.getElementById('collectionsGrid');
+            if (!container) return;
+
+            // Здесь тоже используем 'db'
+            const { data: collections, error } = await db
+                .from('collections')
+                .select('id, title, description, image_url')
+                .order('id', { ascending: true });
+
+            if (error || !collections) {
+                console.error('Ошибка загрузки сборников:', error);
+                container.innerHTML = ''; 
+                return; 
+            }
+
+            if (collections.length === 0) {
+                container.innerHTML = ''; 
+                return;
+            }
+
+            container.innerHTML = collections.map(col => {
+                const imgUrl = col.image_url || 'https://via.placeholder.com/400x200/7c3a8c/ffffff?text=Сборник';
+                const link = `prose.html?collection=${col.id}`; 
+                
+                return `
+                    <a href="${link}" class="collection-card">
+                        <img src="${imgUrl}" alt="${escapeHtml(col.title)}" class="collection-cover" loading="lazy">
+                        <div class="collection-info">
+                            <h3 class="collection-title">${escapeHtml(col.title)}</h3>
+                            <p class="collection-desc">${escapeHtml(col.description) || 'Описание скоро появится...'}</p>
+                        </div>
+                    </a>
+                `;
+            }).join('');
+        }
+
+        // ==========================================
+        // 3. ФУНКЦИИ ИНТЕРФЕЙСА (UI)
+        // ==========================================
         function applyFilters() {
             let filtered = allWorks;
             if (activeLang !== 'all') {
@@ -241,55 +282,13 @@
         }
 
         // ==========================================
-        // 3. НОВЫЙ БЛОК: СБОРНИКИ
-        // ==========================================
-        async function renderCollectionsGrid() {
-            const container = document.getElementById('collectionsGrid');
-            if (!container) return;
-
-            // Теперь supabase виден здесь, потому что он глобальный!
-            const { data: collections, error } = await supabase
-                .from('collections')
-                .select('id, title, description, image_url')
-                .order('id', { ascending: true });
-
-            if (error || !collections) {
-                console.error('Ошибка загрузки сборников:', error);
-                container.innerHTML = ''; // Скрываем блок при ошибке
-                return; 
-            }
-
-            if (collections.length === 0) {
-                container.innerHTML = ''; // Если сборников нет, скрываем блок
-                return;
-            }
-
-            container.innerHTML = collections.map(col => {
-                const imgUrl = col.image_url || 'https://via.placeholder.com/400x200/7c3a8c/ffffff?text=Сборник';
-                const link = `prose.html?collection=${col.id}`; 
-                
-                return `
-                    <a href="${link}" class="collection-card">
-                        <img src="${imgUrl}" alt="${escapeHtml(col.title)}" class="collection-cover" loading="lazy">
-                        <div class="collection-info">
-                            <h3 class="collection-title">${escapeHtml(col.title)}</h3>
-                            <p class="collection-desc">${escapeHtml(col.description) || 'Описание скоро появится...'}</p>
-                        </div>
-                    </a>
-                `;
-            }).join('');
-        }
-
-        // ==========================================
-        // 4. СОБЫТИЯ И ИНИЦИАЛИЗАЦИЯ
+        // 4. ЗАПУСК И СОБЫТИЯ
         // ==========================================
         document.addEventListener('DOMContentLoaded', () => {
-            // Запускаем обе функции параллельно при загрузке страницы
             loadWorks();
             renderCollectionsGrid();
         });
 
-        // Обработчики фильтров
         document.querySelectorAll('[data-lang]').forEach(btn => {
             btn.addEventListener('click', () => {
                 document.querySelectorAll('[data-lang]').forEach(b => b.classList.remove('active-filter'));
@@ -299,13 +298,11 @@
             });
         });
 
-        // Обработчик поиска
         document.getElementById('searchInput').addEventListener('input', (e) => {
             searchTerm = e.target.value.toLowerCase();
             applyFilters();
         });
 
-        // Обработчики модального окна
         document.getElementById('modalClose').addEventListener('click', closeModal);
         document.getElementById('modal').addEventListener('click', (e) => {
             if (e.target === document.getElementById('modal')) closeModal();
@@ -314,7 +311,6 @@
             if (e.key === 'Escape') closeModal();
         });
 
-        // Логика шаринга
         document.getElementById('btnCopyText').addEventListener('click', () => {
             if (!currentWork) return;
             const baseUrl = 'https://angel-adel.github.io/angel/works.html';
@@ -329,6 +325,6 @@
             const linkParam = currentWork.slug ? `?slug=${currentWork.slug}` : `?id=${currentWork.id}`;
             navigator.clipboard.writeText(baseUrl + linkParam).then(() => alert("✅ Ссылка на произведение скопирована!"));
         });
-    </script>
+    </script>    
 </body>
 </html>
