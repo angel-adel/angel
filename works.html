@@ -165,6 +165,64 @@
             background: #8e44ad;
             transform: translateY(-2px);
         }
+       .collections-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.5rem;
+    padding: 1rem 0;
+}
+.collection-card {
+    background: #fff;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    transition: transform 0.2s, box-shadow 0.2s;
+    text-decoration: none;
+    color: inherit;
+    display: flex;
+    flex-direction: column;
+    border: 1px solid transparent;
+}
+.collection-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 24px rgba(124, 58, 140, 0.15);
+    border-color: #7c3a8c;
+}
+.collection-cover {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+    background: #f0e6f5; /* Цвет заглушки, если нет картинки */
+}
+.collection-info {
+    padding: 1.2rem;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+}
+.collection-title {
+    font-size: 1.2rem;
+    font-weight: 700;
+    margin: 0 0 0.5rem 0;
+    color: #333;
+}
+.collection-desc {
+    font-size: 0.9rem;
+    color: #666;
+    line-height: 1.5;
+    margin: 0;
+    flex-grow: 1;
+    display: -webkit-box;
+    -webkit-line-clamp: 3; /* Обрезает текст после 3 строк */
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+/* Тёмная тема для карточек */
+[data-theme="dark"] .collection-card { background: #1c112b; border-color: #2d1b4e; }
+[data-theme="dark"] .collection-title { color: #f3e8ff; }
+[data-theme="dark"] .collection-desc { color: #b8a3d0; }
+[data-theme="dark"] .collection-cover { background: #2d1b4e; }
     </style>
 </head>
 <body>
@@ -194,6 +252,11 @@
         <div class="search-box">
             <input type="text" id="searchInput" placeholder="🔍 Поиск по названию...">
         </div>
+
+        <div id="collectionsGrid" class="collections-grid">
+    <!-- Сюда JavaScript вставит красивые карточки -->
+    <p style="text-align:center; color: #666;">Загрузка сборников...</p>
+</div>
 
         <div id="worksContainer">
             <div class="loading">Загрузка произведений...</div>
@@ -413,6 +476,60 @@
         });
 
         loadWorks();
+
+        // ==========================================
+// НОВЫЙ БЛОК: Загрузка и отрисовка сборников
+// ==========================================
+async function renderCollectionsGrid() {
+    const container = document.getElementById('collectionsGrid');
+    if (!container) return; // Если на странице нет этого блока, просто выходим, не вызывая ошибок
+
+    // Запрашиваем данные только из таблицы collections
+    const { data: collections, error } = await supabase
+        .from('collections')
+        .select('id, title, description, image_url')
+        .order('id', { ascending: true });
+
+    if (error || !collections) {
+        console.error('Ошибка загрузки сборников:', error);
+        container.innerHTML = ''; // Скрываем блок при ошибке, чтобы не портить вид
+        return; 
+    }
+
+    if (collections.length === 0) {
+        container.innerHTML = ''; // Если сборников нет, просто не рисуем блок
+        return;
+    }
+
+    // Рисуем карточки
+    container.innerHTML = collections.map(col => {
+        const imgUrl = col.image_url || 'https://via.placeholder.com/400x200/7c3a8c/ffffff?text=Сборник';
+        // Ссылка ведет на страницу прозы и автоматически активирует фильтр этого сборника
+        const link = `prose.html?collection=${col.id}`; 
+        
+        return `
+            <a href="${link}" class="collection-card">
+                <img src="${imgUrl}" alt="${escapeHtml(col.title)}" class="collection-cover" loading="lazy">
+                <div class="collection-info">
+                    <h3 class="collection-title">${escapeHtml(col.title)}</h3>
+                    <p class="collection-desc">${escapeHtml(col.description) || 'Описание скоро появится...'}</p>
+                </div>
+            </a>
+        `;
+    }).join('');
+}
+
+// ==========================================
+// ИНИЦИАЛИЗАЦИЯ ПРИ ЗАГРУЗКЕ СТРАНИЦЫ
+// ==========================================
+document.addEventListener('DOMContentLoaded', () => {
+    // 1. Здесь вызывается твоя СУЩЕСТВУЮЩАЯ функция загрузки стихов. 
+    // (Назови её так, как она у тебя называется, например loadPoems() или initWorks())
+    // loadPoems(); 
+    
+    // 2. Здесь вызывается НОВАЯ функция загрузки сборников
+    renderCollectionsGrid();
+});
     </script>
 </body>
 </html>
