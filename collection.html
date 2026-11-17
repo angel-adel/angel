@@ -135,56 +135,64 @@
         let collectionWorks = [];
 
         async function initCollectionPage() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const slug = urlParams.get('slug');
+    const urlParams = new URLSearchParams(window.location.search);
+    const slug = urlParams.get('slug');
 
-            if (!slug) {
-                document.getElementById('collectionHeader').innerHTML = '<p>Сборник не найден. <a href="works.html">Вернуться к списку</a></p>';
-                document.getElementById('worksList').innerHTML = '';
-                return;
-            }
+    // Проверяем, что slug валидный (не undefined, не null, не пустой)
+    if (!slug || slug === 'undefined' || slug === 'null') {
+        document.getElementById('collectionHeader').innerHTML = `
+            <h2>Сборник не найден</h2>
+            <p>Возможно, ссылка устарела или сборник ещё не создан.</p>
+            <a href="works.html" style="color: var(--accent);">← Вернуться к списку произведений</a>
+        `;
+        document.getElementById('worksList').innerHTML = '';
+        return;
+    }
 
-            try {
-                // 1. Загружаем информацию о самом сборнике
-                const { data: collection, error: colError } = await db
-                    .from('collections')
-                    .select('*')
-                    .eq('slug', slug)
-                    .single();
+    try {
+        const { data: collection, error: colError } = await db
+            .from('collections')
+            .select('*')
+            .eq('slug', slug)
+            .single();
 
-                if (colError || !collection) {
-                    throw new Error('Сборник с таким адресом не найден.');
-                }
-
-                // Отрисовываем шапку сборника
-                const headerHtml = `
-                    ${collection.image_url ? `<img src="${collection.image_url}" alt="${escapeHtml(collection.title)}" class="collection-hero-image">` : ''}
-                    <h1 class="collection-main-title">${escapeHtml(collection.title)}</h1>
-                    <p class="collection-main-desc">${escapeHtml(collection.description) || 'Описание отсутствует.'}</p>
-                `;
-                document.getElementById('collectionHeader').innerHTML = headerHtml;
-                document.title = `${collection.title} — Ádel`;
-
-                // 2. Загружаем все произведения, привязанные к этому сборнику
-                const { data: works, error: worksError } = await db
-                    .from('works')
-                    .select('id, slug, title, content, type, created_at, chapter_number')
-                    .eq('collection_id', collection.id)
-                    .eq('published', true)
-                    .order('chapter_number', { ascending: true, nullsFirst: false }) // Сначала главы по порядку
-                    .order('created_at', { ascending: false }); // Потом по дате
-
-                if (worksError) throw worksError;
-
-                collectionWorks = works || [];
-                renderWorksList();
-
-            } catch (error) {
-                console.error(error);
-                document.getElementById('collectionHeader').innerHTML = `<p>❌ Ошибка: ${error.message}</p>`;
-                document.getElementById('worksList').innerHTML = '';
-            }
+        if (colError || !collection) {
+            throw new Error(`Сборник со slug "${slug}" не найден в базе.`);
         }
+
+        // Отрисовываем шапку
+        const headerHtml = `
+            ${collection.image_url ? `<img src="${collection.image_url}" alt="${escapeHtml(collection.title)}" class="collection-hero-image">` : ''}
+            <h1 class="collection-main-title">${escapeHtml(collection.title)}</h1>
+            <p class="collection-main-desc">${escapeHtml(collection.description) || 'Описание отсутствует.'}</p>
+        `;
+        document.getElementById('collectionHeader').innerHTML = headerHtml;
+        document.title = `${collection.title} — Ádel`;
+
+        // Загружаем произведения
+        const { data: works, error: worksError } = await db
+            .from('works')
+            .select('id, slug, title, content, type, created_at, chapter_number')
+            .eq('collection_id', collection.id)
+            .eq('published', true)
+            .order('chapter_number', { ascending: true, nullsFirst: false })
+            .order('created_at', { ascending: false });
+
+        if (worksError) throw worksError;
+
+        collectionWorks = works || [];
+        renderWorksList();
+
+    } catch (error) {
+        console.error('Ошибка загрузки сборника:', error);
+        document.getElementById('collectionHeader').innerHTML = `
+            <h2>Ошибка загрузки</h2>
+            <p>${error.message}</p>
+            <a href="works.html" style="color: var(--accent);">← Вернуться к списку</a>
+        `;
+        document.getElementById('worksList').innerHTML = '';
+    }
+}
 
         function renderWorksList() {
             const container = document.getElementById('worksList');
