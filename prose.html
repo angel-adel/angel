@@ -8,6 +8,34 @@
     <link rel="stylesheet" href="style.css">
     <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
     <style>
+        /* Стили для фильтров (как в стихах) */
+        .filters-bar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.8rem;
+            justify-content: center;
+            margin: 2rem 0;
+        }
+        .filter-btn {
+            background: var(--bg-light);
+            border: 1px solid var(--accent-light);
+            padding: 0.5rem 1.2rem;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: 0.2s;
+            font-size: 0.9rem;
+        }
+        .filter-btn:hover {
+            background: var(--accent-light);
+            color: white;
+        }
+        .filter-btn.active-filter {
+            background: var(--accent);
+            color: white;
+            border-color: var(--accent);
+        }
+
+        /* Карточки произведений */
         .prose-card {
             background: white;
             border-radius: var(--radius-sm);
@@ -56,6 +84,8 @@
             font-size: 0.85rem;
             font-weight: 500;
         }
+        
+        /* Модальное окно */
         .modal {
             display: none;
             position: fixed;
@@ -118,29 +148,6 @@
             padding: 2rem;
             color: var(--text-muted);
         }
-        .share-buttons {
-            margin-top: 2rem; 
-            display: flex; 
-            gap: 1rem; 
-            justify-content: center; 
-            border-top: 1px solid #eee; 
-            padding-top: 1.5rem;
-            flex-wrap: wrap;
-        }
-        .share-btn {
-            background: #9b59b6; 
-            color: white; 
-            border: none; 
-            padding: 0.6rem 1.2rem; 
-            border-radius: 30px; 
-            cursor: pointer; 
-            font-size: 0.9rem; 
-            transition: 0.2s;
-        }
-        .share-btn:hover {
-            background: #8e44ad;
-            transform: translateY(-2px);
-        }
         @media (max-width: 600px) {
             .prose-card {
                 flex-direction: column;
@@ -167,8 +174,13 @@
 
     <main>
         <h1>📖 Проза Адель</h1>
-        <p>Рассказы, зарисовки, тихие истории от крылатой поэтессы.</p>
+        <p>Рассказы, зарисовки, тихие истории и крупная проза.</p>
         
+        <!-- Фильтры -->
+        <div class="filters-bar" id="filtersBar">
+            <!-- Сюда будут добавлены кнопки сборников -->
+        </div>
+
         <div id="proseContainer">
             <div class="loading">Загрузка рассказов...</div>
         </div>
@@ -181,10 +193,9 @@
             <img class="modal-image" id="modalImage" style="display: none;" alt="Иллюстрация">
             <div class="modal-text" id="modalText"></div>
             
-            <!-- Кнопки шаринга -->
-            <div class="share-buttons">
-                <button class="share-btn" id="btnCopyText">📋 Скопировать текст</button>
-                <button class="share-btn" id="btnCopyLink">🔗 Скопировать ссылку</button>
+            <div class="share-buttons" style="margin-top: 2rem; display: flex; gap: 1rem; justify-content: center; border-top: 1px solid #eee; padding-top: 1.5rem; flex-wrap: wrap;">
+                <button class="share-btn" id="btnCopyText" style="background: #9b59b6; color: white; border: none; padding: 0.6rem 1.2rem; border-radius: 30px; cursor: pointer; font-size: 0.9rem;">📋 Скопировать текст</button>
+                <button class="share-btn" id="btnCopyLink" style="background: #8e44ad; color: white; border: none; padding: 0.6rem 1.2rem; border-radius: 30px; cursor: pointer; font-size: 0.9rem;">🔗 Скопировать ссылку</button>
             </div>
         </div>
     </div>
@@ -209,29 +220,33 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <script>
-        let proseList = []; // Сохраняем глобально для поиска
+        let proseList = []; // Все произведения
+        let collectionsList = []; // Все сборники
+        let activeCollection = 'all'; // Текущий фильтр ('all' или id сборника)
         let currentProse = null;
 
         async function loadProse() {
             const container = document.getElementById('proseContainer');
+            const filtersBar = document.getElementById('filtersBar');
             const SUPABASE_URL = 'https://qoqflgpkbzvdtleidtjw.supabase.co'; 
             const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFvcWZsZ3BrYnp2ZHRsZWlkdGp3Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc5Mjk0ODE0MywiZXhwIjoyMTA4NTI0MTQzfQ.5q4asB-_LFhDnzikW_tWM37RzVq85YQGAEeP4ZMF0dU';
             
             try {
                 const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
                 
-                // ДОБАВИЛИ slug в запрос
+                // 1. Загружаем сборники
+                const { data: cols } = await supabase.from('collections').select('*').order('id');
+                collectionsList = cols || [];
+
+                // 2. Загружаем всю прозу
                 const { data: proseData, error } = await supabase
                     .from('works')
-                    .select('id, slug, title, full_text, description, image_url, created_at')
+                    .select('id, slug, title, content, full_text, description, image_url, created_at, collection_id, chapter_number, type')
                     .eq('published', true)
-                    .eq('type', 'prose')
-                    .order('created_at', { ascending: false });
+                    .in('type', ['prose', 'story']) // Берем и старую прозу, и новые рассказы
+                    .order('created_at', { ascending: true });
 
-                if (error) {
-                    container.innerHTML = `<p>❌ Ошибка базы: ${error.message}</p>`;
-                    return;
-                }
+                if (error) throw error;
                 
                 if (!proseData || proseData.length === 0) {
                     container.innerHTML = '<p>Пока нет рассказов. Адель пишет тихо, но скоро появятся.</p>';
@@ -243,46 +258,91 @@
                     slug: item.slug,
                     title: item.title,
                     date: item.created_at,
-                    description: item.description || '',
+                    description: item.description || item.content || '',
                     image: item.image_url || '',
-                    fullText: item.full_text || ''
+                    fullText: item.full_text || item.content || '',
+                    collection_id: item.collection_id,
+                    chapter_number: item.chapter_number
                 }));
-                
-                container.innerHTML = proseList.map(prose => `
-                    <div class="prose-card" data-id="${prose.id}">
-                        ${prose.image ? `<img class="prose-image" src="${prose.image}" alt="Иллюстрация" loading="lazy" onerror="this.style.display='none'">` : ''}
-                        <div class="prose-content">
-                            <div class="prose-title">${escapeHtml(prose.title)}</div>
-                            <div class="prose-date">${formatDate(prose.date)}</div>
-                            <div class="prose-description">${escapeHtml(prose.description)}</div>
-                            <div class="read-more">📖 Читать →</div>
-                        </div>
-                    </div>
-                `).join('');
-                
-                document.querySelectorAll('.prose-card').forEach(card => {
-                    card.addEventListener('click', () => {
-                        const id = card.dataset.id;
-                        const prose = proseList.find(p => p.id == id);
-                        if (prose) openModal(prose);
+
+                // 3. Рисуем кнопки фильтров
+                filtersBar.innerHTML = `<button class="filter-btn ${activeCollection === 'all' ? 'active-filter' : ''}" data-col="all">📚 Все произведения</button>`;
+                collectionsList.forEach(col => {
+                    filtersBar.innerHTML += `<button class="filter-btn ${activeCollection == col.id ? 'active-filter' : ''}" data-col="${col.id}">📖 ${col.title}</button>`;
+                });
+
+                // Вешаем события на кнопки
+                document.querySelectorAll('.filter-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active-filter'));
+                        e.target.classList.add('active-filter');
+                        activeCollection = e.target.getAttribute('data-col');
+                        renderProse();
                     });
                 });
 
-                checkUrlParams(); // Проверка ссылки при загрузке
+                // 4. Рисуем список
+                renderProse();
+
+                // 5. Проверяем URL (если зашли по прямой ссылке)
+                checkUrlParams();
                 
             } catch (error) {
                 console.error('Ошибка загрузки прозы:', error);
                 container.innerHTML = `<p>❌ Ошибка: ${error.message}</p>`;
             }
         }
-        
+
+        function renderProse() {
+            const container = document.getElementById('proseContainer');
+            
+            // Фильтруем
+            let filtered = proseList;
+            if (activeCollection !== 'all') {
+                filtered = filtered.filter(item => item.collection_id == activeCollection);
+            }
+
+            // Сортируем: если это сборник с главами, то по chapter_number, иначе по дате
+            filtered.sort((a, b) => {
+                if (a.chapter_number && b.chapter_number) {
+                    return a.chapter_number - b.chapter_number;
+                }
+                return new Date(b.date) - new Date(a.date);
+            });
+
+            if (filtered.length === 0) {
+                container.innerHTML = '<p>В этом разделе пока нет произведений.</p>';
+                return;
+            }
+
+            container.innerHTML = filtered.map(prose => `
+                <div class="prose-card" data-id="${prose.id}">
+                    ${prose.image ? `<img class="prose-image" src="${prose.image}" alt="Иллюстрация" loading="lazy" onerror="this.style.display='none'">` : ''}
+                    <div class="prose-content">
+                        <div class="prose-title">${escapeHtml(prose.title)}</div>
+                        <div class="prose-date">${formatDate(prose.date)}</div>
+                        <div class="prose-description">${escapeHtml(prose.description).substring(0, 200)}...</div>
+                        <div class="read-more">📖 Читать →</div>
+                    </div>
+                </div>
+            `).join('');
+
+            document.querySelectorAll('.prose-card').forEach(card => {
+                card.addEventListener('click', () => {
+                    const id = card.dataset.id;
+                    const prose = proseList.find(p => p.id == id);
+                    if (prose) openModal(prose);
+                });
+            });
+        }
+
         function openModal(prose) {
             const modal = document.getElementById('modal');
             const title = document.getElementById('modalTitle');
             const text = document.getElementById('modalText');
             const modalImage = document.getElementById('modalImage');
             
-            currentProse = prose; // Сохраняем текущую прозу
+            currentProse = prose;
             
             title.textContent = prose.title;
             text.innerHTML = escapeHtml(prose.fullText).replace(/\n/g, '<br>');
@@ -321,33 +381,21 @@
             const baseUrl = 'https://angel-adel.github.io/angel/prose.html';
             const linkParam = currentProse.slug ? `?slug=${currentProse.slug}` : `?id=${currentProse.id}`;
             const fullLink = baseUrl + linkParam;
-            
             const textToCopy = `${currentProse.title}\n\n${currentProse.fullText}\n\nЧитать на сайте: ${fullLink}`;
-            
-            navigator.clipboard.writeText(textToCopy).then(() => {
-                alert("✅ Текст и ссылка скопированы!");
-            });
+            navigator.clipboard.writeText(textToCopy).then(() => alert("✅ Текст и ссылка скопированы!"));
         });
 
         document.getElementById('btnCopyLink').addEventListener('click', () => {
             if (!currentProse) return;
             const baseUrl = 'https://angel-adel.github.io/angel/prose.html';
             const linkParam = currentProse.slug ? `?slug=${currentProse.slug}` : `?id=${currentProse.id}`;
-            const fullLink = baseUrl + linkParam;
-            
-            navigator.clipboard.writeText(fullLink).then(() => {
-                alert("✅ Ссылка на произведение скопирована!");
-            });
+            navigator.clipboard.writeText(baseUrl + linkParam).then(() => alert("✅ Ссылка на произведение скопирована!"));
         });
         
         function formatDate(dateString) {
             if (!dateString) return '';
             const date = new Date(dateString);
-            return date.toLocaleDateString('ru-RU', {
-                day: 'numeric',
-                month: 'long',
-                year: 'numeric'
-            });
+            return date.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' });
         }
         
         function escapeHtml(str) {
