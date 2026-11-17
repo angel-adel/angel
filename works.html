@@ -141,6 +141,30 @@
             line-height: 1.7;
             font-family: 'Georgia', serif;
         }
+        /* Стили для кнопок шаринга */
+        .share-buttons {
+            margin-top: 2rem; 
+            display: flex; 
+            gap: 1rem; 
+            justify-content: center; 
+            border-top: 1px solid #eee; 
+            padding-top: 1.5rem;
+            flex-wrap: wrap;
+        }
+        .share-btn {
+            background: #9b59b6; 
+            color: white; 
+            border: none; 
+            padding: 0.6rem 1.2rem; 
+            border-radius: 30px; 
+            cursor: pointer; 
+            font-size: 0.9rem; 
+            transition: 0.2s;
+        }
+        .share-btn:hover {
+            background: #8e44ad;
+            transform: translateY(-2px);
+        }
     </style>
 </head>
 <body>
@@ -182,6 +206,12 @@
             <span class="modal-close" id="modalClose">&times;</span>
             <h2 class="modal-title" id="modalTitle"></h2>
             <div class="modal-text" id="modalText"></div>
+            
+            <!-- Кнопки шаринга -->
+            <div class="share-buttons">
+                <button class="share-btn" id="btnCopyText">📋 Скопировать текст</button>
+                <button class="share-btn" id="btnCopyLink">🔗 Скопировать ссылку</button>
+            </div>
         </div>
     </div>
 
@@ -192,15 +222,15 @@
         <a href="contacts.html">Контакты</a>
     </footer>
 
-        <!-- 1. Подключаем скрипт меню -->
-        <script src="menu.js"></script>
-        <script src="bug-report.js"></script>
+    <script src="menu.js"></script>
+    <script src="bug-report.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <script>
         let allWorks = [];
         let activeLang = 'all';
         let searchTerm = '';
+        let currentWork = null; // Храним текущее открытое произведение
 
         async function loadWorks() {
             const container = document.getElementById('worksContainer');
@@ -210,9 +240,10 @@
             try {
                 const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
                 
+                // ДОБАВИЛИ id и slug
                 const { data: poems, error } = await supabase
                     .from('works')
-                    .select('title, content, language')
+                    .select('id, slug, title, content, language')
                     .eq('published', true)
                     .eq('type', 'poem')
                     .order('created_at', { ascending: false });
@@ -228,6 +259,8 @@
                 }
 
                 allWorks = poems.map(poem => ({
+                    id: poem.id,
+                    slug: poem.slug,
                     title: poem.title,
                     content: poem.content,
                     lang: poem.language || 'ru',
@@ -235,6 +268,7 @@
                 }));
                 
                 applyFilters();
+                checkUrlParams(); // Проверяем, есть ли ссылка на конкретный стих
                 
             } catch (error) {
                 container.innerHTML = '<p>Ошибка скрипта: ' + error.message + '</p>';
@@ -260,8 +294,8 @@
                 return;
             }
             
-            container.innerHTML = works.map((work, idx) => `
-                <div class="work-card" data-idx="${idx}">
+            container.innerHTML = works.map((work) => `
+                <div class="work-card" data-id="${work.id}">
                     <div class="work-title">${escapeHtml(work.title)}</div>
                     <div class="work-meta">
                         <span class="badge">${getLangName(work.lang)}</span>
@@ -272,8 +306,8 @@
             
             document.querySelectorAll('.work-card').forEach(card => {
                 card.addEventListener('click', () => {
-                    const idx = parseInt(card.dataset.idx);
-                    const work = works[idx];
+                    const id = card.dataset.id;
+                    const work = allWorks.find(w => w.id == id);
                     if (work) openModal(work);
                 });
             });
@@ -283,6 +317,8 @@
             const modal = document.getElementById('modal');
             const title = document.getElementById('modalTitle');
             const text = document.getElementById('modalText');
+            
+            currentWork = work; // Сохраняем для шаринга
             
             title.textContent = work.title;
             text.innerHTML = escapeHtml(work.content).replace(/\n/g, '<br>');
@@ -294,7 +330,46 @@
         function closeModal() {
             document.getElementById('modal').classList.remove('active');
             document.body.style.overflow = '';
+            // Опционально: можно очищать URL, чтобы при закрытии ссылка исчезала
+            // window.history.replaceState(null, null, window.location.pathname);
         }
+
+        function checkUrlParams() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const slug = urlParams.get('slug');
+            const id = urlParams.get('id');
+            
+            let targetWork = null;
+            if (slug) targetWork = allWorks.find(w => w.slug === slug);
+            else if (id) targetWork = allWorks.find(w => w.id == id);
+            
+            if (targetWork) openModal(targetWork);
+        }
+
+        // --- ЛОГИКА ШАРИНГА ---
+        document.getElementById('btnCopyText').addEventListener('click', () => {
+            if (!currentWork) return;
+            const baseUrl = 'https://angel-adel.github.io/angel/works.html';
+            const linkParam = currentWork.slug ? `?slug=${currentWork.slug}` : `?id=${currentWork.id}`;
+            const fullLink = baseUrl + linkParam;
+            
+            const textToCopy = `${currentWork.title}\n\n${currentWork.content}\n\nЧитать на сайте: ${fullLink}`;
+            
+            navigator.clipboard.writeText(textToCopy).then(() => {
+                alert("✅ Текст и ссылка скопированы!");
+            });
+        });
+
+        document.getElementById('btnCopyLink').addEventListener('click', () => {
+            if (!currentWork) return;
+            const baseUrl = 'https://angel-adel.github.io/angel/works.html';
+            const linkParam = currentWork.slug ? `?slug=${currentWork.slug}` : `?id=${currentWork.id}`;
+            const fullLink = baseUrl + linkParam;
+            
+            navigator.clipboard.writeText(fullLink).then(() => {
+                alert("✅ Ссылка на произведение скопирована!");
+            });
+        });
 
         function getLangName(lang) {
             const names = {
