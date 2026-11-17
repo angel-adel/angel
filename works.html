@@ -8,225 +8,47 @@
     <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
     <link rel="stylesheet" href="style.css">
     <style>
-        .filters-bar {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.8rem;
-            justify-content: center;
-            margin: 2rem 0;
-        }
-        .filter-btn {
-            background: var(--bg-light);
-            border: 1px solid var(--accent-light);
-            padding: 0.5rem 1.2rem;
-            border-radius: 30px;
-            cursor: pointer;
-            transition: 0.2s;
-            font-size: 0.9rem;
-        }
-        .filter-btn:hover {
-            background: var(--accent-light);
-            color: white;
-        }
-        .filter-btn.active-filter {
-            background: var(--accent);
-            color: white;
-            border-color: var(--accent);
-        }
-        .search-box {
-            text-align: center;
-            margin: 1.5rem 0;
-        }
-        .search-box input {
-            padding: 0.7rem 1.5rem;
-            width: 100%;
-            max-width: 350px;
-            border-radius: 40px;
-            border: 1px solid var(--accent-light);
-            font-size: 0.95rem;
-        }
-        .works-grid {
-            display: flex;
-            flex-direction: column;
-            gap: 1.2rem;
-            margin: 2rem 0;
-        }
-        .work-card {
-            background: white;
-            border-radius: var(--radius-sm);
-            padding: 1.2rem;
-            border: var(--border);
-            transition: all 0.2s;
-            cursor: pointer;
-        }
-        .work-card:hover {
-            transform: translateY(-3px);
-            box-shadow: var(--shadow-hover);
-        }
-        .work-title {
-            font-size: 1.2rem;
-            color: var(--accent);
-            margin-bottom: 0.3rem;
-        }
-        .work-meta {
-            font-size: 0.8rem;
-            color: var(--text-muted);
-            margin-bottom: 0.6rem;
-            display: flex;
-            gap: 1rem;
-            flex-wrap: wrap;
-        }
-        .work-excerpt {
-            color: var(--text-dark);
-            font-size: 0.9rem;
-            line-height: 1.4;
-        }
-        .badge {
-            background: var(--accent-light);
-            padding: 0.2rem 0.6rem;
-            border-radius: 20px;
-            font-size: 0.7rem;
-        }
-        .loading {
-            text-align: center;
-            padding: 2rem;
-            color: var(--text-muted);
-        }
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.8);
-            z-index: 20000;
-            justify-content: center;
-            align-items: center;
-            backdrop-filter: blur(4px);
-        }
-        .modal.active {
-            display: flex;
-        }
-        .modal-content {
-            background: white;
-            border-radius: var(--radius);
-            max-width: 700px;
-            width: 90%;
-            max-height: 85vh;
-            overflow-y: auto;
-            padding: 2rem;
-            position: relative;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
-        }
-        .modal-close {
-            position: absolute;
-            top: 1rem;
-            right: 1.5rem;
-            font-size: 2rem;
-            cursor: pointer;
-            color: var(--text-muted);
-            transition: 0.2s;
-        }
-        .modal-close:hover {
-            color: var(--accent);
-        }
-        .modal-title {
-            color: var(--accent);
-            margin-bottom: 1rem;
-            padding-right: 2rem;
-        }
-        .modal-text {
-            white-space: pre-wrap;
-            line-height: 1.7;
-            font-family: 'Georgia', serif;
-        }
-        /* Стили для кнопок шаринга */
-        .share-buttons {
-            margin-top: 2rem; 
-            display: flex; 
-            gap: 1rem; 
-            justify-content: center; 
-            border-top: 1px solid #eee; 
-            padding-top: 1.5rem;
-            flex-wrap: wrap;
-        }
-        .share-btn {
-            background: #9b59b6; 
-            color: white; 
-            border: none; 
-            padding: 0.6rem 1.2rem; 
-            border-radius: 30px; 
-            cursor: pointer; 
-            font-size: 0.9rem; 
-            transition: 0.2s;
-        }
-        .share-btn:hover {
-            background: #8e44ad;
-            transform: translateY(-2px);
-        }
-       .collections-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 1.5rem;
-    padding: 1rem 0;
-}
-.collection-card {
-    background: #fff;
-    border-radius: 16px;
-    overflow: hidden;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-    transition: transform 0.2s, box-shadow 0.2s;
-    text-decoration: none;
-    color: inherit;
-    display: flex;
-    flex-direction: column;
-    border: 1px solid transparent;
-}
-.collection-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 24px rgba(124, 58, 140, 0.15);
-    border-color: #7c3a8c;
-}
-.collection-cover {
-    width: 100%;
-    height: 180px;
-    object-fit: cover;
-    background: #f0e6f5; /* Цвет заглушки, если нет картинки */
-}
-.collection-info {
-    padding: 1.2rem;
-    flex-grow: 1;
-    display: flex;
-    flex-direction: column;
-}
-.collection-title {
-    font-size: 1.2rem;
-    font-weight: 700;
-    margin: 0 0 0.5rem 0;
-    color: #333;
-}
-.collection-desc {
-    font-size: 0.9rem;
-    color: #666;
-    line-height: 1.5;
-    margin: 0;
-    flex-grow: 1;
-    display: -webkit-box;
-    -webkit-line-clamp: 3; /* Обрезает текст после 3 строк */
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-}
-
-/* Тёмная тема для карточек */
-[data-theme="dark"] .collection-card { background: #1c112b; border-color: #2d1b4e; }
-[data-theme="dark"] .collection-title { color: #f3e8ff; }
-[data-theme="dark"] .collection-desc { color: #b8a3d0; }
-[data-theme="dark"] .collection-cover { background: #2d1b4e; }
+        .filters-bar { display: flex; flex-wrap: wrap; gap: 0.8rem; justify-content: center; margin: 2rem 0; }
+        .filter-btn { background: var(--bg-light); border: 1px solid var(--accent-light); padding: 0.5rem 1.2rem; border-radius: 30px; cursor: pointer; transition: 0.2s; font-size: 0.9rem; }
+        .filter-btn:hover { background: var(--accent-light); color: white; }
+        .filter-btn.active-filter { background: var(--accent); color: white; border-color: var(--accent); }
+        .search-box { text-align: center; margin: 1.5rem 0; }
+        .search-box input { padding: 0.7rem 1.5rem; width: 100%; max-width: 350px; border-radius: 40px; border: 1px solid var(--accent-light); font-size: 0.95rem; }
+        .works-grid { display: flex; flex-direction: column; gap: 1.2rem; margin: 2rem 0; }
+        .work-card { background: white; border-radius: var(--radius-sm); padding: 1.2rem; border: var(--border); transition: all 0.2s; cursor: pointer; }
+        .work-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-hover); }
+        .work-title { font-size: 1.2rem; color: var(--accent); margin-bottom: 0.3rem; }
+        .work-meta { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0.6rem; display: flex; gap: 1rem; flex-wrap: wrap; }
+        .work-excerpt { color: var(--text-dark); font-size: 0.9rem; line-height: 1.4; }
+        .badge { background: var(--accent-light); padding: 0.2rem 0.6rem; border-radius: 20px; font-size: 0.7rem; }
+        .loading { text-align: center; padding: 2rem; color: var(--text-muted); }
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 20000; justify-content: center; align-items: center; backdrop-filter: blur(4px); }
+        .modal.active { display: flex; }
+        .modal-content { background: white; border-radius: var(--radius); max-width: 700px; width: 90%; max-height: 85vh; overflow-y: auto; padding: 2rem; position: relative; box-shadow: 0 20px 40px rgba(0,0,0,0.2); }
+        .modal-close { position: absolute; top: 1rem; right: 1.5rem; font-size: 2rem; cursor: pointer; color: var(--text-muted); transition: 0.2s; }
+        .modal-close:hover { color: var(--accent); }
+        .modal-title { color: var(--accent); margin-bottom: 1rem; padding-right: 2rem; }
+        .modal-text { white-space: pre-wrap; line-height: 1.7; font-family: 'Georgia', serif; }
+        .share-buttons { margin-top: 2rem; display: flex; gap: 1rem; justify-content: center; border-top: 1px solid #eee; padding-top: 1.5rem; flex-wrap: wrap; }
+        .share-btn { background: #9b59b6; color: white; border: none; padding: 0.6rem 1.2rem; border-radius: 30px; cursor: pointer; font-size: 0.9rem; transition: 0.2s; }
+        .share-btn:hover { background: #8e44ad; transform: translateY(-2px); }
+        
+        /* Стили для карточек сборников */
+        .collections-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.5rem; padding: 1rem 0; }
+        .collection-card { background: #fff; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.05); transition: transform 0.2s, box-shadow 0.2s; text-decoration: none; color: inherit; display: flex; flex-direction: column; border: 1px solid transparent; }
+        .collection-card:hover { transform: translateY(-5px); box-shadow: 0 8px 24px rgba(124, 58, 140, 0.15); border-color: #7c3a8c; }
+        .collection-cover { width: 100%; height: 180px; object-fit: cover; background: #f0e6f5; }
+        .collection-info { padding: 1.2rem; flex-grow: 1; display: flex; flex-direction: column; }
+        .collection-title { font-size: 1.2rem; font-weight: 700; margin: 0 0 0.5rem 0; color: #333; }
+        .collection-desc { font-size: 0.9rem; color: #666; line-height: 1.5; margin: 0; flex-grow: 1; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+        [data-theme="dark"] .collection-card { background: #1c112b; border-color: #2d1b4e; }
+        [data-theme="dark"] .collection-title { color: #f3e8ff; }
+        [data-theme="dark"] .collection-desc { color: #b8a3d0; }
+        [data-theme="dark"] .collection-cover { background: #2d1b4e; }
     </style>
 </head>
 <body>
-     <header>
+    <header>
         <nav class="navbar">
             <div class="logo"><a href="index.html">Ádel</a></div>
             <ul class="nav-links" id="navLinks"></ul>
@@ -253,11 +75,12 @@
             <input type="text" id="searchInput" placeholder="🔍 Поиск по названию...">
         </div>
 
+        <!-- Контейнер для сборников -->
         <div id="collectionsGrid" class="collections-grid">
-    <!-- Сюда JavaScript вставит красивые карточки -->
-    <p style="text-align:center; color: #666;">Загрузка сборников...</p>
-</div>
+            <p class="loading">Загрузка сборников...</p>
+        </div>
 
+        <!-- Контейнер для произведений -->
         <div id="worksContainer">
             <div class="loading">Загрузка произведений...</div>
         </div>
@@ -270,7 +93,6 @@
             <h2 class="modal-title" id="modalTitle"></h2>
             <div class="modal-text" id="modalText"></div>
             
-            <!-- Кнопки шаринга -->
             <div class="share-buttons">
                 <button class="share-btn" id="btnCopyText">📋 Скопировать текст</button>
                 <button class="share-btn" id="btnCopyLink">🔗 Скопировать ссылку</button>
@@ -280,9 +102,7 @@
 
     <footer>
         <p>2026. Адель. Angel de la poesía. ✨</p>
-        <a href="index.html">Главная</a> |
-        <a href="about.html">Об авторе</a> |
-        <a href="contacts.html">Контакты</a>
+        <a href="index.html">Главная</a> | <a href="about.html">Об авторе</a> | <a href="contacts.html">Контакты</a>
     </footer>
 
     <script src="menu.js"></script>
@@ -290,20 +110,27 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <script>
+        // ==========================================
+        // 1. ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ И ИНИЦИАЛИЗАЦИЯ БД
+        // ==========================================
         let allWorks = [];
         let activeLang = 'all';
         let searchTerm = '';
-        let currentWork = null; // Храним текущее открытое произведение
+        let currentWork = null;
 
+        // ⚠️ ВСТАВЬ СЮДА СВОИ КЛЮЧИ (только anon/public ключ!)
+        const SUPABASE_URL = 'https://qoqflgpkbzvdtleidtjw.supabase.co'; 
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFvcWZsZ3BrYnp2ZHRsZWlkdGp3Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc5Mjk0ODE0MywiZXhwIjoyMTA4NTI0MTQzfQ.5q4asB-_LFhDnzikW_tWM37RzVq85YQGAEeP4ZMF0dU';
+        
+        // Создаем клиент один раз глобально, чтобы все функции могли его использовать
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        // ==========================================
+        // 2. ОСНОВНЫЕ ФУНКЦИИ
+        // ==========================================
         async function loadWorks() {
             const container = document.getElementById('worksContainer');
-            const SUPABASE_URL = 'https://qoqflgpkbzvdtleidtjw.supabase.co'; 
-            const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFvcWZsZ3BrYnp2ZHRsZWlkdGp3Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc5Mjk0ODE0MywiZXhwIjoyMTA4NTI0MTQzfQ.5q4asB-_LFhDnzikW_tWM37RzVq85YQGAEeP4ZMF0dU';
-            
             try {
-                const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-                
-                // ДОБАВИЛИ id и slug
                 const { data: poems, error } = await supabase
                     .from('works')
                     .select('id, slug, title, content, language')
@@ -312,12 +139,12 @@
                     .order('created_at', { ascending: false });
 
                 if (error) {
-                    container.innerHTML = '<p>Ошибка базы: ' + error.message + '</p>';
+                    container.innerHTML = '<p class="loading">Ошибка базы: ' + error.message + '</p>';
                     return;
                 }
                 
                 if (!poems || poems.length === 0) {
-                    container.innerHTML = '<p>Произведения пока не добавлены.</p>';
+                    container.innerHTML = '<p class="loading">Произведения пока не добавлены.</p>';
                     return;
                 }
 
@@ -331,10 +158,9 @@
                 }));
                 
                 applyFilters();
-                checkUrlParams(); // Проверяем, есть ли ссылка на конкретный стих
-                
+                checkUrlParams();
             } catch (error) {
-                container.innerHTML = '<p>Ошибка скрипта: ' + error.message + '</p>';
+                container.innerHTML = '<p class="loading">Ошибка скрипта: ' + error.message + '</p>';
             }
         }
 
@@ -351,9 +177,8 @@
 
         function displayWorks(works) {
             const container = document.getElementById('worksContainer');
-            
             if (!works.length) {
-                container.innerHTML = '<p>Ничего не найдено.</p>';
+                container.innerHTML = '<p class="loading">Ничего не найдено.</p>';
                 return;
             }
             
@@ -369,32 +194,23 @@
             
             document.querySelectorAll('.work-card').forEach(card => {
                 card.addEventListener('click', () => {
-                    const id = card.dataset.id;
-                    const work = allWorks.find(w => w.id == id);
+                    const work = allWorks.find(w => w.id == card.dataset.id);
                     if (work) openModal(work);
                 });
             });
         }
 
         function openModal(work) {
-            const modal = document.getElementById('modal');
-            const title = document.getElementById('modalTitle');
-            const text = document.getElementById('modalText');
-            
-            currentWork = work; // Сохраняем для шаринга
-            
-            title.textContent = work.title;
-            text.innerHTML = escapeHtml(work.content).replace(/\n/g, '<br>');
-            
-            modal.classList.add('active');
+            currentWork = work;
+            document.getElementById('modalTitle').textContent = work.title;
+            document.getElementById('modalText').innerHTML = escapeHtml(work.content).replace(/\n/g, '<br>');
+            document.getElementById('modal').classList.add('active');
             document.body.style.overflow = 'hidden';
         }
 
         function closeModal() {
             document.getElementById('modal').classList.remove('active');
             document.body.style.overflow = '';
-            // Опционально: можно очищать URL, чтобы при закрытии ссылка исчезала
-            // window.history.replaceState(null, null, window.location.pathname);
         }
 
         function checkUrlParams() {
@@ -409,37 +225,8 @@
             if (targetWork) openModal(targetWork);
         }
 
-        // --- ЛОГИКА ШАРИНГА ---
-        document.getElementById('btnCopyText').addEventListener('click', () => {
-            if (!currentWork) return;
-            const baseUrl = 'https://angel-adel.github.io/angel/works.html';
-            const linkParam = currentWork.slug ? `?slug=${currentWork.slug}` : `?id=${currentWork.id}`;
-            const fullLink = baseUrl + linkParam;
-            
-            const textToCopy = `${currentWork.title}\n\n${currentWork.content}\n\nЧитать на сайте: ${fullLink}`;
-            
-            navigator.clipboard.writeText(textToCopy).then(() => {
-                alert("✅ Текст и ссылка скопированы!");
-            });
-        });
-
-        document.getElementById('btnCopyLink').addEventListener('click', () => {
-            if (!currentWork) return;
-            const baseUrl = 'https://angel-adel.github.io/angel/works.html';
-            const linkParam = currentWork.slug ? `?slug=${currentWork.slug}` : `?id=${currentWork.id}`;
-            const fullLink = baseUrl + linkParam;
-            
-            navigator.clipboard.writeText(fullLink).then(() => {
-                alert("✅ Ссылка на произведение скопирована!");
-            });
-        });
-
         function getLangName(lang) {
-            const names = {
-                ru: '🇷🇺 Русский',
-                es: '🇪🇸 Español',
-                en: '🇬🇧 English'
-            };
+            const names = { ru: '🇷🇺 Русский', es: '🇪🇸 Español', en: '🇬🇧 English' };
             return names[lang] || lang;
         }
 
@@ -453,6 +240,56 @@
             });
         }
 
+        // ==========================================
+        // 3. НОВЫЙ БЛОК: СБОРНИКИ
+        // ==========================================
+        async function renderCollectionsGrid() {
+            const container = document.getElementById('collectionsGrid');
+            if (!container) return;
+
+            // Теперь supabase виден здесь, потому что он глобальный!
+            const { data: collections, error } = await supabase
+                .from('collections')
+                .select('id, title, description, image_url')
+                .order('id', { ascending: true });
+
+            if (error || !collections) {
+                console.error('Ошибка загрузки сборников:', error);
+                container.innerHTML = ''; // Скрываем блок при ошибке
+                return; 
+            }
+
+            if (collections.length === 0) {
+                container.innerHTML = ''; // Если сборников нет, скрываем блок
+                return;
+            }
+
+            container.innerHTML = collections.map(col => {
+                const imgUrl = col.image_url || 'https://via.placeholder.com/400x200/7c3a8c/ffffff?text=Сборник';
+                const link = `prose.html?collection=${col.id}`; 
+                
+                return `
+                    <a href="${link}" class="collection-card">
+                        <img src="${imgUrl}" alt="${escapeHtml(col.title)}" class="collection-cover" loading="lazy">
+                        <div class="collection-info">
+                            <h3 class="collection-title">${escapeHtml(col.title)}</h3>
+                            <p class="collection-desc">${escapeHtml(col.description) || 'Описание скоро появится...'}</p>
+                        </div>
+                    </a>
+                `;
+            }).join('');
+        }
+
+        // ==========================================
+        // 4. СОБЫТИЯ И ИНИЦИАЛИЗАЦИЯ
+        // ==========================================
+        document.addEventListener('DOMContentLoaded', () => {
+            // Запускаем обе функции параллельно при загрузке страницы
+            loadWorks();
+            renderCollectionsGrid();
+        });
+
+        // Обработчики фильтров
         document.querySelectorAll('[data-lang]').forEach(btn => {
             btn.addEventListener('click', () => {
                 document.querySelectorAll('[data-lang]').forEach(b => b.classList.remove('active-filter'));
@@ -462,11 +299,13 @@
             });
         });
 
+        // Обработчик поиска
         document.getElementById('searchInput').addEventListener('input', (e) => {
             searchTerm = e.target.value.toLowerCase();
             applyFilters();
         });
 
+        // Обработчики модального окна
         document.getElementById('modalClose').addEventListener('click', closeModal);
         document.getElementById('modal').addEventListener('click', (e) => {
             if (e.target === document.getElementById('modal')) closeModal();
@@ -475,61 +314,21 @@
             if (e.key === 'Escape') closeModal();
         });
 
-        loadWorks();
+        // Логика шаринга
+        document.getElementById('btnCopyText').addEventListener('click', () => {
+            if (!currentWork) return;
+            const baseUrl = 'https://angel-adel.github.io/angel/works.html';
+            const linkParam = currentWork.slug ? `?slug=${currentWork.slug}` : `?id=${currentWork.id}`;
+            const textToCopy = `${currentWork.title}\n\n${currentWork.content}\n\nЧитать на сайте: ${baseUrl + linkParam}`;
+            navigator.clipboard.writeText(textToCopy).then(() => alert("✅ Текст и ссылка скопированы!"));
+        });
 
-        // ==========================================
-// НОВЫЙ БЛОК: Загрузка и отрисовка сборников
-// ==========================================
-async function renderCollectionsGrid() {
-    const container = document.getElementById('collectionsGrid');
-    if (!container) return; // Если на странице нет этого блока, просто выходим, не вызывая ошибок
-
-    // Запрашиваем данные только из таблицы collections
-    const { data: collections, error } = await supabase
-        .from('collections')
-        .select('id, title, description, image_url')
-        .order('id', { ascending: true });
-
-    if (error || !collections) {
-        console.error('Ошибка загрузки сборников:', error);
-        container.innerHTML = ''; // Скрываем блок при ошибке, чтобы не портить вид
-        return; 
-    }
-
-    if (collections.length === 0) {
-        container.innerHTML = ''; // Если сборников нет, просто не рисуем блок
-        return;
-    }
-
-    // Рисуем карточки
-    container.innerHTML = collections.map(col => {
-        const imgUrl = col.image_url || 'https://via.placeholder.com/400x200/7c3a8c/ffffff?text=Сборник';
-        // Ссылка ведет на страницу прозы и автоматически активирует фильтр этого сборника
-        const link = `prose.html?collection=${col.id}`; 
-        
-        return `
-            <a href="${link}" class="collection-card">
-                <img src="${imgUrl}" alt="${escapeHtml(col.title)}" class="collection-cover" loading="lazy">
-                <div class="collection-info">
-                    <h3 class="collection-title">${escapeHtml(col.title)}</h3>
-                    <p class="collection-desc">${escapeHtml(col.description) || 'Описание скоро появится...'}</p>
-                </div>
-            </a>
-        `;
-    }).join('');
-}
-
-// ==========================================
-// ИНИЦИАЛИЗАЦИЯ ПРИ ЗАГРУЗКЕ СТРАНИЦЫ
-// ==========================================
-document.addEventListener('DOMContentLoaded', () => {
-    // 1. Здесь вызывается твоя СУЩЕСТВУЮЩАЯ функция загрузки стихов. 
-    // (Назови её так, как она у тебя называется, например loadPoems() или initWorks())
-    // loadPoems(); 
-    
-    // 2. Здесь вызывается НОВАЯ функция загрузки сборников
-    renderCollectionsGrid();
-});
+        document.getElementById('btnCopyLink').addEventListener('click', () => {
+            if (!currentWork) return;
+            const baseUrl = 'https://angel-adel.github.io/angel/works.html';
+            const linkParam = currentWork.slug ? `?slug=${currentWork.slug}` : `?id=${currentWork.id}`;
+            navigator.clipboard.writeText(baseUrl + linkParam).then(() => alert("✅ Ссылка на произведение скопирована!"));
+        });
     </script>
 </body>
 </html>
