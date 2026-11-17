@@ -8,7 +8,6 @@
     <link rel="stylesheet" href="style.css">
     <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
     <style>
-        /* Дополнительные стили для прозы */
         .prose-card {
             background: white;
             border-radius: var(--radius-sm);
@@ -57,7 +56,6 @@
             font-size: 0.85rem;
             font-weight: 500;
         }
-        /* Модальное окно */
         .modal {
             display: none;
             position: fixed;
@@ -120,6 +118,29 @@
             padding: 2rem;
             color: var(--text-muted);
         }
+        .share-buttons {
+            margin-top: 2rem; 
+            display: flex; 
+            gap: 1rem; 
+            justify-content: center; 
+            border-top: 1px solid #eee; 
+            padding-top: 1.5rem;
+            flex-wrap: wrap;
+        }
+        .share-btn {
+            background: #9b59b6; 
+            color: white; 
+            border: none; 
+            padding: 0.6rem 1.2rem; 
+            border-radius: 30px; 
+            cursor: pointer; 
+            font-size: 0.9rem; 
+            transition: 0.2s;
+        }
+        .share-btn:hover {
+            background: #8e44ad;
+            transform: translateY(-2px);
+        }
         @media (max-width: 600px) {
             .prose-card {
                 flex-direction: column;
@@ -153,17 +174,21 @@
         </div>
     </main>
 
-    <!-- Модальное окно для чтения -->
     <div id="modal" class="modal">
         <div class="modal-content">
             <span class="modal-close" id="modalClose">&times;</span>
             <h2 class="modal-title" id="modalTitle"></h2>
             <img class="modal-image" id="modalImage" style="display: none;" alt="Иллюстрация">
             <div class="modal-text" id="modalText"></div>
+            
+            <!-- Кнопки шаринга -->
+            <div class="share-buttons">
+                <button class="share-btn" id="btnCopyText">📋 Скопировать текст</button>
+                <button class="share-btn" id="btnCopyLink">🔗 Скопировать ссылку</button>
+            </div>
         </div>
     </div>
 
-    <!-- Баг-виджет -->
     <div class="bug-widget" id="bugWidget">🐞</div>
     <div class="bug-widget-content" id="bugWidgetContent">
         <h3>🐞 Сообщить о проблеме</h3>
@@ -181,25 +206,24 @@
 
     <script src="menu.js"></script>
     <script src="bug-report.js"></script>
-    
-    <!-- Подключаем Supabase -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <script>
-        // Загрузка и отображение прозы
+        let proseList = []; // Сохраняем глобально для поиска
+        let currentProse = null;
+
         async function loadProse() {
             const container = document.getElementById('proseContainer');
-            
-            // ⚠️ ВСТАВЬ СВОИ ДАННЫЕ ИЗ SUPABASE
             const SUPABASE_URL = 'https://qoqflgpkbzvdtleidtjw.supabase.co'; 
             const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFvcWZsZ3BrYnp2ZHRsZWlkdGp3Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc5Mjk0ODE0MywiZXhwIjoyMTA4NTI0MTQzfQ.5q4asB-_LFhDnzikW_tWM37RzVq85YQGAEeP4ZMF0dU';
             
             try {
                 const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
                 
+                // ДОБАВИЛИ slug в запрос
                 const { data: proseData, error } = await supabase
                     .from('works')
-                    .select('id, title, full_text, description, image_url, created_at')
+                    .select('id, slug, title, full_text, description, image_url, created_at')
                     .eq('published', true)
                     .eq('type', 'prose')
                     .order('created_at', { ascending: false });
@@ -214,11 +238,11 @@
                     return;
                 }
                 
-                // Преобразуем данные из базы в привычный для твоей вёрстки формат
-                const proseList = proseData.map(item => ({
+                proseList = proseData.map(item => ({
                     id: item.id,
+                    slug: item.slug,
                     title: item.title,
-                    date: item.created_at, // используем дату создания
+                    date: item.created_at,
                     description: item.description || '',
                     image: item.image_url || '',
                     fullText: item.full_text || ''
@@ -238,11 +262,13 @@
                 
                 document.querySelectorAll('.prose-card').forEach(card => {
                     card.addEventListener('click', () => {
-                        const id = parseInt(card.dataset.id);
-                        const prose = proseList.find(p => p.id === id);
+                        const id = card.dataset.id;
+                        const prose = proseList.find(p => p.id == id);
                         if (prose) openModal(prose);
                     });
                 });
+
+                checkUrlParams(); // Проверка ссылки при загрузке
                 
             } catch (error) {
                 console.error('Ошибка загрузки прозы:', error);
@@ -250,12 +276,13 @@
             }
         }
         
-        // --- ФУНКЦИИ РЕНДЕРА ОСТАЮТСЯ БЕЗ ИЗМЕНЕНИЙ ---
         function openModal(prose) {
             const modal = document.getElementById('modal');
             const title = document.getElementById('modalTitle');
             const text = document.getElementById('modalText');
             const modalImage = document.getElementById('modalImage');
+            
+            currentProse = prose; // Сохраняем текущую прозу
             
             title.textContent = prose.title;
             text.innerHTML = escapeHtml(prose.fullText).replace(/\n/g, '<br>');
@@ -268,7 +295,50 @@
             }
             
             modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
         }
+
+        function closeModal() {
+            document.getElementById('modal').classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        function checkUrlParams() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const slug = urlParams.get('slug');
+            const id = urlParams.get('id');
+            
+            let targetProse = null;
+            if (slug) targetProse = proseList.find(p => p.slug === slug);
+            else if (id) targetProse = proseList.find(p => p.id == id);
+            
+            if (targetProse) openModal(targetProse);
+        }
+
+        // --- ЛОГИКА ШАРИНГА ---
+        document.getElementById('btnCopyText').addEventListener('click', () => {
+            if (!currentProse) return;
+            const baseUrl = 'https://angel-adel.github.io/angel/prose.html';
+            const linkParam = currentProse.slug ? `?slug=${currentProse.slug}` : `?id=${currentProse.id}`;
+            const fullLink = baseUrl + linkParam;
+            
+            const textToCopy = `${currentProse.title}\n\n${currentProse.fullText}\n\nЧитать на сайте: ${fullLink}`;
+            
+            navigator.clipboard.writeText(textToCopy).then(() => {
+                alert("✅ Текст и ссылка скопированы!");
+            });
+        });
+
+        document.getElementById('btnCopyLink').addEventListener('click', () => {
+            if (!currentProse) return;
+            const baseUrl = 'https://angel-adel.github.io/angel/prose.html';
+            const linkParam = currentProse.slug ? `?slug=${currentProse.slug}` : `?id=${currentProse.id}`;
+            const fullLink = baseUrl + linkParam;
+            
+            navigator.clipboard.writeText(fullLink).then(() => {
+                alert("✅ Ссылка на произведение скопирована!");
+            });
+        });
         
         function formatDate(dateString) {
             if (!dateString) return '';
@@ -290,13 +360,12 @@
             });
         }
         
-        document.getElementById('modalClose').addEventListener('click', () => {
-            document.getElementById('modal').classList.remove('active');
-        });
+        document.getElementById('modalClose').addEventListener('click', closeModal);
         document.getElementById('modal').addEventListener('click', (e) => {
-            if (e.target === document.getElementById('modal')) {
-                document.getElementById('modal').classList.remove('active');
-            }
+            if (e.target === document.getElementById('modal')) closeModal();
+        });
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closeModal();
         });
         
         loadProse();
