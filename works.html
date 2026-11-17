@@ -172,7 +172,7 @@
             // Здесь тоже используем 'db'
             const { data: collections, error } = await db
                 .from('collections')
-                .select('id, title, description, image_url')
+                .select('id, title, description, image_url, slug')
                 .order('id', { ascending: true });
 
             if (error || !collections) {
