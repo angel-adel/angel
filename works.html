@@ -188,7 +188,7 @@
 
             container.innerHTML = collections.map(col => {
                 const imgUrl = col.image_url || 'https://via.placeholder.com/400x200/7c3a8c/ffffff?text=Сборник';
-                const link = `prose.html?collection=${col.id}`; 
+                const link = `collection.html?slug=${col.slug}`; // Используем красивый slug вместо ID
                 
                 return `
                     <a href="${link}" class="collection-card">
