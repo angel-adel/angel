@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Сборник — Ádel</title>
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* Стили для шапки сборника */
+        .collection-header {
+            text-align: center;
+            padding: 2rem 1rem;
+            margin-bottom: 2rem;
+            background: linear-gradient(to bottom, var(--bg-light), transparent);
+            border-radius: var(--radius);
+        }
+        .collection-hero-image {
+            width: 100%;
+            max-width: 400px;
+            height: 250px;
+            object-fit: cover;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-hover);
+            margin-bottom: 1.5rem;
+        }
+        .collection-main-title {
+            font-size: 2rem;
+            color: var(--accent);
+            margin-bottom: 0.5rem;
+        }
+        .collection-main-desc {
+            font-size: 1.1rem;
+            color: var(--text-muted);
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+        /* Стили для списка произведений внутри сборника */
+        .works-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            max-width: 800px;
+            margin: 0 auto 3rem auto;
+        }
+        .work-item {
+            background: white;
+            padding: 1.2rem;
+            border-radius: var(--radius-sm);
+            border: var(--border);
+            cursor: pointer;
+            transition: 0.2s;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .work-item:hover {
+            transform: translateX(5px);
+            border-color: var(--accent);
+            box-shadow: var(--shadow-hover);
+        }
+        .work-item-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+        .work-item-meta {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-top: 0.3rem;
+        }
+        .read-arrow {
+            font-size: 1.5rem;
+            color: var(--accent);
+        }
+        /* Переиспользуем стили модального окна из works.html */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 20000; justify-content: center; align-items: center; backdrop-filter: blur(4px); }
+        .modal.active { display: flex; }
+        .modal-content { background: white; border-radius: var(--radius); max-width: 700px; width: 90%; max-height: 85vh; overflow-y: auto; padding: 2rem; position: relative; }
+        .modal-close { position: absolute; top: 1rem; right: 1.5rem; font-size: 2rem; cursor: pointer; color: var(--text-muted); }
+        .modal-title { color: var(--accent); margin-bottom: 1rem; }
+        .modal-text { white-space: pre-wrap; line-height: 1.7; font-family: 'Georgia', serif; }
+        [data-theme="dark"] .work-item { background: #1c112b; }
+        [data-theme="dark"] .work-item-title { color: #f3e8ff; }
+    </style>
+</head>
+<body>
+    <header>
+        <nav class="navbar">
+            <div class="logo"><a href="index.html">Ádel</a></div>
+            <ul class="nav-links" id="navLinks"></ul>
+            <div class="burger"><div class="line1"></div><div class="line2"></div><div class="line3"></div></div>
+        </nav>
+    </header>
+
+    <main>
+        <!-- Шапка сборника -->
+        <div id="collectionHeader" class="collection-header">
+            <p class="loading">Загрузка информации о сборнике...</p>
+        </div>
+
+        <!-- Список произведений -->
+        <div id="worksList" class="works-list">
+            <p class="loading">Загрузка произведений...</p>
+        </div>
+    </main>
+
+    <!-- Модальное окно для чтения -->
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <span class="modal-close" id="modalClose">&times;</span>
+            <h2 class="modal-title" id="modalTitle"></h2>
+            <div class="modal-text" id="modalText"></div>
+        </div>
+    </div>
+
+    <footer>
+        <p>2026. Адель. Angel de la poesía. ✨</p>
+        <a href="index.html">Главная</a> | <a href="works.html">Все произведения</a>
+    </footer>
+
+    <script src="menu.js"></script>
+    <script src="bug-report.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <script>
+        // ⚠️ ВСТАВЬ СЮДА СВОИ КЛЮЧИ
+        const SUPABASE_URL = 'https://qoqflgpkbzvdtleidtjw.supabase.co'; 
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFvcWZsZ3BrYnp2ZHRsZWlkdGp3Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc5Mjk0ODE0MywiZXhwIjoyMTA4NTI0MTQzfQ.5q4asB-_LFhDnzikW_tWM37RzVq85YQGAEeP4ZMF0dU';
+        const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        let currentWork = null;
+        let collectionWorks = [];
+
+        async function initCollectionPage() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const slug = urlParams.get('slug');
+
+            if (!slug) {
+                document.getElementById('collectionHeader').innerHTML = '<p>Сборник не найден. <a href="works.html">Вернуться к списку</a></p>';
+                document.getElementById('worksList').innerHTML = '';
+                return;
+            }
+
+            try {
+                // 1. Загружаем информацию о самом сборнике
+                const { data: collection, error: colError } = await db
+                    .from('collections')
+                    .select('*')
+                    .eq('slug', slug)
+                    .single();
+
+                if (colError || !collection) {
+                    throw new Error('Сборник с таким адресом не найден.');
+                }
+
+                // Отрисовываем шапку сборника
+                const headerHtml = `
+                    ${collection.image_url ? `<img src="${collection.image_url}" alt="${escapeHtml(collection.title)}" class="collection-hero-image">` : ''}
+                    <h1 class="collection-main-title">${escapeHtml(collection.title)}</h1>
+                    <p class="collection-main-desc">${escapeHtml(collection.description) || 'Описание отсутствует.'}</p>
+                `;
+                document.getElementById('collectionHeader').innerHTML = headerHtml;
+                document.title = `${collection.title} — Ádel`;
+
+                // 2. Загружаем все произведения, привязанные к этому сборнику
+                const { data: works, error: worksError } = await db
+                    .from('works')
+                    .select('id, slug, title, content, type, created_at, chapter_number')
+                    .eq('collection_id', collection.id)
+                    .eq('published', true)
+                    .order('chapter_number', { ascending: true, nullsFirst: false }) // Сначала главы по порядку
+                    .order('created_at', { ascending: false }); // Потом по дате
+
+                if (worksError) throw worksError;
+
+                collectionWorks = works || [];
+                renderWorksList();
+
+            } catch (error) {
+                console.error(error);
+                document.getElementById('collectionHeader').innerHTML = `<p>❌ Ошибка: ${error.message}</p>`;
+                document.getElementById('worksList').innerHTML = '';
+            }
+        }
+
+        function renderWorksList() {
+            const container = document.getElementById('worksList');
+            
+            if (collectionWorks.length === 0) {
+                container.innerHTML = '<p style="text-align:center; color: var(--text-muted);">В этом сборнике пока нет добавленных произведений.</p>';
+                return;
+            }
+
+            container.innerHTML = collectionWorks.map(work => {
+                const typeLabel = work.type === 'poem' ? '📜 Стихотворение' : '📖 Проза';
+                const chapterLabel = work.chapter_number ? `Глава ${work.chapter_number}` : '';
+                const meta = [typeLabel, chapterLabel].filter(Boolean).join(' • ');
+
+                return `
+                    <div class="work-item" data-id="${work.id}">
+                        <div>
+                            <div class="work-item-title">${escapeHtml(work.title)}</div>
+                            <div class="work-item-meta">${meta}</div>
+                        </div>
+                        <div class="read-arrow">→</div>
+                    </div>
+                `;
+            }).join('');
+
+            // Вешаем обработчики клика
+            document.querySelectorAll('.work-item').forEach(item => {
+                item.addEventListener('click', () => {
+                    const work = collectionWorks.find(w => w.id == item.dataset.id);
+                    if (work) openModal(work);
+                });
+            });
+        }
+
+        function openModal(work) {
+            currentWork = work;
+            document.getElementById('modalTitle').textContent = work.title;
+            document.getElementById('modalText').innerHTML = escapeHtml(work.content).replace(/\n/g, '<br>');
+            document.getElementById('modal').classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal() {
+            document.getElementById('modal').classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        function escapeHtml(str) {
+            if (!str) return '';
+            return str.replace(/[&<>]/g, function(m) {
+                if (m === '&') return '&amp;';
+                if (m === '<') return '&lt;';
+                if (m === '>') return '&gt;';
+                return m;
+            });
+        }
+
+        // Запуск и события
+        document.addEventListener('DOMContentLoaded', initCollectionPage);
+
+        document.getElementById('modalClose').addEventListener('click', closeModal);
+        document.getElementById('modal').addEventListener('click', (e) => {
+            if (e.target === document.getElementById('modal')) closeModal();
+        });
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closeModal();
+        });
+    </script>
+</body>
+</html>
